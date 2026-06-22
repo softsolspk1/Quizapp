@@ -14,6 +14,7 @@ import {
   AreaChart,
   Area
 } from 'recharts';
+import {
   TrendingUp,
   Users,
   Trophy,
