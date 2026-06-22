@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {
   Users,
-  FolderOpen,
   HelpCircle,
   Trophy,
   TrendingUp,
   Clock,
-  CheckCircle,
-  XCircle
+  CheckCircle
 } from 'lucide-react';
 import {
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -34,6 +29,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     loadDashboardData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadDashboardData = async () => {

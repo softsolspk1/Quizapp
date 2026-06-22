@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { Key, Plus, X, Search, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, X, Search, CheckCircle, XCircle } from 'lucide-react';
 
 const Pins = () => {
   const [pins, setPins] = useState([]);

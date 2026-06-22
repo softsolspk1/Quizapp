@@ -8,19 +8,15 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  LineChart,
-  Line,
   PieChart,
   Pie,
   Cell,
   AreaChart,
   Area
 } from 'recharts';
-import {
   TrendingUp,
   Users,
   Trophy,
-  Clock,
   Target,
   Award
 } from 'lucide-react';
@@ -37,6 +33,7 @@ const Analytics = () => {
 
   useEffect(() => {
     loadAnalyticsData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPeriod]);
 
   const loadAnalyticsData = async () => {

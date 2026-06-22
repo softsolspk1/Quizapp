@@ -9,8 +9,7 @@ import {
   HelpCircle,
   CheckCircle,
   XCircle,
-  Search,
-  Filter
+  Search
 } from 'lucide-react';
 
 const Questions = () => {
@@ -29,6 +28,7 @@ const Questions = () => {
   useEffect(() => {
     loadCategories();
     loadQuestions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, selectedCategory, selectedDifficulty]);
 
   const loadCategories = async () => {

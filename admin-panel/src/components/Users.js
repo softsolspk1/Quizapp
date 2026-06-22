@@ -2,12 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import {
-  CheckCircle,
   XCircle,
   Eye,
-  EyeOff,
   Search,
-  Filter,
   UserCheck,
   UserX,
   Shield,
