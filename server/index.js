@@ -18,6 +18,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('uploads'));
 
+// Root route to verify API is running
+app.get('/', (req, res) => {
+  res.send('Hilton Quiz App API is running on Vercel!');
+});
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
@@ -56,8 +61,13 @@ prisma.$connect()
   .catch(err => console.error('Database connection error:', err));
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
 
+// Only start the server if this file is run directly (not imported by Vercel)
+if (require.main === module) {
+  server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
+// Export the app for Vercel Serverless Functions
+module.exports = app;
