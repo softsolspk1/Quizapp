@@ -1,6 +1,8 @@
 const express = require('express');
 const prisma = require('../db');
 const auth = require('../middleware/auth');
+const bcrypt = require('bcryptjs');
+const { body, validationResult } = require('express-validator');
 
 const router = express.Router();
 
@@ -38,6 +40,75 @@ router.get('/', auth, async (req, res) => {
       orderBy: { createdAt: 'desc' }
     });
     res.json(users);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+});
+
+// Create new user (admin only)
+router.post('/', [
+  auth,
+  body('doctorName').notEmpty().withMessage('Doctor name is required'),
+  body('designation').notEmpty().withMessage('Designation is required'),
+  body('specialty').notEmpty().withMessage('Specialty is required'),
+  body('hospitalName').notEmpty().withMessage('Hospital name is required'),
+  body('pmdcNumber').notEmpty().withMessage('PMDC number is required'),
+  body('city').notEmpty().withMessage('City is required'),
+  body('phoneNumber').notEmpty().withMessage('Phone number is required'),
+  body('email').isEmail().withMessage('Valid email is required'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+  body('role').isIn(['user', 'subadmin', 'admin']).withMessage('Invalid role')
+], async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { doctorName, designation, specialty, hospitalName, pmdcNumber, city, phoneNumber, email, password, role } = req.body;
+
+    // Check if user already exists
+    let existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email },
+          { pmdcNumber }
+        ]
+      }
+    });
+
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists with this email or PMDC number' });
+    }
+
+    // Hash password before saving
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Create new user, auto-approved and active
+    const user = await prisma.user.create({
+      data: {
+        doctorName,
+        designation,
+        specialty,
+        hospitalName,
+        pmdcNumber,
+        city,
+        phoneNumber,
+        email,
+        password: hashedPassword,
+        role,
+        isApproved: true,
+        isActive: true
+      },
+      select: excludePassword
+    });
+
+    res.json({ message: 'User created successfully', user });
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server error');

@@ -8,7 +8,8 @@ import {
   UserCheck,
   UserX,
   Shield,
-  ShieldOff
+  ShieldOff,
+  Plus
 } from 'lucide-react';
 
 const Users = () => {
@@ -18,6 +19,20 @@ const Users = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedUser, setSelectedUser] = useState(null);
   const [showUserModal, setShowUserModal] = useState(false);
+  const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    doctorName: '',
+    designation: '',
+    specialty: '',
+    hospitalName: '',
+    pmdcNumber: '',
+    city: '',
+    phoneNumber: '',
+    email: '',
+    password: '',
+    role: 'user'
+  });
 
   useEffect(() => {
     loadUsers();
@@ -31,6 +46,32 @@ const Users = () => {
       toast.error('Failed to load users');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleAddUser = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await axios.post('/api/users', formData);
+      toast.success('User created successfully');
+      setShowAddUserModal(false);
+      setFormData({
+        doctorName: '', designation: '', specialty: '', hospitalName: '',
+        pmdcNumber: '', city: '', phoneNumber: '', email: '', password: '', role: 'user'
+      });
+      loadUsers();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to create user');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -118,9 +159,18 @@ const Users = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Users Management</h1>
-        <p className="text-gray-600">Manage user accounts and approvals</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Users Management</h1>
+          <p className="text-gray-600">Manage user accounts and approvals</p>
+        </div>
+        <button
+          onClick={() => setShowAddUserModal(true)}
+          className="btn-primary flex items-center gap-2"
+        >
+          <Plus className="h-5 w-5" />
+          Add User
+        </button>
       </div>
 
       {/* Filters */}
@@ -324,6 +374,90 @@ const Users = () => {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add User Modal */}
+      {showAddUserModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-10 mx-auto p-5 border w-[600px] shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900">Add New User</h3>
+                <button
+                  onClick={() => setShowAddUserModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <XCircle className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <form onSubmit={handleAddUser} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Doctor Name</label>
+                    <input type="text" name="doctorName" required value={formData.doctorName} onChange={handleInputChange} className="mt-1 input-field" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" name="email" required value={formData.email} onChange={handleInputChange} className="mt-1 input-field" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="text" name="password" required minLength="6" value={formData.password} onChange={handleInputChange} className="mt-1 input-field" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Role</label>
+                    <select name="role" value={formData.role} onChange={handleInputChange} className="mt-1 input-field">
+                      <option value="user">User / Doctor</option>
+                      <option value="subadmin">Sub-Admin</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Designation</label>
+                    <input type="text" name="designation" required value={formData.designation} onChange={handleInputChange} className="mt-1 input-field" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Specialty</label>
+                    <input type="text" name="specialty" required value={formData.specialty} onChange={handleInputChange} className="mt-1 input-field" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Hospital Name</label>
+                    <input type="text" name="hospitalName" required value={formData.hospitalName} onChange={handleInputChange} className="mt-1 input-field" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">PMDC Number</label>
+                    <input type="text" name="pmdcNumber" required value={formData.pmdcNumber} onChange={handleInputChange} className="mt-1 input-field" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">City</label>
+                    <input type="text" name="city" required value={formData.city} onChange={handleInputChange} className="mt-1 input-field" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+                    <input type="text" name="phoneNumber" required value={formData.phoneNumber} onChange={handleInputChange} className="mt-1 input-field" />
+                  </div>
+                </div>
+
+                <div className="mt-6 flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddUserModal(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="btn-primary"
+                  >
+                    {isSubmitting ? 'Creating...' : 'Create User'}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>

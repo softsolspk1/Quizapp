@@ -76,6 +76,11 @@ const Layout = ({ children }) => {
               );
             })}
           </nav>
+          <div className="p-4 border-t border-gray-200">
+            <p className="text-xs text-center text-gray-500">
+              Developed by <a href="https://softsols.pk/" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-800 font-semibold">Softsols Pakistan</a>
+            </p>
+          </div>
         </div>
       </div>
 
@@ -105,6 +110,11 @@ const Layout = ({ children }) => {
               );
             })}
           </nav>
+          <div className="p-4 border-t border-gray-200 mt-auto">
+            <p className="text-xs text-center text-gray-500">
+              Developed by <a href="https://softsols.pk/" target="_blank" rel="noopener noreferrer" className="text-primary-600 hover:text-primary-800 font-semibold">Softsols Pakistan</a>
+            </p>
+          </div>
         </div>
       </div>
 
