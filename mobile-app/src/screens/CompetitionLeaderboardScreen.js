@@ -58,10 +58,13 @@ const CompetitionLeaderboardScreen = ({ navigation, route }) => {
           <Text style={styles.rankText}>#{index + 1}</Text>
         )}
       </View>
-      <Image 
-        source={item.user.profilePicture ? { uri: item.user.profilePicture } : require('../../assets/images/default-avatar.png')} 
-        style={styles.avatar} 
-      />
+      {item.user.profilePicture ? (
+        <Image source={{ uri: item.user.profilePicture }} style={styles.avatar} />
+      ) : (
+        <View style={[styles.avatar, { backgroundColor: '#e5e7eb', justifyContent: 'center', alignItems: 'center' }]}>
+          <Ionicons name="person" size={24} color="#9ca3af" />
+        </View>
+      )}
       <View style={styles.infoContainer}>
         <Text style={styles.nameText}>{item.user.doctorName}</Text>
         <Text style={styles.detailsText}>{item.user.specialty} • {item.user.city}</Text>
