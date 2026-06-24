@@ -31,6 +31,7 @@ const Users = () => {
   const [formData, setFormData] = useState({
     doctorName: '',
     designation: '',
+    highestQualification: '',
     specialty: '',
     hospitalName: '',
     pmdcNumber: '',
@@ -50,6 +51,7 @@ const Users = () => {
     { id: 'pins', label: 'PINs' },
     { id: 'banners', label: 'Banners' },
     { id: 'broadcast', label: 'Broadcast' },
+    { id: 'winners', label: 'Winners' },
     { id: 'analytics', label: 'Analytics' }
   ];
 

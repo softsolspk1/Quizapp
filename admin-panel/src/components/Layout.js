@@ -13,7 +13,8 @@ import {
   User,
   Key,
   Image,
-  Bell
+  Bell,
+  Trophy
 } from 'lucide-react';
 
 const Layout = ({ children }) => {
@@ -29,6 +30,7 @@ const Layout = ({ children }) => {
     { name: 'PINs', href: '/pins', icon: Key },
     { name: 'Banners', href: '/banners', icon: Image },
     { name: 'Broadcast', href: '/broadcast', icon: Bell },
+    { name: 'Winners', href: '/winners', icon: Trophy },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   ];
 

@@ -11,6 +11,7 @@ import Pins from './components/Pins';
 import Analytics from './components/Analytics';
 import Banners from './components/Banners';
 import Broadcast from './components/Broadcast';
+import Winners from './components/Winners';
 import Layout from './components/Layout';
 
 
@@ -111,6 +112,13 @@ function App() {
               <AdminOnlyRoute feature="broadcast">
                 <Layout>
                   <Broadcast />
+                </Layout>
+              </AdminOnlyRoute>
+            } />
+            <Route path="/winners" element={
+              <AdminOnlyRoute feature="winners">
+                <Layout>
+                  <Winners />
                 </Layout>
               </AdminOnlyRoute>
             } />

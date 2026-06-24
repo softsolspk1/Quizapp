@@ -21,6 +21,7 @@ const RegisterScreen = ({ navigation }) => {
   const [formData, setFormData] = useState({
     doctorName: '',
     designation: '',
+    highestQualification: '',
     specialty: '',
     hospitalName: '',
     pmdcNumber: '',
@@ -36,6 +37,18 @@ const RegisterScreen = ({ navigation }) => {
   const [showSpecialtyModal, setShowSpecialtyModal] = useState(false);
   const [showDesignationModal, setShowDesignationModal] = useState(false);
   const [showCityModal, setShowCityModal] = useState(false);
+  
+  // Complaint Modal state
+  const [showComplaintModal, setShowComplaintModal] = useState(false);
+  const [complaintData, setComplaintData] = useState({
+    doctorName: '',
+    city: '',
+    email: '',
+    phoneNumber: '',
+    complaint: ''
+  });
+  const [submittingComplaint, setSubmittingComplaint] = useState(false);
+
   const { register } = useAuth();
 
   const specialtyOptions = [
@@ -55,11 +68,13 @@ const RegisterScreen = ({ navigation }) => {
   ];
 
   const designationOptions = [
-    'Prof.',
-    'Associate Prof.',
-    'Asst. Prof',
+    'Professor',
+    'Associate Professor',
+    'Assitant Professor',
     'Consultant',
-    'Post Graduate'
+    'Post Graduate',
+    'General Physician',
+    'GP'
   ];
 
   const cityOptions = [
@@ -94,15 +109,14 @@ const RegisterScreen = ({ navigation }) => {
 
   const validateForm = () => {
     const requiredFields = [
-      'doctorName', 'designation', 'specialty', 'hospitalName',
+      'doctorName', 'designation', 'highestQualification', 'specialty', 'hospitalName',
       'pmdcNumber', 'city', 'phoneNumber', 'email', 'password'
     ];
 
-    for (const field of requiredFields) {
-      if (!formData[field].trim()) {
-        Alert.alert('Error', `Please fill in ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
-        return false;
-      }
+    const isComplete = requiredFields.every(field => formData[field].trim() !== '');
+    if (!isComplete) {
+      Alert.alert('Error', 'Please fill in all required fields');
+      return false;
     }
 
     if (formData.password !== formData.confirmPassword) {
@@ -111,7 +125,7 @@ const RegisterScreen = ({ navigation }) => {
     }
 
     if (formData.password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters long');
+      Alert.alert('Error', 'Password must be at least 6 characters');
       return false;
     }
 
@@ -122,12 +136,50 @@ const RegisterScreen = ({ navigation }) => {
     if (!validateForm()) return;
 
     setLoading(true);
-    const { confirmPassword, ...userData } = formData;
-    const result = await register(userData);
-    setLoading(false);
+    try {
+      const { confirmPassword, ...registerData } = formData;
+      const success = await register(registerData);
+      
+      if (success) {
+        Alert.alert(
+          'Registration Successful',
+          'Thank you for SignUp. Your Account is under admin approval.',
+          [{ text: 'OK', onPress: () => navigation.navigate('Login') }]
+        );
+      }
+    } catch (error) {
+      Alert.alert('Registration Failed', error.response?.data?.message || 'Please try again later');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    if (result.success && result.pendingApproval) {
-      navigation.navigate('Login');
+  const submitComplaint = async () => {
+    const { doctorName, city, email, phoneNumber, complaint } = complaintData;
+    if (!doctorName || !city || !email || !phoneNumber || !complaint) {
+      Alert.alert('Error', 'Please fill in all complaint fields');
+      return;
+    }
+    
+    setSubmittingComplaint(true);
+    try {
+      const response = await fetch(`${require('../config').API_URL}/api/support/complaint`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(complaintData)
+      });
+      
+      if (response.ok) {
+        Alert.alert('Success', 'Complaint submitted successfully');
+        setShowComplaintModal(false);
+        setComplaintData({ doctorName: '', city: '', email: '', phoneNumber: '', complaint: '' });
+      } else {
+        throw new Error('Failed to submit');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to submit complaint. Please try again.');
+    } finally {
+      setSubmittingComplaint(false);
     }
   };
 
@@ -174,6 +226,18 @@ const RegisterScreen = ({ navigation }) => {
               </Text>
               <Ionicons name="chevron-down" size={20} color="#6b7280" />
             </TouchableOpacity>
+
+            <View style={styles.inputContainer}>
+              <Ionicons name="school-outline" size={20} color="#6b7280" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Highest Qualification"
+                placeholderTextColor="#9ca3af"
+                value={formData.highestQualification}
+                onChangeText={(value) => handleInputChange('highestQualification', value)}
+                autoCapitalize="words"
+              />
+            </View>
 
             <TouchableOpacity 
               style={styles.inputContainer}
@@ -311,6 +375,10 @@ const RegisterScreen = ({ navigation }) => {
                 <Text style={styles.loginLink}>Sign In</Text>
               </TouchableOpacity>
             </View>
+
+            <TouchableOpacity style={{ marginTop: 20, alignItems: 'center' }} onPress={() => setShowComplaintModal(true)}>
+              <Text style={{ color: '#ef4444', textDecorationLine: 'underline', fontSize: 14 }}>Have an issue? Submit a Complaint</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
 
@@ -322,6 +390,69 @@ const RegisterScreen = ({ navigation }) => {
           />
         </View>
       </KeyboardAvoidingView>
+
+      {/* Complaint Modal */}
+      <Modal
+        visible={showComplaintModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowComplaintModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Submit Complaint</Text>
+            
+            <TextInput
+              style={styles.input}
+              placeholder="Doctor Name"
+              value={complaintData.doctorName}
+              onChangeText={(val) => setComplaintData(prev => ({ ...prev, doctorName: val }))}
+            />
+            <TextInput
+              style={[styles.input, { marginTop: 10 }]}
+              placeholder="City"
+              value={complaintData.city}
+              onChangeText={(val) => setComplaintData(prev => ({ ...prev, city: val }))}
+            />
+            <TextInput
+              style={[styles.input, { marginTop: 10 }]}
+              placeholder="Email Address"
+              keyboardType="email-address"
+              value={complaintData.email}
+              onChangeText={(val) => setComplaintData(prev => ({ ...prev, email: val }))}
+            />
+            <TextInput
+              style={[styles.input, { marginTop: 10 }]}
+              placeholder="Phone Number"
+              keyboardType="phone-pad"
+              value={complaintData.phoneNumber}
+              onChangeText={(val) => setComplaintData(prev => ({ ...prev, phoneNumber: val }))}
+            />
+            <TextInput
+              style={[styles.input, { marginTop: 10, height: 100, textAlignVertical: 'top' }]}
+              placeholder="Your Complaint"
+              multiline
+              value={complaintData.complaint}
+              onChangeText={(val) => setComplaintData(prev => ({ ...prev, complaint: val }))}
+            />
+
+            <TouchableOpacity 
+              style={[styles.registerButton, { marginTop: 20 }, submittingComplaint && styles.registerButtonDisabled]}
+              onPress={submitComplaint}
+              disabled={submittingComplaint}
+            >
+              <Text style={styles.registerButtonText}>{submittingComplaint ? 'Submitting...' : 'Submit Complaint'}</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={{ marginTop: 15, alignItems: 'center' }}
+              onPress={() => setShowComplaintModal(false)}
+            >
+              <Text style={{ color: '#6b7280', fontSize: 16 }}>Cancel</Text>
+            </TouchableOpacity>
+          </KeyboardAvoidingView>
+        </View>
+      </Modal>
 
       {/* Specialty Modal */}
       <Modal

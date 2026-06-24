@@ -20,19 +20,24 @@ const { width } = Dimensions.get('window');
 const HomeScreen = ({ navigation }) => {
   const { user } = useAuth();
   const [categories, setCategories] = useState([]);
+  const [activeWinner, setActiveWinner] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    loadCategories();
+    loadData();
   }, []);
 
-  const loadCategories = async () => {
+  const loadData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/categories`);
-      setCategories(response.data);
+      const [categoriesRes, winnerRes] = await Promise.all([
+        axios.get(`${API_URL}/api/categories`),
+        axios.get(`${API_URL}/api/winners/active`)
+      ]);
+      setCategories(categoriesRes.data);
+      setActiveWinner(winnerRes.data);
     } catch (error) {
-      console.error('Error loading categories:', error);
+      console.error('Error loading data:', error);
     } finally {
       setLoading(false);
     }
@@ -40,7 +45,7 @@ const HomeScreen = ({ navigation }) => {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await loadCategories();
+    await loadData();
     setRefreshing(false);
   };
 
@@ -93,6 +98,23 @@ const HomeScreen = ({ navigation }) => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+        {/* Winner of the Month */}
+        {activeWinner && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Winner of the Month</Text>
+            <View style={styles.winnerCard}>
+              <Image source={{ uri: activeWinner.imageUrl }} style={styles.winnerImage} />
+              <View style={styles.winnerInfo}>
+                <Ionicons name="trophy" size={24} color="#f59e0b" style={styles.winnerIcon} />
+                <View>
+                  <Text style={styles.winnerTitle}>{activeWinner.title}</Text>
+                  <Text style={styles.winnerSubtitle}>{activeWinner.month} {activeWinner.year}</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        )}
+
         {/* Quick Actions */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Quick Actions</Text>
@@ -272,21 +294,57 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 24,
   },
   section: {
-    marginTop: 24,
+    padding: 20,
+    paddingBottom: 0,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: 'bold',
     color: '#1f2937',
-    marginBottom: 16,
-    fontFamily: 'Inter-SemiBold',
+    marginBottom: 15,
+  },
+  winnerCard: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+    marginBottom: 10,
+  },
+  winnerImage: {
+    width: '100%',
+    height: 180,
+    backgroundColor: '#f3f4f6',
+  },
+  winnerInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    backgroundColor: '#fffbeb',
+  },
+  winnerIcon: {
+    marginRight: 12,
+  },
+  winnerTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#92400e',
+  },
+  winnerSubtitle: {
+    fontSize: 12,
+    color: '#b45309',
+    marginTop: 2,
   },
   quickActions: {
     flexDirection: 'row',
-    gap: 12,
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 15,
   },
   quickActionItem: {
     flex: 1,

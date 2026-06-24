@@ -8,21 +8,22 @@ generator client {
 }
 
 model User {
-  id             Int           @id @default(autoincrement())
-  doctorName     String
-  designation    String
-  specialty      String
-  hospitalName   String
-  pmdcNumber     String        @unique
-  city           String
-  phoneNumber    String
-  email          String        @unique
-  password       String
-  profilePicture String?
-  isApproved     Boolean       @default(false)
-  isActive       Boolean       @default(true)
-  role           String        @default("user") // "user" or "admin"
-  permissions    String[]      @default([]) // For subadmin specific access
+  id                   Int           @id @default(autoincrement())
+  doctorName           String
+  designation          String
+  highestQualification String?
+  specialty            String
+  hospitalName         String
+  pmdcNumber           String        @unique
+  city                 String
+  phoneNumber          String
+  email                String        @unique
+  password             String
+  profilePicture       String?
+  isApproved           Boolean       @default(false)
+  isActive             Boolean       @default(true)
+  role                 String        @default("user") // "user" or "admin"
+  permissions          String[]      @default([]) // For subadmin specific access
   totalPoints    Int           @default(0)
   gamesPlayed    Int           @default(0)
   correctAnswers Int           @default(0)
@@ -165,4 +166,15 @@ model Message {
   content        String
   isRead         Boolean      @default(false)
   createdAt      DateTime     @default(now())
+}
+
+model Winner {
+  id        Int      @id @default(autoincrement())
+  title     String
+  imageUrl  String
+  month     String
+  year      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

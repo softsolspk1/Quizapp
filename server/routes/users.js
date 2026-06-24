@@ -72,7 +72,7 @@ router.post('/', [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { doctorName, designation, specialty, hospitalName, pmdcNumber, city, phoneNumber, email, password, role, permissions } = req.body;
+    const { doctorName, designation, highestQualification, specialty, hospitalName, pmdcNumber, city, phoneNumber, email, password, role, permissions } = req.body;
 
     // Check if user already exists
     let existingUser = await prisma.user.findFirst({
@@ -96,6 +96,7 @@ router.post('/', [
       data: {
         doctorName,
         designation,
+        highestQualification,
         specialty,
         hospitalName,
         pmdcNumber,
