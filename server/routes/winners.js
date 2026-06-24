@@ -1,14 +1,13 @@
 const express = require('express');
 const prisma = require('../db');
 const auth = require('../middleware/auth');
-const adminAuth = require('../middleware/adminAuth');
 
 const router = express.Router();
 
 // @route   GET /api/winners
 // @desc    Get all winners (for admin)
 // @access  Private/Admin
-router.get('/', auth, adminAuth, async (req, res) => {
+router.get('/', auth, async (req, res) => {
   try {
     const winners = await prisma.winner.findMany({
       orderBy: { createdAt: 'desc' }
@@ -36,14 +35,7 @@ router.get('/active', async (req, res) => {
   }
 });
 
-// @route   POST /api/winners
-// @desc    Create a new winner
-// @access  Private/Admin
-router.get('/', auth, adminAuth, async (req, res) => {
-    // This is handled by the first route.
-});
-
-router.post('/', auth, adminAuth, async (req, res) => {
+router.post('/', auth, async (req, res) => {
   try {
     const { title, imageUrl, month, year, isActive } = req.body;
 
@@ -75,7 +67,7 @@ router.post('/', auth, adminAuth, async (req, res) => {
 // @route   PUT /api/winners/:id
 // @desc    Update a winner
 // @access  Private/Admin
-router.put('/:id', auth, adminAuth, async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
   try {
     const { title, imageUrl, month, year, isActive } = req.body;
 
@@ -107,7 +99,7 @@ router.put('/:id', auth, adminAuth, async (req, res) => {
 // @route   DELETE /api/winners/:id
 // @desc    Delete a winner
 // @access  Private/Admin
-router.delete('/:id', auth, adminAuth, async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
   try {
     await prisma.winner.delete({
       where: { id: parseInt(req.params.id) }
