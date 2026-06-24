@@ -37,6 +37,7 @@ app.use('/api/banners', require('./routes/banners'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/chat', require('./routes/chat'));
 app.use('/api/winners', require('./routes/winners'));
+app.use('/api/competitions', require('./routes/competitions'));
 
 // Socket.io for real-time multiplayer
 io.on('connection', (socket) => {

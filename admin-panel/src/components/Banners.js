@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Plus, Edit2, Trash2, XCircle, Image as ImageIcon, Upload } from 'lucide-react';
+import { Plus, Edit2, Trash2, XCircle, Image as ImageIcon, Upload, Download, FileText } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { exportToPDF, exportToExcel } from '../utils/exportUtils';
 
 const Banners = () => {
   const [banners, setBanners] = useState([]);
@@ -115,6 +116,28 @@ const Banners = () => {
     }
   };
 
+  const handleExportPDF = () => {
+    const headers = ['Title', 'Specialty', 'Status', 'Image URL'];
+    const data = banners.map(banner => [
+      banner.title,
+      banner.specialty,
+      banner.isActive ? 'Active' : 'Inactive',
+      banner.imageUrl
+    ]);
+    exportToPDF('Banners List', headers, data);
+  };
+
+  const handleExportExcel = () => {
+    const headers = ['Title', 'Specialty', 'Status', 'Image URL'];
+    const data = banners.map(banner => [
+      banner.title,
+      banner.specialty,
+      banner.isActive ? 'Active' : 'Inactive',
+      banner.imageUrl
+    ]);
+    exportToExcel('Banners List', headers, data);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -130,16 +153,26 @@ const Banners = () => {
           <h1 className="text-2xl font-bold text-gray-900">Banners</h1>
           <p className="text-gray-600">Manage promotional and specialty banners</p>
         </div>
-        <button
-          onClick={() => {
-            setFormData({ id: null, title: '', imageUrl: '', specialty: 'All', isActive: true });
-            setShowModal(true);
-          }}
-          className="btn-primary flex items-center gap-2"
-        >
-          <Plus className="h-5 w-5" />
-          Add Banner
-        </button>
+        <div className="flex gap-2">
+          <button onClick={handleExportPDF} className="btn-secondary flex items-center gap-2">
+            <FileText className="h-5 w-5 text-red-600" />
+            PDF
+          </button>
+          <button onClick={handleExportExcel} className="btn-secondary flex items-center gap-2">
+            <Download className="h-5 w-5 text-green-600" />
+            Excel
+          </button>
+          <button
+            onClick={() => {
+              setFormData({ id: null, title: '', imageUrl: '', specialty: 'All', isActive: true });
+              setShowModal(true);
+            }}
+            className="btn-primary flex items-center gap-2"
+          >
+            <Plus className="h-5 w-5" />
+            Add Banner
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

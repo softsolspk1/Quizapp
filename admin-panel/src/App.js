@@ -12,6 +12,7 @@ import Analytics from './components/Analytics';
 import Banners from './components/Banners';
 import Broadcast from './components/Broadcast';
 import Winners from './components/Winners';
+import Competitions from './components/Competitions';
 import Layout from './components/Layout';
 
 
@@ -87,7 +88,7 @@ function App() {
                 </Layout>
               </AdminOnlyRoute>
             } />
-            <Route path="/pins" element={
+            <Route path="/ward-activities" element={
               <AdminOnlyRoute feature="pins">
                 <Layout>
                   <Pins />
@@ -122,6 +123,14 @@ function App() {
                 </Layout>
               </AdminOnlyRoute>
             } />
+            <Route path="/competitions" element={
+              <AdminOnlyRoute feature="competitions">
+                <Layout>
+                  <Competitions />
+                </Layout>
+              </AdminOnlyRoute>
+            } />
+
           </Routes>
         </div>
       </Router>

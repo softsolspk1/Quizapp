@@ -67,14 +67,14 @@ const PinQuizScreen = ({ navigation }) => {
         
         <View style={styles.headerContent}>
           <Ionicons name="key" size={60} color="white" style={styles.icon} />
-          <Text style={styles.title}>Join Ward Quiz</Text>
-          <Text style={styles.subtitle}>Enter the PIN provided by your Admin</Text>
+          <Text style={styles.title}>Join Ward Activity</Text>
+          <Text style={styles.subtitle}>Enter the Activity PIN provided by your Admin</Text>
         </View>
       </LinearGradient>
 
       <View style={styles.content}>
         <View style={styles.card}>
-          <Text style={styles.label}>PIN Code</Text>
+          <Text style={styles.label}>Activity PIN</Text>
           <View style={styles.inputContainer}>
             <Ionicons name="lock-closed" size={20} color="#6b7280" />
             <TextInput

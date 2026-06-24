@@ -9,7 +9,12 @@ router.get('/', async (req, res) => {
   try {
     const categories = await prisma.category.findMany({
       where: { isActive: true },
-      orderBy: { name: 'asc' }
+      orderBy: { name: 'asc' },
+      include: {
+        _count: {
+          select: { questions: true }
+        }
+      }
     });
     
     // Move Specialty category to the top if it exists

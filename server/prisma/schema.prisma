@@ -39,6 +39,7 @@ model User {
   conversations1 Conversation[] @relation("ConversationUser1")
   conversations2 Conversation[] @relation("ConversationUser2")
   sentMessages   Message[]
+  competitionEnrollments CompetitionEnrollment[]
 }
 
 model Category {
@@ -53,6 +54,7 @@ model Category {
   questions     Question[]
   quizSessions  QuizSession[]
   pins          Pin[]
+  monthlyCompetitions MonthlyCompetition[]
 }
 
 model Question {
@@ -177,4 +179,31 @@ model Winner {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model MonthlyCompetition {
+  id              Int                     @id @default(autoincrement())
+  name            String
+  targetSpecialty String
+  posterUrl       String
+  date            String
+  startTime       String
+  endTime         String
+  categoryId      Int
+  category        Category                @relation(fields: [categoryId], references: [id])
+  isActive        Boolean                 @default(true)
+  enrollments     CompetitionEnrollment[]
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+}
+
+model CompetitionEnrollment {
+  id            Int                @id @default(autoincrement())
+  userId        Int
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  competitionId Int
+  competition   MonthlyCompetition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  enrolledAt    DateTime           @default(now())
+
+  @@unique([userId, competitionId])
 }

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { Plus, X, Search, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, X, Search, CheckCircle, XCircle, Download, FileText } from 'lucide-react';
+import { exportToPDF, exportToExcel } from '../utils/exportUtils';
 
 const Pins = () => {
   const [pins, setPins] = useState([]);
@@ -61,20 +62,56 @@ const Pins = () => {
     pin.code.includes(searchTerm)
   );
 
+  const handleExportPDF = () => {
+    const headers = ['Activity PIN', 'Ward Name', 'City', 'Creator', 'Status', 'Expires At'];
+    const data = filteredPins.map(pin => [
+      pin.code,
+      pin.wardName,
+      pin.city,
+      pin.creator ? pin.creator.doctorName : 'Unknown',
+      pin.isActive ? 'Active' : 'Revoked',
+      pin.expiresAt ? new Date(pin.expiresAt).toLocaleString() : 'Never'
+    ]);
+    exportToPDF('Ward Activities List', headers, data);
+  };
+
+  const handleExportExcel = () => {
+    const headers = ['Activity PIN', 'Ward Name', 'City', 'Creator', 'Status', 'Expires At'];
+    const data = filteredPins.map(pin => [
+      pin.code,
+      pin.wardName,
+      pin.city,
+      pin.creator ? pin.creator.doctorName : 'Unknown',
+      pin.isActive ? 'Active' : 'Revoked',
+      pin.expiresAt ? new Date(pin.expiresAt).toLocaleString() : 'Never'
+    ]);
+    exportToExcel('Ward Activities List', headers, data);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl font-bold text-gray-900">PIN Management</h1>
-        <button
-          onClick={() => {
-            reset();
-            setIsModalOpen(true);
-          }}
-          className="btn-primary flex items-center gap-2"
-        >
-          <Plus className="h-5 w-5" />
-          Generate New PIN
-        </button>
+        <h1 className="text-2xl font-bold text-gray-900">Ward Activity Management</h1>
+        <div className="flex gap-2">
+          <button onClick={handleExportPDF} className="btn-secondary flex items-center gap-2">
+            <FileText className="h-5 w-5 text-red-600" />
+            PDF
+          </button>
+          <button onClick={handleExportExcel} className="btn-secondary flex items-center gap-2">
+            <Download className="h-5 w-5 text-green-600" />
+            Excel
+          </button>
+          <button
+            onClick={() => {
+              reset();
+              setIsModalOpen(true);
+            }}
+            className="btn-primary flex items-center gap-2"
+          >
+            <Plus className="h-5 w-5" />
+            Create Ward Activity
+          </button>
+        </div>
       </div>
 
       <div className="card p-4">
@@ -100,7 +137,7 @@ const Pins = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="table-header">PIN Code</th>
+                  <th className="table-header">Activity PIN</th>
                   <th className="table-header">Ward Name</th>
                   <th className="table-header">City</th>
                   <th className="table-header">Creator</th>
@@ -153,7 +190,7 @@ const Pins = () => {
                 {filteredPins.length === 0 && (
                   <tr>
                     <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
-                      No PINs found matching your criteria.
+                      No Ward Activities found matching your criteria.
                     </td>
                   </tr>
                 )}
@@ -167,7 +204,7 @@ const Pins = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-gray-900">Generate New PIN</h3>
+              <h3 className="text-lg font-semibold text-gray-900">Create Ward Activity</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-500">
                 <X className="h-6 w-6" />
               </button>
@@ -257,7 +294,7 @@ const Pins = () => {
                   type="submit"
                   className="btn-primary"
                 >
-                  Generate PIN
+                  Create Activity
                 </button>
               </div>
             </form>

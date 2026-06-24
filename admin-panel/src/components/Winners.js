@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { Image, Upload, Plus, X, Star } from 'lucide-react';
+import { Image, Upload, Plus, X, Star, Download, FileText } from 'lucide-react';
+import { exportToPDF, exportToExcel } from '../utils/exportUtils';
 
 const Winners = () => {
   const [winners, setWinners] = useState([]);
@@ -99,6 +100,29 @@ const Winners = () => {
     }
   };
 
+  const handleExportPDF = () => {
+    const headers = ['Title', 'Month', 'Year', 'Status'];
+    const data = winners.map(winner => [
+      winner.title,
+      winner.month,
+      winner.year,
+      winner.isActive ? 'Active' : 'Inactive'
+    ]);
+    exportToPDF('Winners of the Month', headers, data);
+  };
+
+  const handleExportExcel = () => {
+    const headers = ['Title', 'Month', 'Year', 'Status', 'Image URL'];
+    const data = winners.map(winner => [
+      winner.title,
+      winner.month,
+      winner.year,
+      winner.isActive ? 'Active' : 'Inactive',
+      winner.imageUrl || 'N/A'
+    ]);
+    exportToExcel('Winners of the Month', headers, data);
+  };
+
   if (loading) {
     return <div className="flex justify-center items-center h-64">Loading...</div>;
   }
@@ -107,13 +131,23 @@ const Winners = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">Winner of the Month</h1>
-        <button
-          onClick={() => setShowModal(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-700"
-        >
-          <Plus className="w-5 h-5" />
-          <span>Add Winner</span>
-        </button>
+        <div className="flex gap-2">
+          <button onClick={handleExportPDF} className="btn-secondary flex items-center gap-2">
+            <FileText className="h-5 w-5 text-red-600" />
+            PDF
+          </button>
+          <button onClick={handleExportExcel} className="btn-secondary flex items-center gap-2">
+            <Download className="h-5 w-5 text-green-600" />
+            Excel
+          </button>
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-700"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Add Winner</span>
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

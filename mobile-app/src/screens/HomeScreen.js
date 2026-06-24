@@ -144,6 +144,19 @@ const HomeScreen = ({ navigation }) => {
                 <Text style={styles.quickActionText}>Leaderboard</Text>
               </LinearGradient>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.quickActionItem}
+              onPress={() => navigation.navigate('Competition')}
+            >
+              <LinearGradient
+                colors={['#ef4444', '#b91c1c']}
+                style={styles.quickActionGradient}
+              >
+                <Ionicons name="calendar" size={24} color="white" />
+                <Text style={styles.quickActionText}>Competition</Text>
+              </LinearGradient>
+            </TouchableOpacity>
           </View>
         </View>
 

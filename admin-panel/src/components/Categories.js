@@ -9,8 +9,11 @@ import {
   FolderOpen,
   CheckCircle,
   XCircle,
-  Search
+  Search,
+  Download,
+  FileText
 } from 'lucide-react';
+import { exportToPDF, exportToExcel } from '../utils/exportUtils';
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
@@ -112,6 +115,28 @@ const Categories = () => {
     category.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleExportPDF = () => {
+    const headers = ['Category Name', 'Description', 'Questions', 'Status'];
+    const data = filteredCategories.map(cat => [
+      cat.name,
+      cat.description || 'N/A',
+      cat._count?.questions || 0,
+      cat.isActive ? 'Active' : 'Inactive'
+    ]);
+    exportToPDF('Categories List', headers, data);
+  };
+
+  const handleExportExcel = () => {
+    const headers = ['Category Name', 'Description', 'Questions', 'Status'];
+    const data = filteredCategories.map(cat => [
+      cat.name,
+      cat.description || 'N/A',
+      cat._count?.questions || 0,
+      cat.isActive ? 'Active' : 'Inactive'
+    ]);
+    exportToExcel('Categories List', headers, data);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -127,13 +152,23 @@ const Categories = () => {
           <h1 className="text-2xl font-bold text-gray-900">Categories Management</h1>
           <p className="text-gray-600">Manage quiz categories</p>
         </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="btn-primary flex items-center gap-2"
-        >
-          <Plus className="h-5 w-5" />
-          Add Category
-        </button>
+        <div className="flex gap-2">
+          <button onClick={handleExportPDF} className="btn-secondary flex items-center gap-2">
+            <FileText className="h-5 w-5 text-red-600" />
+            PDF
+          </button>
+          <button onClick={handleExportExcel} className="btn-secondary flex items-center gap-2">
+            <Download className="h-5 w-5 text-green-600" />
+            Excel
+          </button>
+          <button
+            onClick={() => setShowModal(true)}
+            className="btn-primary flex items-center gap-2"
+          >
+            <Plus className="h-5 w-5" />
+            Add Category
+          </button>
+        </div>
       </div>
 
       {/* Search */}

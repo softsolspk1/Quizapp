@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Send, Trash2, Bell } from 'lucide-react';
+import { Send, Trash2, Bell, Download, FileText } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { exportToPDF, exportToExcel } from '../utils/exportUtils';
 
 const Broadcast = () => {
   const [notifications, setNotifications] = useState([]);
@@ -95,11 +96,47 @@ const Broadcast = () => {
     );
   }
 
+  const handleExportPDF = () => {
+    const headers = ['Title', 'Message', 'Target Type', 'Target Value', 'Created At'];
+    const data = notifications.map(notif => [
+      notif.title,
+      notif.message,
+      notif.targetType,
+      notif.targetValue || 'N/A',
+      new Date(notif.createdAt).toLocaleString()
+    ]);
+    exportToPDF('Broadcast History', headers, data);
+  };
+
+  const handleExportExcel = () => {
+    const headers = ['Title', 'Message', 'Target Type', 'Target Value', 'Created At'];
+    const data = notifications.map(notif => [
+      notif.title,
+      notif.message,
+      notif.targetType,
+      notif.targetValue || 'N/A',
+      new Date(notif.createdAt).toLocaleString()
+    ]);
+    exportToExcel('Broadcast History', headers, data);
+  };
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Broadcast Messages</h1>
-        <p className="text-gray-600">Send in-app notifications to filtered users</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Broadcast Messages</h1>
+          <p className="text-gray-600">Send in-app notifications to filtered users</p>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={handleExportPDF} className="btn-secondary flex items-center gap-2">
+            <FileText className="h-5 w-5 text-red-600" />
+            PDF
+          </button>
+          <button onClick={handleExportExcel} className="btn-secondary flex items-center gap-2">
+            <Download className="h-5 w-5 text-green-600" />
+            Excel
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

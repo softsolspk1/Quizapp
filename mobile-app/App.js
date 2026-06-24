@@ -20,6 +20,7 @@ import RegisterScreen from './src/screens/RegisterScreen';
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import CategoryScreen from './src/screens/CategoryScreen';
+import CompetitionScreen from './src/screens/CompetitionScreen';
 import QuizScreen from './src/screens/QuizScreen';
 import ResultsScreen from './src/screens/ResultsScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
@@ -160,6 +161,7 @@ function AppNavigator() {
             <Stack.Screen name="Results" component={ResultsScreen} />
             <Stack.Screen name="Multiplayer" component={MultiplayerScreen} />
             <Stack.Screen name="MultiplayerQuiz" component={MultiplayerQuizScreen} />
+            <Stack.Screen name="Competition" component={CompetitionScreen} />
             <Stack.Screen name="PinQuiz" component={PinQuizScreen} />
             <Stack.Screen name="Support" component={SupportScreen} />
             <Stack.Screen name="ChatList" component={ChatListScreen} />

@@ -9,8 +9,11 @@ import {
   HelpCircle,
   CheckCircle,
   XCircle,
-  Search
+  Search,
+  Download,
+  FileText
 } from 'lucide-react';
+import { exportToPDF, exportToExcel } from '../utils/exportUtils';
 
 const Questions = () => {
   const [questions, setQuestions] = useState([]);
@@ -154,6 +157,36 @@ const Questions = () => {
     question.question.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleExportPDF = () => {
+    const headers = ['Question', 'Category', 'Difficulty', 'Points', 'Status'];
+    const data = filteredQuestions.map(q => [
+      q.question,
+      q.category?.name || 'N/A',
+      q.difficulty,
+      q.points,
+      q.isActive ? 'Active' : 'Inactive'
+    ]);
+    exportToPDF('Questions List', headers, data);
+  };
+
+  const handleExportExcel = () => {
+    const headers = ['Question', 'Category', 'Difficulty', 'Points', 'Status', 'Option A', 'Option B', 'Option C', 'Option D', 'Correct Answer', 'Explanation'];
+    const data = filteredQuestions.map(q => [
+      q.question,
+      q.category?.name || 'N/A',
+      q.difficulty,
+      q.points,
+      q.isActive ? 'Active' : 'Inactive',
+      q.options[0],
+      q.options[1],
+      q.options[2],
+      q.options[3],
+      q.correctAnswer,
+      q.explanation || 'N/A'
+    ]);
+    exportToExcel('Questions List', headers, data);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -169,13 +202,23 @@ const Questions = () => {
           <h1 className="text-2xl font-bold text-gray-900">Questions Management</h1>
           <p className="text-gray-600">Manage quiz questions</p>
         </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="btn-primary flex items-center gap-2"
-        >
-          <Plus className="h-5 w-5" />
-          Add Question
-        </button>
+        <div className="flex gap-2">
+          <button onClick={handleExportPDF} className="btn-secondary flex items-center gap-2">
+            <FileText className="h-5 w-5 text-red-600" />
+            PDF
+          </button>
+          <button onClick={handleExportExcel} className="btn-secondary flex items-center gap-2">
+            <Download className="h-5 w-5 text-green-600" />
+            Excel
+          </button>
+          <button
+            onClick={() => setShowModal(true)}
+            className="btn-primary flex items-center gap-2"
+          >
+            <Plus className="h-5 w-5" />
+            Add Question
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
