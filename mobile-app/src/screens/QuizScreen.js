@@ -14,7 +14,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { API_URL } from '../config';
 
 const QuizScreen = ({ navigation, route }) => {
-  const { category, questions, gameMode } = route.params;
+  const { category, questions, gameMode, competitionId } = route.params;
   const { user } = useAuth();
   
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -119,7 +119,8 @@ const QuizScreen = ({ navigation, route }) => {
     try {
       const response = await axios.post(`${API_URL}/api/quiz/submit`, {
         sessionId,
-        answers: finalAnswers
+        answers: finalAnswers,
+        competitionId: gameMode === 'competition' ? competitionId : undefined
       });
 
       navigation.navigate('Results', {

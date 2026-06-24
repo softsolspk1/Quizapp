@@ -203,6 +203,9 @@ model CompetitionEnrollment {
   user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   competitionId Int
   competition   MonthlyCompetition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  score         Int?
+  timeSpent     Int?
+  completedAt   DateTime?
   enrolledAt    DateTime           @default(now())
 
   @@unique([userId, competitionId])

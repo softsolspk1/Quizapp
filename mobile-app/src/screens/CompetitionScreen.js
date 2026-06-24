@@ -96,7 +96,8 @@ const CompetitionScreen = ({ navigation }) => {
       navigation.navigate('Quiz', {
         category: comp.category || { name: 'Competition Quiz' },
         questions,
-        gameMode: 'single', // Treating it as single for answering, but we could use a custom mode
+        gameMode: 'competition',
+        competitionId: comp.id
       });
     } catch (error) {
       Alert.alert('Error', 'Failed to load quiz questions');
@@ -164,6 +165,14 @@ const CompetitionScreen = ({ navigation }) => {
                     </View>
 
                     <View style={styles.actionContainer}>
+                      <TouchableOpacity
+                        style={styles.leaderboardButton}
+                        onPress={() => navigation.navigate('CompetitionLeaderboard', { competition: comp })}
+                      >
+                        <Ionicons name="podium-outline" size={18} color="#3b82f6" />
+                        <Text style={styles.leaderboardButtonText}>View Leaderboard</Text>
+                      </TouchableOpacity>
+
                       {isEnrolled ? (
                         <>
                           <View style={styles.enrolledBadge}>
@@ -222,6 +231,8 @@ const styles = StyleSheet.create({
   enrollButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold', fontFamily: 'Inter-Bold' },
   joinLiveButton: { backgroundColor: '#ef4444', borderRadius: 12, paddingVertical: 14, alignItems: 'center' },
   joinLiveButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold', fontFamily: 'Inter-Bold' },
+  leaderboardButton: { flexDirection: 'row', backgroundColor: '#eff6ff', borderRadius: 12, paddingVertical: 14, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#bfdbfe' },
+  leaderboardButtonText: { color: '#3b82f6', fontSize: 16, fontWeight: 'bold', fontFamily: 'Inter-Bold', marginLeft: 8 },
 });
 
 export default CompetitionScreen;

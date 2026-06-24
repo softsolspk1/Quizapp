@@ -236,4 +236,43 @@ router.post('/:id/enroll', auth, async (req, res) => {
   }
 });
 
+// @route   GET /api/competitions/:id/leaderboard
+// @desc    Get leaderboard for a competition
+// @access  Private
+router.get('/:id/leaderboard', auth, async (req, res) => {
+  try {
+    const competitionId = parseInt(req.params.id);
+    const { specialty, city } = req.query;
+
+    let whereClause = {
+      competitionId,
+      score: { not: null }
+    };
+
+    if (specialty || city) {
+      whereClause.user = {};
+      if (specialty) whereClause.user.specialty = specialty;
+      if (city) whereClause.user.city = city;
+    }
+
+    const leaderboard = await prisma.competitionEnrollment.findMany({
+      where: whereClause,
+      include: {
+        user: {
+          select: { doctorName: true, specialty: true, city: true, hospitalName: true, profilePicture: true }
+        }
+      },
+      orderBy: [
+        { score: 'desc' },
+        { timeSpent: 'asc' }
+      ]
+    });
+
+    res.json(leaderboard);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+});
+
 module.exports = router;

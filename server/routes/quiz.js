@@ -191,6 +191,29 @@ router.post('/submit', auth, async (req, res) => {
       }
     });
 
+    // Handle Competition Enrollment Score
+    const competitionId = req.body.competitionId;
+    if (competitionId) {
+      const enrollment = await prisma.competitionEnrollment.findUnique({
+        where: {
+          userId_competitionId: {
+            userId: req.user.id,
+            competitionId: parseInt(competitionId)
+          }
+        }
+      });
+      if (enrollment && enrollment.score === null) {
+        await prisma.competitionEnrollment.update({
+          where: { id: enrollment.id },
+          data: {
+            score: finalScore,
+            timeSpent: timeSpentTotal,
+            completedAt: new Date()
+          }
+        });
+      }
+    }
+
     res.json({
       score: finalScore,
       correctAnswers,
