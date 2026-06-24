@@ -99,7 +99,7 @@ const HomeScreen = ({ navigation }) => {
         }
       >
         {/* Winner of the Month */}
-        {activeWinner && (
+        {activeWinner ? (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Winner of the Month</Text>
             <View style={styles.winnerCard}>
@@ -113,7 +113,7 @@ const HomeScreen = ({ navigation }) => {
               </View>
             </View>
           </View>
-        )}
+        ) : null}
 
         {/* Quick Actions */}
         <View style={styles.section}>
