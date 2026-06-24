@@ -56,32 +56,19 @@ router.post('/register', [
         phoneNumber,
         email,
         password: hashedPassword,
-        isApproved: true
+        isApproved: false
       }
     });
 
-    // Generate JWT token
-    const payload = {
+    res.json({
+      message: 'Registration successful. Your account is under admin approval.',
       user: {
         id: user.id,
-        role: user.role,
-        permissions: user.permissions
+        doctorName: user.doctorName,
+        email: user.email,
+        isApproved: user.isApproved,
+        role: user.role
       }
-    };
-
-    jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' }, (err, token) => {
-      if (err) throw err;
-      res.json({
-        token,
-        user: {
-          id: user.id,
-          doctorName: user.doctorName,
-          email: user.email,
-          isApproved: user.isApproved,
-          role: user.role,
-          permissions: user.permissions
-        }
-      });
     });
   } catch (error) {
     console.error(error.message);

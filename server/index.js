@@ -32,6 +32,10 @@ app.use('/api/quiz', require('./routes/quiz'));
 app.use('/api/analytics', require('./routes/analytics'));
 app.use('/api/pins', require('./routes/pins'));
 app.use('/api/upload', require('./routes/upload'));
+app.use('/api/support', require('./routes/support'));
+app.use('/api/banners', require('./routes/banners'));
+app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/chat', require('./routes/chat'));
 
 // Socket.io for real-time multiplayer
 io.on('connection', (socket) => {
@@ -49,6 +53,54 @@ io.on('connection', (socket) => {
   
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
+  });
+
+  // Chat events
+  socket.on('join-chat', (userId) => {
+    socket.join(`user_${userId}`);
+    console.log(`User ${userId} joined their personal chat room`);
+  });
+
+  socket.on('send-message', async (data) => {
+    try {
+      const { senderId, receiverId, content } = data;
+      
+      let conversation = await prisma.conversation.findFirst({
+        where: {
+          OR: [
+            { user1Id: senderId, user2Id: receiverId },
+            { user1Id: receiverId, user2Id: senderId }
+          ]
+        }
+      });
+
+      if (!conversation) {
+        conversation = await prisma.conversation.create({
+          data: {
+            user1Id: senderId,
+            user2Id: receiverId
+          }
+        });
+      }
+
+      const message = await prisma.message.create({
+        data: {
+          conversationId: conversation.id,
+          senderId,
+          content
+        },
+        include: {
+          sender: {
+            select: { doctorName: true, profilePicture: true }
+          }
+        }
+      });
+
+      io.to(`user_${receiverId}`).emit('receive-message', message);
+      io.to(`user_${senderId}`).emit('message-sent', message);
+    } catch (error) {
+      console.error('Socket chat error:', error);
+    }
   });
 });
 

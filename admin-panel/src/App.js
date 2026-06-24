@@ -9,6 +9,8 @@ import Categories from './components/Categories';
 import Questions from './components/Questions';
 import Pins from './components/Pins';
 import Analytics from './components/Analytics';
+import Banners from './components/Banners';
+import Broadcast from './components/Broadcast';
 import Layout from './components/Layout';
 
 
@@ -95,6 +97,20 @@ function App() {
               <AdminOnlyRoute feature="analytics">
                 <Layout>
                   <Analytics />
+                </Layout>
+              </AdminOnlyRoute>
+            } />
+            <Route path="/banners" element={
+              <AdminOnlyRoute feature="banners">
+                <Layout>
+                  <Banners />
+                </Layout>
+              </AdminOnlyRoute>
+            } />
+            <Route path="/broadcast" element={
+              <AdminOnlyRoute feature="broadcast">
+                <Layout>
+                  <Broadcast />
                 </Layout>
               </AdminOnlyRoute>
             } />

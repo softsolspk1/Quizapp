@@ -48,6 +48,8 @@ const Users = () => {
     { id: 'categories', label: 'Categories' },
     { id: 'questions', label: 'Questions' },
     { id: 'pins', label: 'PINs' },
+    { id: 'banners', label: 'Banners' },
+    { id: 'broadcast', label: 'Broadcast' },
     { id: 'analytics', label: 'Analytics' }
   ];
 
@@ -565,7 +567,22 @@ const Users = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Specialty</label>
-                    <input type="text" name="specialty" required value={formData.specialty} onChange={handleInputChange} className="mt-1 input-field" />
+                    <select name="specialty" required value={formData.specialty} onChange={handleInputChange} className="mt-1 input-field">
+                      <option value="">Select Specialty</option>
+                      <option value="Cardiology">Cardiology</option>
+                      <option value="Dermatology">Dermatology</option>
+                      <option value="Endocrinology & Diabetes">Endocrinology & Diabetes</option>
+                      <option value="ER">ER</option>
+                      <option value="Gastroenterology">Gastroenterology</option>
+                      <option value="Gynaecology">Gynaecology</option>
+                      <option value="Internal Medicine">Internal Medicine</option>
+                      <option value="Nephrology">Nephrology</option>
+                      <option value="Neurology">Neurology</option>
+                      <option value="Orthopaedic">Orthopaedic</option>
+                      <option value="Paediatrics">Paediatrics</option>
+                      <option value="Psychiatry">Psychiatry</option>
+                      <option value="Pulmonology">Pulmonology</option>
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Hospital Name</label>
@@ -577,7 +594,19 @@ const Users = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700">City</label>
-                    <input type="text" name="city" required value={formData.city} onChange={handleInputChange} className="mt-1 input-field" />
+                    <select name="city" required value={formData.city} onChange={handleInputChange} className="mt-1 input-field">
+                      <option value="">Select City</option>
+                      {['Abbottabad', 'Bahawalpur', 'Chiniot', 'Dera Ghazi Khan', 'Dera Ismail Khan',
+                        'Faisalabad', 'Gilgit', 'Gujranwala', 'Gujrat', 'Hyderabad',
+                        'Islamabad', 'Jacobabad', 'Jhang', 'Jhelum', 'Karachi',
+                        'Kasur', 'Khairpur', 'Lahore', 'Larkana', 'Mardan',
+                        'Mingora', 'Mirpur Khas', 'Multan', 'Muzaffarabad', 'Nawabshah',
+                        'Okara', 'Peshawar', 'Quetta', 'Rahim Yar Khan', 'Rawalpindi',
+                        'Sadiqabad', 'Sahiwal', 'Sargodha', 'Sheikhupura', 'Shikarpur',
+                        'Sialkot', 'Sukkur', 'Vehari'].map(city => (
+                        <option key={city} value={city}>{city}</option>
+                      ))}
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Phone Number</label>

@@ -39,10 +39,19 @@ const RegisterScreen = ({ navigation }) => {
   const { register } = useAuth();
 
   const specialtyOptions = [
-    'Neuro Physician',
-    'Neuro Surgeon',
-    'Peads Neurology',
-    'Psychiatrist'
+    'Cardiology',
+    'Dermatology',
+    'Endocrinology & Diabetes',
+    'ER',
+    'Gastroenterology',
+    'Gynaecology',
+    'Internal Medicine',
+    'Nephrology',
+    'Neurology',
+    'Orthopaedic',
+    'Paediatrics',
+    'Psychiatry',
+    'Pulmonology'
   ];
 
   const designationOptions = [
@@ -54,10 +63,14 @@ const RegisterScreen = ({ navigation }) => {
   ];
 
   const cityOptions = [
-    'Karachi', 'Lahore', 'Islamabad', 'Rawalpindi', 'Faisalabad',
-    'Multan', 'Peshawar', 'Quetta', 'Sialkot', 'Gujranwala',
-    'Hyderabad', 'Sukkur', 'Larkana', 'Nawabshah', 'Mirpur Khas',
-    'Jacobabad', 'Shikarpur', 'Khairpur', 'Dadu', 'Badin'
+    'Abbottabad', 'Bahawalpur', 'Chiniot', 'Dera Ghazi Khan', 'Dera Ismail Khan',
+    'Faisalabad', 'Gilgit', 'Gujranwala', 'Gujrat', 'Hyderabad',
+    'Islamabad', 'Jacobabad', 'Jhang', 'Jhelum', 'Karachi',
+    'Kasur', 'Khairpur', 'Lahore', 'Larkana', 'Mardan',
+    'Mingora', 'Mirpur Khas', 'Multan', 'Muzaffarabad', 'Nawabshah',
+    'Okara', 'Peshawar', 'Quetta', 'Rahim Yar Khan', 'Rawalpindi',
+    'Sadiqabad', 'Sahiwal', 'Sargodha', 'Sheikhupura', 'Shikarpur',
+    'Sialkot', 'Sukkur', 'Vehari'
   ];
 
   const handleInputChange = (field, value) => {
@@ -113,8 +126,8 @@ const RegisterScreen = ({ navigation }) => {
     const result = await register(userData);
     setLoading(false);
 
-    if (!result.success) {
-      // Error is already shown via toast
+    if (result.success && result.pendingApproval) {
+      navigation.navigate('Login');
     }
   };
 

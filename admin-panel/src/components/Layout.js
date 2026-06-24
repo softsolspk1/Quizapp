@@ -11,7 +11,9 @@ import {
   X,
   LogOut,
   User,
-  Key
+  Key,
+  Image,
+  Bell
 } from 'lucide-react';
 
 const Layout = ({ children }) => {
@@ -25,6 +27,8 @@ const Layout = ({ children }) => {
     { name: 'Categories', href: '/categories', icon: FolderOpen },
     { name: 'Questions', href: '/questions', icon: HelpCircle },
     { name: 'PINs', href: '/pins', icon: Key },
+    { name: 'Banners', href: '/banners', icon: Image },
+    { name: 'Broadcast', href: '/broadcast', icon: Bell },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   ];
 

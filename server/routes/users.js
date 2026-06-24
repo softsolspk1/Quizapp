@@ -137,6 +137,8 @@ router.get('/pending', auth, async (req, res) => {
   }
 });
 
+const sendEmail = require('../utils/sendEmail');
+
 // Approve user (admin only)
 router.put('/:id/approve', auth, async (req, res) => {
   try {
@@ -155,6 +157,22 @@ router.put('/:id/approve', auth, async (req, res) => {
       data: { isApproved: true },
       select: excludePassword
     });
+
+    // Send Approval Email
+    const subject = 'Your Hilton Quiz App Account is Approved!';
+    const text = `Dear Dr. ${user.doctorName},\n\nYour account has been approved by the administrator. You can now login to the mobile app and start playing quizzes.\n\nBest regards,\nHilton Quiz App Team`;
+    const html = `
+      <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+        <h2 style="color: #3b82f6;">Account Approved</h2>
+        <p>Dear Dr. <strong>${user.doctorName}</strong>,</p>
+        <p>Your account has been approved by the administrator. You can now access the Hilton Quiz App.</p>
+        <p>Thank you for joining our community!</p>
+        <br/>
+        <p>Best regards,</p>
+        <p><strong>Hilton Quiz App Team</strong></p>
+      </div>
+    `;
+    await sendEmail(user.email, subject, text, html);
 
     res.json({ message: 'User approved successfully', user: updatedUser });
   } catch (error) {

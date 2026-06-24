@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,9 +11,61 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
+import * as ImagePicker from 'expo-image-picker';
+import axios from 'axios';
+import { API_URL } from '../config';
+import Toast from 'react-native-toast-message';
 
 const ProfileScreen = ({ navigation }) => {
-  const { user, logout } = useAuth();
+  const { user, logout, checkAuthStatus } = useAuth();
+  const [uploading, setUploading] = useState(false);
+
+  const pickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.5,
+      });
+
+      if (!result.canceled) {
+        uploadImage(result.assets[0]);
+      }
+    } catch (error) {
+      console.log('Error picking image:', error);
+      Alert.alert('Error', 'Failed to pick image');
+    }
+  };
+
+  const uploadImage = async (imageFile) => {
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', {
+        uri: imageFile.uri,
+        type: 'image/jpeg',
+        name: 'profile.jpg',
+      });
+
+      const response = await axios.post(`${API_URL}/api/upload`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      // After upload, update user profile
+      await axios.put(`${API_URL}/api/users/${user.id}`, {
+        profilePicture: response.data.imageUrl
+      });
+
+      Toast.show({ type: 'success', text1: 'Profile Picture Updated' });
+      await checkAuthStatus(); // Refresh user context
+    } catch (error) {
+      console.log('Error uploading image:', error);
+      Toast.show({ type: 'error', text1: 'Upload Failed' });
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleLogout = () => {
     Alert.alert(
@@ -34,6 +86,7 @@ const ProfileScreen = ({ navigation }) => {
   };
 
   const getApprovalStatus = () => {
+    if (!user) return { text: '', color: '#000' };
     if (!user.isApproved) {
       return { text: 'Pending Approval', color: '#f59e0b' };
     }
@@ -42,6 +95,8 @@ const ProfileScreen = ({ navigation }) => {
     }
     return { text: 'Active', color: '#10b981' };
   };
+
+  if (!user) return null;
 
   const status = getApprovalStatus();
 
@@ -52,9 +107,22 @@ const ProfileScreen = ({ navigation }) => {
         style={styles.header}
       >
         <View style={styles.headerContent}>
-          <View style={styles.avatar}>
-            <Ionicons name="person" size={40} color="white" />
-          </View>
+          <TouchableOpacity style={styles.avatarContainer} onPress={pickImage} disabled={uploading}>
+            {user.profilePicture ? (
+              <Image source={{ uri: user.profilePicture }} style={styles.avatarImage} />
+            ) : (
+              <View style={styles.avatar}>
+                <Text style={styles.avatarText}>{getInitials(user.doctorName)}</Text>
+              </View>
+            )}
+            <View style={styles.editAvatarBadge}>
+              {uploading ? (
+                <View style={{ width: 14, height: 14, borderRadius: 7, backgroundColor: 'white' }} />
+              ) : (
+                <Ionicons name="camera" size={16} color="white" />
+              )}
+            </View>
+          </TouchableOpacity>
           <Text style={styles.userName}>Dr. {user.doctorName}</Text>
           <Text style={styles.userDesignation}>{user.designation}</Text>
           <View style={styles.levelBadge}>
@@ -183,7 +251,10 @@ const ProfileScreen = ({ navigation }) => {
               <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.actionItem}>
+            <TouchableOpacity 
+              style={styles.actionItem} 
+              onPress={() => navigation.navigate('Support')}
+            >
               <Ionicons name="help-circle" size={20} color="#6b7280" />
               <Text style={styles.actionText}>Help & Support</Text>
               <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
@@ -229,6 +300,10 @@ const styles = StyleSheet.create({
   headerContent: {
     alignItems: 'center',
   },
+  avatarContainer: {
+    marginBottom: 16,
+    position: 'relative',
+  },
   avatar: {
     width: 80,
     height: 80,
@@ -236,7 +311,29 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+  },
+  avatarImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+  },
+  avatarText: {
+    color: 'white',
+    fontSize: 32,
+    fontWeight: 'bold',
+  },
+  editAvatarBadge: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: '#3b82f6',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'white',
   },
   userName: {
     fontSize: 24,

@@ -34,6 +34,10 @@ model User {
   updatedAt      DateTime      @updatedAt
   quizSessions   QuizSession[]
   pinsCreated    Pin[]
+  notifications  Notification[]
+  conversations1 Conversation[] @relation("ConversationUser1")
+  conversations2 Conversation[] @relation("ConversationUser2")
+  sentMessages   Message[]
 }
 
 model Category {
@@ -114,4 +118,51 @@ model Pin {
   creator     User     @relation(fields: [creatorId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Banner {
+  id        Int      @id @default(autoincrement())
+  title     String
+  imageUrl  String
+  specialty String   @default("All") // "All" or specific specialty
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id          Int      @id @default(autoincrement())
+  title       String
+  message     String
+  targetType  String   // "all", "specialty", "city", "hospital", "role"
+  targetValue String?  // e.g. "Cardiology", "Karachi", etc.
+  isReadBy    Int[]    @default([])
+  creatorId   Int
+  creator     User     @relation(fields: [creatorId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Conversation {
+  id        Int       @id @default(autoincrement())
+  user1Id   Int
+  user1     User      @relation("ConversationUser1", fields: [user1Id], references: [id])
+  user2Id   Int
+  user2     User      @relation("ConversationUser2", fields: [user2Id], references: [id])
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([user1Id, user2Id])
+}
+
+model Message {
+  id             Int          @id @default(autoincrement())
+  conversationId Int
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       Int
+  sender         User         @relation(fields: [senderId], references: [id])
+  content        String
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
 }

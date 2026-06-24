@@ -82,19 +82,13 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axios.post(`${API_URL}/api/auth/register`, userData);
       
-      const { token, user: newUser } = response.data;
-      
-      await AsyncStorage.setItem('token', token);
-      axios.defaults.headers.common['x-auth-token'] = token;
-      setUser(newUser);
-      
       Toast.show({
         type: 'success',
         text1: 'Registration Successful',
-        text2: 'Your account has been created!'
+        text2: 'Thank you for SignUp. Your Account is under admin approval.'
       });
       
-      return { success: true };
+      return { success: true, pendingApproval: true };
     } catch (error) {
       const message = error.response?.data?.message || 'Registration failed';
       Toast.show({

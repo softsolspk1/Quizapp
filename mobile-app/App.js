@@ -28,6 +28,10 @@ import MultiplayerScreen from './src/screens/MultiplayerScreen';
 import MultiplayerQuizScreen from './src/screens/MultiplayerQuizScreen';
 import PinQuizScreen from './src/screens/PinQuizScreen';
 import WardActivitiesScreen from './src/screens/WardActivitiesScreen';
+import SupportScreen from './src/screens/SupportScreen';
+import NotificationsScreen from './src/screens/NotificationsScreen';
+import ChatListScreen from './src/screens/ChatListScreen';
+import ChatRoomScreen from './src/screens/ChatRoomScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -46,32 +50,38 @@ function AuthStack() {
   );
 }
 
+import FooterBanner from './src/components/FooterBanner';
+import { View } from 'react-native';
+
 function MainTabs() {
   return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
+    <View style={{ flex: 1 }}>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
 
-          if (route.name === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Leaderboard') {
-            iconName = focused ? 'trophy' : 'trophy-outline';
-          } else if (route.name === 'Profile') {
-            iconName = focused ? 'person' : 'person-outline';
-          }
+            if (route.name === 'Home') {
+              iconName = focused ? 'home' : 'home-outline';
+            } else if (route.name === 'Leaderboard') {
+              iconName = focused ? 'trophy' : 'trophy-outline';
+            } else if (route.name === 'Profile') {
+              iconName = focused ? 'person' : 'person-outline';
+            }
 
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: '#0f172a',
-        tabBarInactiveTintColor: 'gray',
-        headerShown: false,
-      })}
-    >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Leaderboard" component={LeaderboardScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
-    </Tab.Navigator>
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: '#0f172a',
+          tabBarInactiveTintColor: 'gray',
+          headerShown: false,
+        })}
+      >
+        <Tab.Screen name="Home" component={HomeScreen} />
+        <Tab.Screen name="Leaderboard" component={LeaderboardScreen} />
+        <Tab.Screen name="Profile" component={ProfileScreen} />
+      </Tab.Navigator>
+      <FooterBanner />
+    </View>
   );
 }
 
@@ -108,6 +118,26 @@ function DrawerNavigator() {
           )
         }}
       />
+      <Drawer.Screen 
+        name="Notifications" 
+        component={NotificationsScreen} 
+        options={{
+          title: 'Notifications',
+          drawerIcon: ({ color }) => (
+            <Ionicons name="notifications-outline" size={24} color={color} />
+          )
+        }}
+      />
+      <Drawer.Screen 
+        name="Messages" 
+        component={ChatListScreen} 
+        options={{
+          title: 'Messages',
+          drawerIcon: ({ color }) => (
+            <Ionicons name="chatbubbles-outline" size={24} color={color} />
+          )
+        }}
+      />
     </Drawer.Navigator>
   );
 }
@@ -131,6 +161,9 @@ function AppNavigator() {
             <Stack.Screen name="Multiplayer" component={MultiplayerScreen} />
             <Stack.Screen name="MultiplayerQuiz" component={MultiplayerQuizScreen} />
             <Stack.Screen name="PinQuiz" component={PinQuizScreen} />
+            <Stack.Screen name="Support" component={SupportScreen} />
+            <Stack.Screen name="ChatList" component={ChatListScreen} />
+            <Stack.Screen name="ChatRoom" component={ChatRoomScreen} />
           </>
         ) : (
           <Stack.Screen name="Auth" component={AuthStack} />
