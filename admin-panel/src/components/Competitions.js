@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { Calendar, Plus, X, Upload, Users, Download, FileText } from 'lucide-react';
+import { Plus, X, Upload, Users, Download, FileText } from 'lucide-react';
 import { exportToPDF, exportToExcel } from '../utils/exportUtils';
 
 const Competitions = () => {
