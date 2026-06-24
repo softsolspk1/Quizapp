@@ -37,6 +37,7 @@ const RegisterScreen = ({ navigation }) => {
   const [showSpecialtyModal, setShowSpecialtyModal] = useState(false);
   const [showDesignationModal, setShowDesignationModal] = useState(false);
   const [showCityModal, setShowCityModal] = useState(false);
+  const [citySearchQuery, setCitySearchQuery] = useState('');
   
   // Complaint Modal state
   const [showComplaintModal, setShowComplaintModal] = useState(false);
@@ -185,7 +186,7 @@ const RegisterScreen = ({ navigation }) => {
 
   return (
     <LinearGradient
-      colors={['#0f172a', '#1e293b', '#334155', '#475569']}
+      colors={['#f8fafc', '#f1f5f9', '#e2e8f0']}
       style={styles.container}
     >
       <KeyboardAvoidingView
@@ -523,26 +524,51 @@ const RegisterScreen = ({ navigation }) => {
         visible={showCityModal}
         transparent={true}
         animationType="slide"
-        onRequestClose={() => setShowCityModal(false)}
+        onRequestClose={() => {
+          setShowCityModal(false);
+          setCitySearchQuery('');
+        }}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Select City</Text>
+            
+            <View style={[styles.inputContainer, { marginBottom: 15 }]}>
+              <Ionicons name="search-outline" size={20} color="#6b7280" style={styles.inputIcon} />
+              <TextInput
+                style={[styles.input, { paddingVertical: 10 }]}
+                placeholder="Search city..."
+                placeholderTextColor="#9ca3af"
+                value={citySearchQuery}
+                onChangeText={setCitySearchQuery}
+                autoCapitalize="words"
+              />
+            </View>
+
             <FlatList
-              data={cityOptions}
+              data={cityOptions.filter(city => city.toLowerCase().includes(citySearchQuery.toLowerCase()))}
               keyExtractor={(item) => item}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.modalItem}
-                  onPress={() => handleCitySelect(item)}
+                  onPress={() => {
+                    handleCitySelect(item);
+                    setCitySearchQuery('');
+                  }}
                 >
                   <Text style={styles.modalItemText}>{item}</Text>
                 </TouchableOpacity>
               )}
+              ListEmptyComponent={
+                <Text style={{ textAlign: 'center', color: '#6b7280', padding: 20 }}>No cities found.</Text>
+              }
             />
             <TouchableOpacity
               style={styles.modalCloseButton}
-              onPress={() => setShowCityModal(false)}
+              onPress={() => {
+                setShowCityModal(false);
+                setCitySearchQuery('');
+              }}
             >
               <Text style={styles.modalCloseText}>Cancel</Text>
             </TouchableOpacity>
@@ -577,21 +603,18 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: 'white',
+    color: '#1e3a8a',
     marginBottom: 8,
     fontFamily: 'Inter-Bold',
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
+    textShadowColor: 'rgba(0, 0, 0, 0.05)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   subtitle: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: '#475569',
     textAlign: 'center',
     fontFamily: 'Inter-Medium',
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
   },
   form: {
     backgroundColor: 'white',
@@ -640,13 +663,13 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   registerButton: {
-    backgroundColor: '#0f172a',
+    backgroundColor: '#6d28d9',
     borderRadius: 16,
     paddingVertical: 18,
     alignItems: 'center',
     marginTop: 12,
     marginBottom: 22,
-    shadowColor: '#0f172a',
+    shadowColor: '#6d28d9',
     shadowOffset: {
       width: 0,
       height: 4,
@@ -676,7 +699,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
   },
   loginLink: {
-    color: '#0f172a',
+    color: '#db2777',
     fontSize: 14,
     fontWeight: '600',
     fontFamily: 'Inter-SemiBold',

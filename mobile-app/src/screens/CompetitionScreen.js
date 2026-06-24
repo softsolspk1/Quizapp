@@ -113,7 +113,7 @@ const CompetitionScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#3b82f6', '#1d4ed8']} style={styles.header}>
+      <LinearGradient colors={['#6d28d9', '#4c1d95']} style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>

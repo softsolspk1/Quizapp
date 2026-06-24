@@ -70,7 +70,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#3b82f6', '#1d4ed8']}
+        colors={['#6d28d9', '#4c1d95']}
         style={styles.header}
       >
         <View style={styles.headerContent}>
@@ -99,7 +99,7 @@ const HomeScreen = ({ navigation }) => {
         }
       >
         {/* Winner of the Month */}
-        {activeWinner ? (
+        {activeWinner && activeWinner.imageUrl ? (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Winner of the Month</Text>
             <View style={styles.winnerCard}>
@@ -124,7 +124,7 @@ const HomeScreen = ({ navigation }) => {
               onPress={() => navigation.navigate('Multiplayer')}
             >
               <LinearGradient
-                colors={['#10b981', '#059669']}
+                colors={['#1e3a8a', '#1e40af']}
                 style={styles.quickActionGradient}
               >
                 <Ionicons name="people" size={24} color="white" />
@@ -137,7 +137,7 @@ const HomeScreen = ({ navigation }) => {
               onPress={() => navigation.navigate('Leaderboard')}
             >
               <LinearGradient
-                colors={['#f59e0b', '#d97706']}
+                colors={['#db2777', '#be185d']}
                 style={styles.quickActionGradient}
               >
                 <Ionicons name="trophy" size={24} color="white" />
@@ -150,7 +150,7 @@ const HomeScreen = ({ navigation }) => {
               onPress={() => navigation.navigate('Competition')}
             >
               <LinearGradient
-                colors={['#ef4444', '#b91c1c']}
+                colors={['#d946ef', '#c026d3']}
                 style={styles.quickActionGradient}
               >
                 <Ionicons name="calendar" size={24} color="white" />
@@ -170,7 +170,7 @@ const HomeScreen = ({ navigation }) => {
             onPress={() => navigation.navigate('WardActivities')}
           >
             <LinearGradient
-              colors={['#8b5cf6', '#6d28d9']}
+              colors={['#6d28d9', '#5b21b6']}
               style={styles.pinQuizGradient}
             >
               <Ionicons name="medical" size={32} color="white" />
@@ -209,7 +209,7 @@ const HomeScreen = ({ navigation }) => {
                         <Ionicons 
                           name={getCategoryIcon(category.name)} 
                           size={28} 
-                          color="#3b82f6" 
+                          color="#1e3a8a" 
                         />
                       </View>
                       <View style={styles.questionCountBadge}>

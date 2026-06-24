@@ -39,7 +39,7 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <LinearGradient
-      colors={['#0f172a', '#1e293b', '#334155', '#475569']}
+      colors={['#f8fafc', '#f1f5f9', '#e2e8f0']}
       style={styles.container}
     >
       <KeyboardAvoidingView
@@ -158,20 +158,17 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: 'white',
+    color: '#1e3a8a',
     marginBottom: 10,
     fontFamily: 'Inter-Bold',
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
+    textShadowColor: 'rgba(0, 0, 0, 0.05)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   subtitle: {
     fontSize: 18,
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: '#475569',
     fontFamily: 'Inter-Medium',
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
   },
   form: {
     backgroundColor: 'white',
@@ -229,12 +226,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
   },
   loginButton: {
-    backgroundColor: '#0f172a',
+    backgroundColor: '#6d28d9',
     borderRadius: 16,
     paddingVertical: 18,
     alignItems: 'center',
     marginBottom: 26,
-    shadowColor: '#0f172a',
+    shadowColor: '#6d28d9',
     shadowOffset: {
       width: 0,
       height: 4,
@@ -264,7 +261,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
   },
   signupLink: {
-    color: '#0f172a',
+    color: '#db2777',
     fontSize: 14,
     fontWeight: '600',
     fontFamily: 'Inter-SemiBold',

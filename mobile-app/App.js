@@ -73,7 +73,7 @@ function MainTabs() {
 
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: '#0f172a',
+          tabBarActiveTintColor: '#db2777',
           tabBarInactiveTintColor: 'gray',
           headerShown: false,
         })}
@@ -92,7 +92,7 @@ function DrawerNavigator() {
     <Drawer.Navigator
       screenOptions={{
         headerShown: false,
-        drawerActiveTintColor: '#8b5cf6',
+        drawerActiveTintColor: '#db2777',
         drawerInactiveTintColor: '#4b5563',
         drawerLabelStyle: {
           fontFamily: 'Inter-Medium',

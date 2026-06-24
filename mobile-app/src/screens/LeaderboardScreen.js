@@ -117,7 +117,7 @@ const LeaderboardScreen = ({ navigation }) => {
     return (
       <View style={styles.container}>
         <LinearGradient
-          colors={['#3b82f6', '#1d4ed8']}
+          colors={['#db2777', '#9d174d']}
           style={styles.header}
         >
           <View style={styles.headerContent}>
@@ -137,7 +137,7 @@ const LeaderboardScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#3b82f6', '#1d4ed8']}
+        colors={['#db2777', '#9d174d']}
         style={styles.header}
       >
         <View style={styles.headerTop}>

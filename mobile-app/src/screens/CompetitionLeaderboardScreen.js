@@ -80,7 +80,7 @@ const CompetitionLeaderboardScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#3b82f6', '#1d4ed8']} style={styles.header}>
+      <LinearGradient colors={['#6d28d9', '#4c1d95']} style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
@@ -115,7 +115,7 @@ const CompetitionLeaderboardScreen = ({ navigation, route }) => {
       </View>
 
       {loading ? (
-        <ActivityIndicator size="large" color="#3b82f6" style={{ marginTop: 40 }} />
+        <ActivityIndicator size="large" color="#6d28d9" style={{ marginTop: 40 }} />
       ) : leaderboard.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Ionicons name="podium-outline" size={64} color="#9ca3af" />
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   nameText: { fontSize: 16, fontWeight: 'bold', color: '#1f2937', fontFamily: 'Inter-SemiBold', marginBottom: 2 },
   detailsText: { fontSize: 12, color: '#6b7280', fontFamily: 'Inter-Regular' },
   scoreContainer: { alignItems: 'flex-end', minWidth: 50 },
-  scoreText: { fontSize: 18, fontWeight: 'bold', color: '#3b82f6', fontFamily: 'Inter-Bold' },
+  scoreText: { fontSize: 18, fontWeight: 'bold', color: '#6d28d9', fontFamily: 'Inter-Bold' },
   pointsLabel: { fontSize: 10, color: '#6b7280', fontFamily: 'Inter-Medium' },
   timeText: { fontSize: 11, color: '#9ca3af', fontFamily: 'Inter-Regular', marginTop: 2 }
 });

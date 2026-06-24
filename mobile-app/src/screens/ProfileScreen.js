@@ -103,12 +103,12 @@ const ProfileScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#0f172a', '#1e293b', '#334155', '#475569']}
+        colors={['#6d28d9', '#4c1d95']}
         style={styles.header}
       >
         <View style={styles.headerContent}>
           <TouchableOpacity style={styles.avatarContainer} onPress={pickImage} disabled={uploading}>
-            {user.profilePicture ? (
+            {user && user.profilePicture ? (
               <Image source={{ uri: user.profilePicture }} style={styles.avatarImage} />
             ) : (
               <View style={styles.avatar}>
