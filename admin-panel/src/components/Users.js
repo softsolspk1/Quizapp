@@ -25,6 +25,7 @@ const Users = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showUserModal, setShowUserModal] = useState(false);
   const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [showEditUserModal, setShowEditUserModal] = useState(false);
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [roleFormData, setRoleFormData] = useState({ userId: null, role: 'user', permissions: [] });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,6 +78,13 @@ const Users = () => {
     });
   };
 
+  const handleEditInputChange = (e) => {
+    setSelectedUser({
+      ...selectedUser,
+      [e.target.name]: e.target.value
+    });
+  };
+
   const handlePermissionToggle = (featureId, isRoleModal = false) => {
     if (isRoleModal) {
       setRoleFormData(prev => {
@@ -116,6 +124,37 @@ const Users = () => {
       toast.error(errMsg);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleUpdateUser = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const payload = { ...selectedUser };
+      if (!payload.password) {
+        delete payload.password;
+      }
+      await axios.put(`/api/users/${selectedUser.id}`, payload);
+      toast.success('User updated successfully');
+      setShowEditUserModal(false);
+      loadUsers();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to update user');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteUser = async (userId) => {
+    if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+      try {
+        await axios.delete(`/api/users/${userId}`);
+        toast.success('User deleted successfully');
+        loadUsers();
+      } catch (error) {
+        toast.error('Failed to delete user');
+      }
     }
   };
 
@@ -437,11 +476,28 @@ const Users = () => {
                         )
                       )}
 
-                      <button
-                        onClick={() => {
-                          setSelectedUser(user);
-                          setShowUserModal(true);
-                        }}
+                        <button
+                          onClick={() => {
+                            setSelectedUser({ ...user, password: '' });
+                            setShowEditUserModal(true);
+                          }}
+                          className="text-gray-600 hover:text-gray-900"
+                          title="Edit User"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUser(user.id)}
+                          className="text-red-600 hover:text-red-900"
+                          title="Delete User"
+                        >
+                          <XCircle className="h-5 w-5" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setShowUserModal(true);
+                          }}
                         className="text-blue-600 hover:text-blue-900"
                         title="View Details"
                       >
@@ -649,6 +705,110 @@ const Users = () => {
                     className="btn-primary"
                   >
                     {isSubmitting ? 'Creating...' : 'Create User'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit User Modal */}
+      {showEditUserModal && selectedUser && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-10 mx-auto p-5 border w-[600px] shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900">Edit User</h3>
+                <button
+                  onClick={() => setShowEditUserModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <XCircle className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <form onSubmit={handleUpdateUser} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Doctor Name</label>
+                    <input type="text" name="doctorName" required value={selectedUser.doctorName || ''} onChange={handleEditInputChange} className="mt-1 input-field" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" name="email" required value={selectedUser.email || ''} onChange={handleEditInputChange} className="mt-1 input-field" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">New Password (Optional)</label>
+                    <input type="text" name="password" minLength="6" value={selectedUser.password || ''} onChange={handleEditInputChange} placeholder="Leave blank to keep current" className="mt-1 input-field" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Designation</label>
+                    <input type="text" name="designation" required value={selectedUser.designation || ''} onChange={handleEditInputChange} className="mt-1 input-field" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Specialty</label>
+                    <select name="specialty" required value={selectedUser.specialty || ''} onChange={handleEditInputChange} className="mt-1 input-field">
+                      <option value="">Select Specialty</option>
+                      <option value="Cardiology">Cardiology</option>
+                      <option value="Dermatology">Dermatology</option>
+                      <option value="Endocrinology & Diabetes">Endocrinology & Diabetes</option>
+                      <option value="ER">ER</option>
+                      <option value="Gastroenterology">Gastroenterology</option>
+                      <option value="Gynaecology">Gynaecology</option>
+                      <option value="Internal Medicine">Internal Medicine</option>
+                      <option value="Nephrology">Nephrology</option>
+                      <option value="Neurology">Neurology</option>
+                      <option value="Orthopaedic">Orthopaedic</option>
+                      <option value="Paediatrics">Paediatrics</option>
+                      <option value="Psychiatry">Psychiatry</option>
+                      <option value="Pulmonology">Pulmonology</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Hospital Name</label>
+                    <input type="text" name="hospitalName" required value={selectedUser.hospitalName || ''} onChange={handleEditInputChange} className="mt-1 input-field" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">PMDC Number</label>
+                    <input type="text" name="pmdcNumber" required value={selectedUser.pmdcNumber || ''} onChange={handleEditInputChange} className="mt-1 input-field" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">City</label>
+                    <select name="city" required value={selectedUser.city || ''} onChange={handleEditInputChange} className="mt-1 input-field">
+                      <option value="">Select City</option>
+                      {['Abbottabad', 'Bahawalpur', 'Chiniot', 'Dera Ghazi Khan', 'Dera Ismail Khan',
+                        'Faisalabad', 'Gilgit', 'Gujranwala', 'Gujrat', 'Hyderabad',
+                        'Islamabad', 'Jacobabad', 'Jhang', 'Jhelum', 'Karachi',
+                        'Kasur', 'Khairpur', 'Lahore', 'Larkana', 'Mardan',
+                        'Mingora', 'Mirpur Khas', 'Multan', 'Muzaffarabad', 'Nawabshah',
+                        'Okara', 'Peshawar', 'Quetta', 'Rahim Yar Khan', 'Rawalpindi',
+                        'Sadiqabad', 'Sahiwal', 'Sargodha', 'Sheikhupura', 'Shikarpur',
+                        'Sialkot', 'Sukkur', 'Vehari'].map(city => (
+                        <option key={city} value={city}>{city}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+                    <input type="text" name="phoneNumber" required value={selectedUser.phoneNumber || ''} onChange={handleEditInputChange} className="mt-1 input-field" />
+                  </div>
+                </div>
+
+                <div className="mt-6 flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowEditUserModal(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="btn-primary"
+                  >
+                    {isSubmitting ? 'Saving...' : 'Save Changes'}
                   </button>
                 </div>
               </form>

@@ -412,4 +412,79 @@ router.put('/profile', auth, async (req, res) => {
   }
 });
 
+// Edit user (admin only)
+router.put('/:id', [
+  auth,
+  body('email').optional().isEmail().withMessage('Valid email is required'),
+  body('password').optional().isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
+], async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ message: 'Invalid user ID' });
+
+    const { doctorName, designation, highestQualification, specialty, hospitalName, pmdcNumber, city, phoneNumber, email, password } = req.body;
+
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    let updateData = {
+      doctorName, designation, highestQualification, specialty, hospitalName, pmdcNumber, city, phoneNumber
+    };
+
+    if (email) {
+      updateData.email = email.trim().toLowerCase();
+    }
+
+    if (password) {
+      updateData.password = await bcrypt.hash(password, 12);
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: updateData,
+      select: excludePassword
+    });
+
+    res.json({ message: 'User updated successfully', user: updatedUser });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+});
+
+// Delete user (admin only)
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ message: 'Invalid user ID' });
+
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    await prisma.user.delete({ where: { id } });
+
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+});
+
 module.exports = router;

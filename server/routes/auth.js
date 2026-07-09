@@ -25,7 +25,8 @@ router.post('/register', [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { doctorName, designation, highestQualification, specialty, hospitalName, pmdcNumber, city, phoneNumber, email, password } = req.body;
+    const { doctorName, designation, highestQualification, specialty, hospitalName, pmdcNumber, city, phoneNumber, password } = req.body;
+    const email = (req.body.email || '').trim().toLowerCase();
 
     // Check if user already exists
     let existingUser = await prisma.user.findFirst({
@@ -88,7 +89,8 @@ router.post('/login', [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { email, password } = req.body;
+    const { password } = req.body;
+    const email = (req.body.email || '').trim().toLowerCase();
 
     // Check if user exists
     const user = await prisma.user.findUnique({ where: { email } });
