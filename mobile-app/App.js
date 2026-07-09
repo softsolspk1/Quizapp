@@ -96,6 +96,7 @@ function MainTabs() {
 function DrawerNavigator() {
   return (
     <Drawer.Navigator
+      useLegacyImplementation={false}
       detachInactiveScreens={false}
       screenOptions={{
         headerShown: false,
