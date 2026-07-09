@@ -1,5 +1,4 @@
 import 'react-native-gesture-handler';
-import 'react-native-reanimated';
 import { enableScreens } from 'react-native-screens';
 enableScreens();
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -8,7 +7,6 @@ import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
@@ -43,7 +41,6 @@ import ChatRoomScreen from './src/screens/ChatRoomScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
-const Drawer = createDrawerNavigator();
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -73,6 +70,10 @@ function MainTabs() {
               iconName = focused ? 'home' : 'home-outline';
             } else if (route.name === 'Leaderboard') {
               iconName = focused ? 'trophy' : 'trophy-outline';
+            } else if (route.name === 'Notifications') {
+              iconName = focused ? 'notifications' : 'notifications-outline';
+            } else if (route.name === 'Messages') {
+              iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
             } else if (route.name === 'Profile') {
               iconName = focused ? 'person' : 'person-outline';
             }
@@ -86,69 +87,12 @@ function MainTabs() {
       >
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Leaderboard" component={LeaderboardScreen} />
+        <Tab.Screen name="Notifications" component={NotificationsScreen} />
+        <Tab.Screen name="Messages" component={ChatListScreen} />
         <Tab.Screen name="Profile" component={ProfileScreen} />
       </Tab.Navigator>
       <FooterBanner />
     </View>
-  );
-}
-
-function DrawerNavigator() {
-  return (
-    <Drawer.Navigator
-      useLegacyImplementation={false}
-      detachInactiveScreens={false}
-      screenOptions={{
-        headerShown: false,
-        drawerActiveTintColor: '#db2777',
-        drawerInactiveTintColor: '#4b5563',
-        drawerLabelStyle: {
-          fontFamily: 'Inter-Medium',
-          fontSize: 16,
-        },
-      }}
-    >
-      <Drawer.Screen 
-        name="HomeTabs" 
-        component={MainTabs} 
-        options={{
-          title: 'Home',
-          drawerIcon: ({ color }) => (
-            <Ionicons name="home-outline" size={24} color={color} />
-          )
-        }}
-      />
-      <Drawer.Screen 
-        name="WardActivities" 
-        component={WardActivitiesScreen} 
-        options={{
-          title: 'Ward Activity',
-          drawerIcon: ({ color }) => (
-            <Ionicons name="medical-outline" size={24} color={color} />
-          )
-        }}
-      />
-      <Drawer.Screen 
-        name="Notifications" 
-        component={NotificationsScreen} 
-        options={{
-          title: 'Notifications',
-          drawerIcon: ({ color }) => (
-            <Ionicons name="notifications-outline" size={24} color={color} />
-          )
-        }}
-      />
-      <Drawer.Screen 
-        name="Messages" 
-        component={ChatListScreen} 
-        options={{
-          title: 'Messages',
-          drawerIcon: ({ color }) => (
-            <Ionicons name="chatbubbles-outline" size={24} color={color} />
-          )
-        }}
-      />
-    </Drawer.Navigator>
   );
 }
 
@@ -164,7 +108,8 @@ function AppNavigator() {
       <Stack.Navigator screenOptions={{ headerShown: false, detachInactiveScreens: false }}>
         {user ? (
           <>
-            <Stack.Screen name="Drawer" component={DrawerNavigator} />
+            <Stack.Screen name="HomeTabs" component={MainTabs} />
+            <Stack.Screen name="WardActivities" component={WardActivitiesScreen} />
             <Stack.Screen name="Category" component={CategoryScreen} />
             <Stack.Screen name="Categories" component={CategoriesScreen} />
             <Stack.Screen name="Quiz" component={QuizScreen} />
