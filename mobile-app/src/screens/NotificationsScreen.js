@@ -53,7 +53,7 @@ const NotificationsScreen = ({ navigation }) => {
   };
 
   const renderNotification = ({ item }) => {
-    const isRead = item.isReadBy.includes(user.id);
+    const isRead = (item.isReadBy || []).includes(user.id);
     
     return (
       <TouchableOpacity 
