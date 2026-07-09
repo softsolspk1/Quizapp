@@ -75,7 +75,7 @@ const ChatListScreen = ({ navigation }) => {
           ) : (
             <View style={styles.avatarPlaceholder}>
               <Text style={styles.avatarInitials}>
-                {otherUser.doctorName?.substring(0, 2).toUpperCase()}
+                {otherUser.doctorName ? otherUser.doctorName.substring(0, 2).toUpperCase() : ''}
               </Text>
             </View>
           )}
@@ -114,7 +114,7 @@ const ChatListScreen = ({ navigation }) => {
         ) : (
           <View style={styles.avatarPlaceholder}>
             <Text style={styles.avatarInitials}>
-              {item.doctorName?.substring(0, 2).toUpperCase()}
+              {item.doctorName ? item.doctorName.substring(0, 2).toUpperCase() : ''}
             </Text>
           </View>
         )}

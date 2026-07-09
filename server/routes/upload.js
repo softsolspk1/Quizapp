@@ -32,8 +32,8 @@ router.post('/', auth, upload.single('image'), (req, res) => {
     
     res.json({
       success: true,
-      url: req.file.path,
-      public_id: req.file.filename
+      url: req.file.path || req.file.secure_url || req.file.url,
+      public_id: req.file.filename || req.file.public_id
     });
   } catch (error) {
     console.error('Upload Error:', error);

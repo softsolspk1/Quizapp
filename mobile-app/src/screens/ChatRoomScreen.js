@@ -85,7 +85,7 @@ const ChatRoomScreen = ({ route, navigation }) => {
           ) : (
             <View style={styles.messageAvatarPlaceholder}>
               <Text style={styles.messageAvatarInitials}>
-                {otherUser.doctorName?.substring(0, 2).toUpperCase()}
+                {otherUser.doctorName ? otherUser.doctorName.substring(0, 2).toUpperCase() : ''}
               </Text>
             </View>
           )
@@ -119,7 +119,7 @@ const ChatRoomScreen = ({ route, navigation }) => {
           ) : (
             <View style={styles.headerAvatarPlaceholder}>
               <Text style={styles.headerAvatarInitials}>
-                {otherUser.doctorName?.substring(0, 2).toUpperCase()}
+                {otherUser.doctorName ? otherUser.doctorName.substring(0, 2).toUpperCase() : ''}
               </Text>
             </View>
           )}

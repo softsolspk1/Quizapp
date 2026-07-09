@@ -269,6 +269,18 @@ const Banners = () => {
                     />
                   </label>
                 </div>
+                
+                <div className="mt-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Or paste Image URL directly</label>
+                  <input
+                    type="text"
+                    name="imageUrl"
+                    value={formData.imageUrl}
+                    onChange={handleInputChange}
+                    className="mt-1 input-field"
+                    placeholder="https://..."
+                  />
+                </div>
               </div>
 
               <div>

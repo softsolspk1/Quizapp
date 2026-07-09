@@ -277,9 +277,19 @@ const Winners = () => {
                         <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
                       </>
                     )}
-                  </div>
                 </div>
                 {isUploading && <p className="text-sm text-blue-600 mt-2 text-center">Uploading image...</p>}
+                
+                <div className="mt-3">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Or paste Image URL directly</label>
+                  <input
+                    type="text"
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    placeholder="https://..."
+                  />
+                </div>
               </div>
 
               <div className="flex items-center">
