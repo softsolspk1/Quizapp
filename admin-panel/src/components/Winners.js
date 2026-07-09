@@ -291,8 +291,9 @@ const Winners = () => {
                   />
                 </div>
               </div>
+            </div>
 
-              <div className="flex items-center">
+            <div className="flex items-center">
                 <input
                   type="checkbox"
                   id="isActive"
