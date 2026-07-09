@@ -194,7 +194,7 @@ const HomeScreen = ({ navigation }) => {
             </View>
           ) : (
             <View style={styles.categoriesGrid}>
-              {categories.map((category) => (
+              {(categories || []).map((category) => (
                 <TouchableOpacity
                   key={category.id}
                   style={styles.categoryCard}
@@ -214,7 +214,7 @@ const HomeScreen = ({ navigation }) => {
                       </View>
                       <View style={styles.questionCountBadge}>
                         <Text style={styles.questionCountText}>
-                          {category.questionCount} Qs
+                          {category._count?.questions || 0} Qs
                         </Text>
                       </View>
                     </View>
@@ -489,6 +489,52 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#9ca3af',
     fontFamily: 'Inter-Regular',
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  seeAllText: {
+    fontSize: 14,
+    color: '#db2777',
+    fontFamily: 'Inter-SemiBold',
+  },
+  categoryGradient: {
+    padding: 16,
+    borderRadius: 16,
+  },
+  categoryHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  categoryIconContainer: {
+    width: 48,
+    height: 48,
+    backgroundColor: '#eff6ff',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  questionCountBadge: {
+    backgroundColor: '#f3f4f6',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  questionCountText: {
+    fontSize: 12,
+    color: '#4b5563',
+    fontFamily: 'Inter-Medium',
+  },
+  categoryTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1f2937',
+    fontFamily: 'Inter-Bold',
   },
 });
 

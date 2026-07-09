@@ -55,7 +55,7 @@ const Competitions = () => {
 
     try {
       const response = await axios.post('/api/upload', uploadData);
-      setFormData({ ...formData, posterUrl: response.data.imageUrl });
+      setFormData({ ...formData, posterUrl: response.data.url });
       toast.success('Poster uploaded successfully');
     } catch (error) {
       toast.error('Failed to upload poster');

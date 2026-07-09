@@ -1,4 +1,9 @@
 import 'react-native-gesture-handler';
+import 'react-native-reanimated';
+import { enableScreens } from 'react-native-screens';
+enableScreens();
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -20,6 +25,7 @@ import RegisterScreen from './src/screens/RegisterScreen';
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import CategoryScreen from './src/screens/CategoryScreen';
+import CategoriesScreen from './src/screens/CategoriesScreen';
 import CompetitionScreen from './src/screens/CompetitionScreen';
 import CompetitionLeaderboardScreen from './src/screens/CompetitionLeaderboardScreen';
 import QuizScreen from './src/screens/QuizScreen';
@@ -44,7 +50,7 @@ SplashScreen.preventAutoHideAsync();
 
 function AuthStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{ headerShown: false, detachInactiveScreens: false }}>
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
@@ -90,6 +96,7 @@ function MainTabs() {
 function DrawerNavigator() {
   return (
     <Drawer.Navigator
+      detachInactiveScreens={false}
       screenOptions={{
         headerShown: false,
         drawerActiveTintColor: '#db2777',
@@ -153,11 +160,12 @@ function AppNavigator() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator screenOptions={{ headerShown: false, detachInactiveScreens: false }}>
         {user ? (
           <>
             <Stack.Screen name="Drawer" component={DrawerNavigator} />
             <Stack.Screen name="Category" component={CategoryScreen} />
+            <Stack.Screen name="Categories" component={CategoriesScreen} />
             <Stack.Screen name="Quiz" component={QuizScreen} />
             <Stack.Screen name="Results" component={ResultsScreen} />
             <Stack.Screen name="Multiplayer" component={MultiplayerScreen} />
@@ -206,11 +214,15 @@ export default function App() {
   }
 
   return (
-    <AuthProvider>
-      <AppNavigator />
-      <StatusBar style="auto" />
-      <Toast />
-    </AuthProvider>
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <AuthProvider>
+          <AppNavigator />
+          <StatusBar style="auto" />
+          <Toast />
+        </AuthProvider>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }
 

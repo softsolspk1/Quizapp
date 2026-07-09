@@ -69,7 +69,7 @@ const Banners = () => {
       const response = await axios.post('/api/upload', data, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      setFormData(prev => ({ ...prev, imageUrl: response.data.imageUrl }));
+      setFormData(prev => ({ ...prev, imageUrl: response.data.url }));
       toast.success('Image uploaded successfully');
     } catch (error) {
       toast.error('Failed to upload image');

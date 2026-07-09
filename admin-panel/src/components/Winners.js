@@ -47,7 +47,7 @@ const Winners = () => {
 
     try {
       const response = await axios.post('/api/upload', uploadData);
-      setFormData({ ...formData, imageUrl: response.data.imageUrl });
+      setFormData({ ...formData, imageUrl: response.data.url });
       toast.success('Image uploaded successfully');
     } catch (error) {
       toast.error('Failed to upload image');

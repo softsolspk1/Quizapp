@@ -20,6 +20,11 @@ const ProfileScreen = ({ navigation }) => {
   const { user, logout, checkAuthStatus } = useAuth();
   const [uploading, setUploading] = useState(false);
 
+  const getInitials = (name) => {
+    if (!name) return '';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+  };
+
   const pickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({

@@ -10,6 +10,7 @@ const router = express.Router();
       id: true,
       doctorName: true,
       designation: true,
+      highestQualification: true,
       specialty: true,
       hospitalName: true,
       pmdcNumber: true,
@@ -26,6 +27,8 @@ const router = express.Router();
       correctAnswers: true,
       wrongAnswers: true,
       lastLogin: true,
+      level: true,
+      badges: true,
       createdAt: true,
       updatedAt: true
     };

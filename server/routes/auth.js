@@ -134,11 +134,28 @@ router.post('/login', [
         user: {
           id: user.id,
           doctorName: user.doctorName,
+          designation: user.designation,
+          highestQualification: user.highestQualification,
+          specialty: user.specialty,
+          hospitalName: user.hospitalName,
+          pmdcNumber: user.pmdcNumber,
+          city: user.city,
+          phoneNumber: user.phoneNumber,
           email: user.email,
+          profilePicture: user.profilePicture,
           isApproved: user.isApproved,
+          isActive: user.isActive,
           role: user.role,
           permissions: user.permissions,
-          totalPoints: user.totalPoints
+          totalPoints: user.totalPoints,
+          gamesPlayed: user.gamesPlayed,
+          correctAnswers: user.correctAnswers,
+          wrongAnswers: user.wrongAnswers,
+          lastLogin: user.lastLogin,
+          level: user.level,
+          badges: user.badges,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt
         }
       });
     });
@@ -157,6 +174,7 @@ router.get('/me', auth, async (req, res) => {
         id: true,
         doctorName: true,
         designation: true,
+        highestQualification: true,
         specialty: true,
         hospitalName: true,
         pmdcNumber: true,
@@ -173,6 +191,8 @@ router.get('/me', auth, async (req, res) => {
         correctAnswers: true,
         wrongAnswers: true,
         lastLogin: true,
+        level: true,
+        badges: true,
         createdAt: true,
         updatedAt: true
       }
