@@ -101,6 +101,51 @@ const HomeScreen = ({ navigation }) => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+        {/* Quick Actions */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <View style={styles.quickActions}>
+            <TouchableOpacity
+              style={styles.quickActionItem}
+              onPress={() => navigation.navigate('Multiplayer')}
+            >
+              <LinearGradient
+                colors={['#1e3a8a', '#1e40af']}
+                style={styles.quickActionGradient}
+              >
+                <Ionicons name="people" size={24} color="white" />
+                <Text style={styles.quickActionText} numberOfLines={1} adjustsFontSizeToFit>Multiplayer</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={styles.quickActionItem}
+              onPress={() => navigation.navigate('Leaderboard')}
+            >
+              <LinearGradient
+                colors={['#db2777', '#be185d']}
+                style={styles.quickActionGradient}
+              >
+                <Ionicons name="trophy" size={24} color="white" />
+                <Text style={styles.quickActionText} numberOfLines={1} adjustsFontSizeToFit>Leaderboard</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.quickActionItem}
+              onPress={() => navigation.navigate('Competition')}
+            >
+              <LinearGradient
+                colors={['#d946ef', '#c026d3']}
+                style={styles.quickActionGradient}
+              >
+                <Ionicons name="calendar" size={24} color="white" />
+                <Text style={styles.quickActionText} numberOfLines={1} adjustsFontSizeToFit>Competition</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </View>
+
         {/* Winner of the Month */}
         {activeWinner && activeWinner.imageUrl ? (
           <View style={styles.section}>
@@ -117,51 +162,6 @@ const HomeScreen = ({ navigation }) => {
             </View>
           </View>
         ) : null}
-
-        {/* Quick Actions */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <View style={styles.quickActions}>
-            <TouchableOpacity
-              style={styles.quickActionItem}
-              onPress={() => navigation.navigate('Multiplayer')}
-            >
-              <LinearGradient
-                colors={['#1e3a8a', '#1e40af']}
-                style={styles.quickActionGradient}
-              >
-                <Ionicons name="people" size={24} color="white" />
-                <Text style={styles.quickActionText}>Multiplayer</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={styles.quickActionItem}
-              onPress={() => navigation.navigate('Leaderboard')}
-            >
-              <LinearGradient
-                colors={['#db2777', '#be185d']}
-                style={styles.quickActionGradient}
-              >
-                <Ionicons name="trophy" size={24} color="white" />
-                <Text style={styles.quickActionText}>Leaderboard</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.quickActionItem}
-              onPress={() => navigation.navigate('Competition')}
-            >
-              <LinearGradient
-                colors={['#d946ef', '#c026d3']}
-                style={styles.quickActionGradient}
-              >
-                <Ionicons name="calendar" size={24} color="white" />
-                <Text style={styles.quickActionText}>Competition</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-          </View>
-        </View>
 
         {/* Categories */}
         <View style={styles.section}>
@@ -370,16 +370,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   quickActionGradient: {
-    padding: 20,
+    padding: 12,
     borderRadius: 16,
     alignItems: 'center',
     gap: 8,
   },
   quickActionText: {
     color: 'white',
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
     fontFamily: 'Inter-SemiBold',
+    textAlign: 'center',
   },
   loadingContainer: {
     padding: 40,

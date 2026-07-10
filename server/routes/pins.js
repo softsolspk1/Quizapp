@@ -172,4 +172,69 @@ router.post('/validate', auth, async (req, res) => {
   }
 });
 
+// Delete a PIN (Admin)
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin' && req.user.role !== 'subadmin') {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    const id = parseInt(req.params.id);
+    const pin = await prisma.pin.findUnique({ where: { id } });
+
+    if (!pin) {
+      return res.status(404).json({ message: 'PIN not found' });
+    }
+
+    if (req.user.role === 'subadmin' && pin.creatorId !== req.user.id) {
+      return res.status(403).json({ message: 'You can only delete your own PINs' });
+    }
+
+    await prisma.pin.delete({ where: { id } });
+
+    res.json({ message: 'PIN deleted successfully' });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+});
+
+// Get leaderboard for a PIN
+router.get('/:id/leaderboard', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin' && req.user.role !== 'subadmin') {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    const id = parseInt(req.params.id);
+    const pin = await prisma.pin.findUnique({ where: { id } });
+
+    if (!pin) {
+      return res.status(404).json({ message: 'PIN not found' });
+    }
+
+    const leaderboard = await prisma.quizSession.findMany({
+      where: {
+        gameMode: 'pin',
+        pin: pin.code,
+        isCompleted: true
+      },
+      include: {
+        user: {
+          select: { id: true, doctorName: true, specialty: true, city: true, hospitalName: true }
+        }
+      },
+      orderBy: [
+        { score: 'desc' },
+        { timeSpent: 'asc' }
+      ]
+    });
+
+    res.json(leaderboard);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+});
+
 module.exports = router;

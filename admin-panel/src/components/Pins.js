@@ -11,6 +11,9 @@ const Pins = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedPin, setSelectedPin] = useState(null);
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
@@ -54,6 +57,29 @@ const Pins = () => {
       } catch (error) {
         toast.error('Failed to revoke PIN');
       }
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this Ward Activity?')) {
+      try {
+        await axios.delete(`/api/pins/${id}`);
+        toast.success('Ward Activity deleted successfully');
+        fetchPinsAndCategories();
+      } catch (error) {
+        toast.error('Failed to delete Ward Activity');
+      }
+    }
+  };
+
+  const handleViewDetail = async (pin) => {
+    try {
+      const res = await axios.get(`/api/pins/${pin.id}/leaderboard`);
+      setLeaderboard(res.data);
+      setSelectedPin(pin);
+      setIsDetailModalOpen(true);
+    } catch (error) {
+      toast.error('Failed to load leaderboard details');
     }
   };
 
@@ -176,14 +202,28 @@ const Pins = () => {
                       {pin.expiresAt ? new Date(pin.expiresAt).toLocaleString() : 'Never'}
                     </td>
                     <td className="table-cell text-right">
-                      {pin.isActive && (
+                      <div className="flex justify-end gap-2">
                         <button
-                          onClick={() => handleRevoke(pin.id)}
+                          onClick={() => handleViewDetail(pin)}
+                          className="text-blue-600 hover:text-blue-900 font-medium"
+                        >
+                          View Detail
+                        </button>
+                        {pin.isActive && (
+                          <button
+                            onClick={() => handleRevoke(pin.id)}
+                            className="text-yellow-600 hover:text-yellow-900 font-medium"
+                          >
+                            Revoke
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleDelete(pin.id)}
                           className="text-red-600 hover:text-red-900 font-medium"
                         >
-                          Revoke
+                          Delete
                         </button>
-                      )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -298,6 +338,50 @@ const Pins = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {isDetailModalOpen && selectedPin && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">
+              <h3 className="text-lg font-semibold text-gray-900">Leaderboard - {selectedPin.wardName} (PIN: {selectedPin.code})</h3>
+              <button onClick={() => setIsDetailModalOpen(false)} className="text-gray-400 hover:text-gray-500">
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-6">
+              {leaderboard.length > 0 ? (
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="table-header">Rank</th>
+                      <th className="table-header">Doctor Name</th>
+                      <th className="table-header">Hospital</th>
+                      <th className="table-header">City</th>
+                      <th className="table-header">Score</th>
+                      <th className="table-header">Time (s)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {leaderboard.map((entry, idx) => (
+                      <tr key={entry.id}>
+                        <td className="table-cell font-medium">{idx + 1}</td>
+                        <td className="table-cell">{entry.user.doctorName}</td>
+                        <td className="table-cell">{entry.user.hospitalName}</td>
+                        <td className="table-cell">{entry.user.city}</td>
+                        <td className="table-cell font-bold text-primary-600">{entry.score}</td>
+                        <td className="table-cell text-gray-500">{entry.timeSpent}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="text-center py-8 text-gray-500">No participants yet.</div>
+              )}
+            </div>
           </div>
         </div>
       )}

@@ -12,6 +12,7 @@ const Competitions = () => {
   const [showEnrollmentsModal, setShowEnrollmentsModal] = useState(false);
   const [selectedCompetition, setSelectedCompetition] = useState(null);
   const [enrollments, setEnrollments] = useState([]);
+  const [leaderboard, setLeaderboard] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -102,6 +103,21 @@ const Competitions = () => {
       setShowEnrollmentsModal(true);
     } catch (error) {
       toast.error('Failed to load enrollments');
+    }
+  };
+
+  const handleViewDetail = async (comp) => {
+    try {
+      const [enrollRes, leaderRes] = await Promise.all([
+        axios.get(`/api/competitions/${comp.id}/enrollments`),
+        axios.get(`/api/competitions/${comp.id}/leaderboard`)
+      ]);
+      setEnrollments(enrollRes.data);
+      setLeaderboard(leaderRes.data);
+      setSelectedCompetition(comp);
+      setShowEnrollmentsModal(true);
+    } catch (error) {
+      toast.error('Failed to load competition details');
     }
   };
 
@@ -215,9 +231,14 @@ const Competitions = () => {
                     </button>
                   </td>
                   <td className="table-cell text-right">
-                    <button onClick={() => handleDelete(comp.id)} className="text-red-600 hover:text-red-900">
-                      Delete
-                    </button>
+                    <div className="flex justify-end gap-2">
+                      <button onClick={() => handleViewDetail(comp)} className="text-blue-600 hover:text-blue-900 font-medium">
+                        View Detail
+                      </button>
+                      <button onClick={() => handleDelete(comp.id)} className="text-red-600 hover:text-red-900 font-medium">
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -358,38 +379,71 @@ const Competitions = () => {
       {showEnrollmentsModal && selectedCompetition && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl overflow-hidden max-h-[90vh] flex flex-col">
-            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-gray-900">Enrolled Doctors - {selectedCompetition.name}</h3>
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">
+              <h3 className="text-lg font-semibold text-gray-900">Competition Details - {selectedCompetition.name}</h3>
               <button onClick={() => setShowEnrollmentsModal(false)} className="text-gray-400 hover:text-gray-500">
                 <X className="h-6 w-6" />
               </button>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-6">
-              {enrollments.length > 0 ? (
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="table-header">Doctor Name</th>
-                      <th className="table-header">Hospital</th>
-                      <th className="table-header">City</th>
-                      <th className="table-header">Enrolled At</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {enrollments.map(e => (
-                      <tr key={e.id}>
-                        <td className="table-cell font-medium">{e.user.doctorName}</td>
-                        <td className="table-cell">{e.user.hospitalName}</td>
-                        <td className="table-cell">{e.user.city}</td>
-                        <td className="table-cell text-gray-500">{new Date(e.enrolledAt).toLocaleString()}</td>
+            <div className="flex-1 overflow-y-auto p-6 space-y-8">
+              <div>
+                <h4 className="font-bold text-gray-800 mb-4 text-lg border-b pb-2">Leaderboard</h4>
+                {leaderboard.length > 0 ? (
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="table-header">Rank</th>
+                        <th className="table-header">Doctor Name</th>
+                        <th className="table-header">Hospital</th>
+                        <th className="table-header">Score</th>
+                        <th className="table-header">Time (s)</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <div className="text-center py-8 text-gray-500">No doctors have enrolled yet.</div>
-              )}
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {leaderboard.map((entry, idx) => (
+                        <tr key={entry.id}>
+                          <td className="table-cell font-medium">{idx + 1}</td>
+                          <td className="table-cell">{entry.user.doctorName}</td>
+                          <td className="table-cell">{entry.user.hospitalName}</td>
+                          <td className="table-cell font-bold text-primary-600">{entry.score}</td>
+                          <td className="table-cell text-gray-500">{entry.timeSpent}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className="text-center py-4 text-gray-500">No leaderboard entries yet.</div>
+                )}
+              </div>
+
+              <div>
+                <h4 className="font-bold text-gray-800 mb-4 text-lg border-b pb-2">Participant Enrollments</h4>
+                {enrollments.length > 0 ? (
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="table-header">Doctor Name</th>
+                        <th className="table-header">Hospital</th>
+                        <th className="table-header">City</th>
+                        <th className="table-header">Enrolled At</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {enrollments.map(e => (
+                        <tr key={e.id}>
+                          <td className="table-cell font-medium">{e.user.doctorName}</td>
+                          <td className="table-cell">{e.user.hospitalName}</td>
+                          <td className="table-cell">{e.user.city}</td>
+                          <td className="table-cell text-gray-500">{new Date(e.enrolledAt).toLocaleString()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className="text-center py-4 text-gray-500">No doctors have enrolled yet.</div>
+                )}
+              </div>
             </div>
           </div>
         </div>
