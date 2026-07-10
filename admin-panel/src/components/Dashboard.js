@@ -65,57 +65,57 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600">Overview of your quiz platform</p>
+      <div className="bg-gradient-to-r from-primary-900 to-primary-800 rounded-2xl p-8 text-white shadow-lg mb-8">
+        <h1 className="text-3xl font-extrabold tracking-tight mb-2">Dashboard</h1>
+        <p className="text-primary-100 text-lg">Overview of your quiz platform</p>
       </div>
 
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="card">
+        <div className="card-gradient">
           <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <Users className="h-8 w-8 text-primary-600" />
+            <div className="flex-shrink-0 bg-blue-100 p-3 rounded-xl">
+              <Users className="h-8 w-8 text-blue-600" />
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Total Users</p>
-              <p className="text-2xl font-semibold text-gray-900">{overview?.totalUsers || 0}</p>
+            <div className="ml-5">
+              <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Total Users</p>
+              <p className="text-3xl font-extrabold text-gray-900 mt-1">{overview?.totalUsers || 0}</p>
             </div>
           </div>
         </div>
 
-        <div className="card">
+        <div className="card-gradient">
           <div className="flex items-center">
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 bg-green-100 p-3 rounded-xl">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Approved Users</p>
-              <p className="text-2xl font-semibold text-gray-900">{overview?.approvedUsers || 0}</p>
+            <div className="ml-5">
+              <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Approved Users</p>
+              <p className="text-3xl font-extrabold text-gray-900 mt-1">{overview?.approvedUsers || 0}</p>
             </div>
           </div>
         </div>
 
-        <div className="card">
+        <div className="card-gradient">
           <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <HelpCircle className="h-8 w-8 text-blue-600" />
+            <div className="flex-shrink-0 bg-purple-100 p-3 rounded-xl">
+              <HelpCircle className="h-8 w-8 text-purple-600" />
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Total Questions</p>
-              <p className="text-2xl font-semibold text-gray-900">{overview?.totalQuestions || 0}</p>
+            <div className="ml-5">
+              <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Total Questions</p>
+              <p className="text-3xl font-extrabold text-gray-900 mt-1">{overview?.totalQuestions || 0}</p>
             </div>
           </div>
         </div>
 
-        <div className="card">
+        <div className="card-gradient">
           <div className="flex items-center">
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 bg-yellow-100 p-3 rounded-xl">
               <Trophy className="h-8 w-8 text-yellow-600" />
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Total Points</p>
-              <p className="text-2xl font-semibold text-gray-900">{overview?.totalPointsEarned || 0}</p>
+            <div className="ml-5">
+              <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Total Points</p>
+              <p className="text-3xl font-extrabold text-gray-900 mt-1">{overview?.totalPointsEarned || 0}</p>
             </div>
           </div>
         </div>
@@ -206,38 +206,38 @@ const Dashboard = () => {
 
       {/* Recent Activity */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="card">
+        <div className="card hover:-translate-y-1 transition-transform duration-300">
           <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <Users className="h-6 w-6 text-primary-600" />
+            <div className="flex-shrink-0 bg-blue-50 p-3 rounded-full">
+              <Users className="h-6 w-6 text-blue-600" />
             </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">New Users (30 days)</p>
-              <p className="text-lg font-semibold text-gray-900">{userActivity?.newUsers || 0}</p>
+            <div className="ml-4">
+              <p className="text-xs font-semibold text-gray-500 uppercase">New Users (30 days)</p>
+              <p className="text-xl font-extrabold text-gray-900 mt-1">{userActivity?.newUsers || 0}</p>
             </div>
           </div>
         </div>
 
-        <div className="card">
+        <div className="card hover:-translate-y-1 transition-transform duration-300">
           <div className="flex items-center">
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 bg-green-50 p-3 rounded-full">
               <TrendingUp className="h-6 w-6 text-green-600" />
             </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">Active Users (30 days)</p>
-              <p className="text-lg font-semibold text-gray-900">{userActivity?.activeUsers || 0}</p>
+            <div className="ml-4">
+              <p className="text-xs font-semibold text-gray-500 uppercase">Active Users (30 days)</p>
+              <p className="text-xl font-extrabold text-gray-900 mt-1">{userActivity?.activeUsers || 0}</p>
             </div>
           </div>
         </div>
 
-        <div className="card">
+        <div className="card hover:-translate-y-1 transition-transform duration-300">
           <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <Clock className="h-6 w-6 text-blue-600" />
+            <div className="flex-shrink-0 bg-orange-50 p-3 rounded-full">
+              <Clock className="h-6 w-6 text-orange-600" />
             </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-500">Pending Approvals</p>
-              <p className="text-lg font-semibold text-gray-900">{overview?.pendingUsers || 0}</p>
+            <div className="ml-4">
+              <p className="text-xs font-semibold text-gray-500 uppercase">Pending Approvals</p>
+              <p className="text-xl font-extrabold text-gray-900 mt-1">{overview?.pendingUsers || 0}</p>
             </div>
           </div>
         </div>

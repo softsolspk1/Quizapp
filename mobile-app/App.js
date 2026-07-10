@@ -55,7 +55,6 @@ function AuthStack() {
   );
 }
 
-import FooterBanner from './src/components/FooterBanner';
 import { View } from 'react-native';
 
 function MainTabs() {
@@ -91,7 +90,6 @@ function MainTabs() {
         <Tab.Screen name="Messages" component={ChatListScreen} />
         <Tab.Screen name="Profile" component={ProfileScreen} />
       </Tab.Navigator>
-      <FooterBanner />
     </View>
   );
 }

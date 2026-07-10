@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import { API_URL } from '../config';
+import FooterBanner from '../components/FooterBanner';
 
 const { width } = Dimensions.get('window');
 
@@ -70,7 +71,9 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#6d28d9', '#4c1d95']}
+        colors={['#1e1b4b', '#4c1d95', '#6d28d9']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
         style={styles.header}
       >
         <View style={styles.headerContent}>
@@ -248,6 +251,10 @@ const HomeScreen = ({ navigation }) => {
               <Text style={styles.activityTime}>3 days ago</Text>
             </View>
           </View>
+        </View>
+
+        <View style={styles.bannerContainer}>
+          <FooterBanner />
         </View>
       </ScrollView>
     </View>
@@ -536,6 +543,13 @@ const styles = StyleSheet.create({
     color: '#1f2937',
     fontFamily: 'Inter-Bold',
   },
+  bannerContainer: {
+    marginTop: 20,
+    marginBottom: 30,
+    borderRadius: 16,
+    overflow: 'hidden',
+    marginHorizontal: 20,
+  }
 });
 
 export default HomeScreen;

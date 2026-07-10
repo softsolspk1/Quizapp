@@ -39,7 +39,9 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <LinearGradient
-      colors={['#f8fafc', '#f1f5f9', '#e2e8f0']}
+      colors={['#1e1b4b', '#4c1d95', '#6d28d9']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
       style={styles.container}
     >
       <KeyboardAvoidingView
@@ -48,11 +50,13 @@ const LoginScreen = ({ navigation }) => {
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.header}>
-            <Image
-              source={require('../../assets/logo.png')}
-              style={styles.logo}
-              resizeMode="contain"
-            />
+            <View style={styles.logoContainer}>
+              <Image
+                source={require('../../assets/logo.png')}
+                style={styles.logo}
+                resizeMode="contain"
+              />
+            </View>
             <Text style={styles.title}>Welcome Back</Text>
             <Text style={styles.subtitle}>Sign in to continue</Text>
           </View>
@@ -148,26 +152,41 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 35,
+    marginTop: 20,
+  },
+  logoContainer: {
+    width: 140,
+    height: 140,
+    backgroundColor: 'white',
+    borderRadius: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.2,
+    shadowRadius: 15,
+    elevation: 10,
+    padding: 10,
   },
   logo: {
-    width: 220,
-    height: 220,
-    marginBottom: 25,
+    width: 100,
+    height: 100,
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#1e3a8a',
-    marginBottom: 10,
+    color: '#ffffff',
+    marginBottom: 8,
     fontFamily: 'Inter-Bold',
-    textShadowColor: 'rgba(0, 0, 0, 0.05)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   subtitle: {
-    fontSize: 18,
-    color: '#475569',
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.8)',
     fontFamily: 'Inter-Medium',
   },
   form: {

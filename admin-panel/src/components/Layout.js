@@ -53,14 +53,16 @@ const Layout = ({ children }) => {
       <div className={`fixed inset-0 z-50 lg:hidden ${sidebarOpen ? 'block' : 'hidden'}`}>
         <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />
         <div className="fixed inset-y-0 left-0 flex w-64 flex-col bg-white">
-          <div className="flex h-16 items-center justify-between px-4">
+          <div className="flex h-20 items-center justify-between px-6 bg-gradient-to-r from-primary-900 to-primary-800">
             <div className="flex items-center">
-              <img src="/logo.png" alt="I-Genius" className="h-12 w-12" />
-              <span className="ml-2 text-xl font-bold text-gray-900">I-Genius</span>
+              <div className="bg-white p-1 rounded-lg shadow-sm">
+                <img src="/logo.png" alt="I-Genius" className="h-10 w-10 object-contain" />
+              </div>
+              <span className="ml-3 text-2xl font-extrabold text-white tracking-tight">I-Genius</span>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-white hover:text-gray-200"
             >
               <X className="h-6 w-6" />
             </button>
@@ -96,9 +98,11 @@ const Layout = ({ children }) => {
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col flex-grow bg-white border-r border-gray-200">
-          <div className="flex h-16 items-center px-4">
-            <img src="/logo.png" alt="I-Genius" className="h-12 w-12" />
-            <span className="ml-2 text-xl font-bold text-gray-900">I-Genius</span>
+          <div className="flex h-20 items-center px-6 bg-gradient-to-r from-primary-900 to-primary-800">
+            <div className="bg-white p-1 rounded-lg shadow-sm">
+              <img src="/logo.png" alt="I-Genius" className="h-10 w-10 object-contain" />
+            </div>
+            <span className="ml-3 text-2xl font-extrabold text-white tracking-tight">I-Genius</span>
           </div>
           <nav className="flex-1 space-y-1 px-2 py-4">
             {filteredNavigation.map((item) => {

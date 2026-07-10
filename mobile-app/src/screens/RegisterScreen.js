@@ -186,7 +186,9 @@ const RegisterScreen = ({ navigation }) => {
 
   return (
     <LinearGradient
-      colors={['#f8fafc', '#f1f5f9', '#e2e8f0']}
+      colors={['#1e1b4b', '#4c1d95', '#6d28d9']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
       style={styles.container}
     >
       <KeyboardAvoidingView
@@ -195,11 +197,13 @@ const RegisterScreen = ({ navigation }) => {
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.header}>
-            <Image
-              source={require('../../assets/logo.png')}
-              style={styles.logo}
-              resizeMode="contain"
-            />
+            <View style={styles.logoContainer}>
+              <Image
+                source={require('../../assets/logo.png')}
+                style={styles.logo}
+                resizeMode="contain"
+              />
+            </View>
             <Text style={styles.title}>Create Account</Text>
             <Text style={styles.subtitle}>Join the medical quiz community</Text>
           </View>
@@ -593,26 +597,41 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 25,
+    marginTop: 15,
+  },
+  logoContainer: {
+    width: 120,
+    height: 120,
+    backgroundColor: 'white',
+    borderRadius: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.2,
+    shadowRadius: 15,
+    elevation: 10,
+    padding: 10,
   },
   logo: {
-    width: 200,
-    height: 200,
-    marginBottom: 20,
+    width: 80,
+    height: 80,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#1e3a8a',
+    color: '#ffffff',
     marginBottom: 8,
     fontFamily: 'Inter-Bold',
-    textShadowColor: 'rgba(0, 0, 0, 0.05)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   subtitle: {
     fontSize: 16,
-    color: '#475569',
+    color: 'rgba(255, 255, 255, 0.8)',
     textAlign: 'center',
     fontFamily: 'Inter-Medium',
   },
