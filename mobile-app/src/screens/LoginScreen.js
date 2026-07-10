@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,13 +9,37 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert
+  Alert,
+  Animated
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
 
 const LoginScreen = ({ navigation }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 800,
+        useNativeDriver: true,
+      })
+    ]).start();
+  }, []);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -39,7 +63,7 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <LinearGradient
-      colors={['#1e1b4b', '#4c1d95', '#6d28d9']}
+      colors={['#1e1b4b', '#4c1d95', '#6d28d9', '#1e1b4b']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={styles.container}
@@ -49,7 +73,7 @@ const LoginScreen = ({ navigation }) => {
         style={styles.keyboardView}
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.header}>
+          <Animated.View style={[styles.header, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
             <View style={styles.logoContainer}>
               <Image
                 source={require('../../assets/logo.png')}
@@ -59,9 +83,9 @@ const LoginScreen = ({ navigation }) => {
             </View>
             <Text style={styles.title}>Welcome Back</Text>
             <Text style={styles.subtitle}>Sign in to continue</Text>
-          </View>
+          </Animated.View>
 
-          <View style={styles.form}>
+          <Animated.View style={[styles.form, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
             <View style={styles.inputContainer}>
               <Ionicons name="mail-outline" size={20} color="#6b7280" style={styles.inputIcon} />
               <TextInput
@@ -123,7 +147,7 @@ const LoginScreen = ({ navigation }) => {
                 <Text style={styles.signupLink}>Sign Up</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </Animated.View>
         </ScrollView>
 
         <View style={styles.footer}>
@@ -158,21 +182,21 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: 140,
     height: 140,
-    backgroundColor: 'white',
-    borderRadius: 70,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.3,
     shadowRadius: 15,
     elevation: 10,
     padding: 10,
   },
   logo: {
-    width: 100,
-    height: 100,
+    width: 110,
+    height: 110,
   },
   title: {
     fontSize: 32,
@@ -196,10 +220,10 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 6,
+      height: 8,
     },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
     elevation: 12,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
@@ -208,27 +232,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f8fafc',
-    borderRadius: 16,
-    marginBottom: 18,
-    paddingHorizontal: 18,
-    borderWidth: 2,
+    borderRadius: 12,
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    borderWidth: 1,
     borderColor: '#e2e8f0',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
   },
   inputIcon: {
-    marginRight: 12,
+    marginRight: 10,
   },
   input: {
     flex: 1,
-    paddingVertical: 18,
-    fontSize: 17,
+    paddingVertical: 14,
+    fontSize: 16,
     color: '#0f172a',
     fontFamily: 'Inter-Medium',
   },
@@ -246,10 +262,10 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     backgroundColor: '#6d28d9',
-    borderRadius: 16,
-    paddingVertical: 18,
+    borderRadius: 12,
+    paddingVertical: 16,
     alignItems: 'center',
-    marginBottom: 26,
+    marginBottom: 24,
     shadowColor: '#6d28d9',
     shadowOffset: {
       width: 0,

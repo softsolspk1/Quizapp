@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,8 @@ import {
   ScrollView,
   Alert,
   Modal,
-  FlatList
+  FlatList,
+  Animated
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -51,6 +52,24 @@ const RegisterScreen = ({ navigation }) => {
   const [submittingComplaint, setSubmittingComplaint] = useState(false);
 
   const { register } = useAuth();
+  
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 800,
+        useNativeDriver: true,
+      })
+    ]).start();
+  }, []);
 
   const specialtyOptions = [
     'Cardiology',
@@ -186,7 +205,7 @@ const RegisterScreen = ({ navigation }) => {
 
   return (
     <LinearGradient
-      colors={['#1e1b4b', '#4c1d95', '#6d28d9']}
+      colors={['#1e1b4b', '#4c1d95', '#6d28d9', '#1e1b4b']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={styles.container}
@@ -196,7 +215,7 @@ const RegisterScreen = ({ navigation }) => {
         style={styles.keyboardView}
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.header}>
+          <Animated.View style={[styles.header, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
             <View style={styles.logoContainer}>
               <Image
                 source={require('../../assets/logo.png')}
@@ -206,9 +225,9 @@ const RegisterScreen = ({ navigation }) => {
             </View>
             <Text style={styles.title}>Create Account</Text>
             <Text style={styles.subtitle}>Join the medical quiz community</Text>
-          </View>
+          </Animated.View>
 
-          <View style={styles.form}>
+          <Animated.View style={[styles.form, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
             <View style={styles.inputContainer}>
               <Ionicons name="person-outline" size={20} color="#6b7280" style={styles.inputIcon} />
               <TextInput
@@ -384,7 +403,7 @@ const RegisterScreen = ({ navigation }) => {
             <TouchableOpacity style={{ marginTop: 20, alignItems: 'center' }} onPress={() => setShowComplaintModal(true)}>
               <Text style={{ color: '#ef4444', textDecorationLine: 'underline', fontSize: 14 }}>Have an issue? Submit a Complaint</Text>
             </TouchableOpacity>
-          </View>
+          </Animated.View>
         </ScrollView>
 
         <View style={styles.footer}>
@@ -603,21 +622,21 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: 120,
     height: 120,
-    backgroundColor: 'white',
-    borderRadius: 60,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.3,
     shadowRadius: 15,
     elevation: 10,
     padding: 10,
   },
   logo: {
-    width: 80,
-    height: 80,
+    width: 90,
+    height: 90,
   },
   title: {
     fontSize: 28,
@@ -642,10 +661,10 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 6,
+      height: 8,
     },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
     elevation: 12,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
@@ -654,27 +673,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f8fafc',
-    borderRadius: 16,
+    borderRadius: 12,
     marginBottom: 14,
-    paddingHorizontal: 18,
-    borderWidth: 2,
+    paddingHorizontal: 16,
+    borderWidth: 1,
     borderColor: '#e2e8f0',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
   },
   inputIcon: {
-    marginRight: 12,
+    marginRight: 10,
   },
   input: {
     flex: 1,
-    paddingVertical: 16,
-    fontSize: 16,
+    paddingVertical: 14,
+    fontSize: 15,
     color: '#0f172a',
     fontFamily: 'Inter-Medium',
   },
@@ -683,8 +694,8 @@ const styles = StyleSheet.create({
   },
   registerButton: {
     backgroundColor: '#6d28d9',
-    borderRadius: 16,
-    paddingVertical: 18,
+    borderRadius: 12,
+    paddingVertical: 16,
     alignItems: 'center',
     marginTop: 12,
     marginBottom: 22,

@@ -93,7 +93,10 @@ router.get('/active', auth, async (req, res) => {
     const pins = await prisma.pin.findMany({
       where: {
         isActive: true,
-        city: user.city,
+        city: {
+          equals: user.city,
+          mode: 'insensitive'
+        },
         OR: [
           { expiresAt: null },
           { expiresAt: { gt: new Date() } }
