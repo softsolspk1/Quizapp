@@ -15,7 +15,8 @@ import {
   Image,
   Bell,
   Trophy,
-  Calendar
+  Calendar,
+  BookOpen
 } from 'lucide-react';
 
 const Layout = ({ children }) => {
@@ -33,6 +34,7 @@ const Layout = ({ children }) => {
     { name: 'Broadcast', href: '/broadcast', icon: Bell },
     { name: 'Winners', href: '/winners', icon: Trophy },
     { name: 'Competitions', href: '/competitions', icon: Calendar },
+    { name: 'Study Guides', href: '/study-guides', icon: BookOpen },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   ];
 

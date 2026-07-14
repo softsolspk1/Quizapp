@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import { API_URL } from '../config';
-import FooterBanner from '../components/FooterBanner';
+import AppBanner from '../components/AppBanner';
 
 const { width } = Dimensions.get('window');
 
@@ -77,10 +77,23 @@ const HomeScreen = ({ navigation }) => {
         style={styles.header}
       >
         <View style={styles.headerContent}>
-          <View>
-            <Text style={styles.greeting}>{getGreeting()},</Text>
-            <Text style={styles.userName}>Dr. {user?.doctorName}</Text>
-            <Text style={styles.userInfo}>{user?.specialty} • {user?.hospitalName}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={{ marginRight: 15 }}>
+              {user?.profilePicture ? (
+                <Image source={{ uri: user.profilePicture }} style={{ width: 60, height: 60, borderRadius: 30, borderWidth: 2, borderColor: 'white' }} />
+              ) : (
+                <View style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: 'white' }}>
+                  <Text style={{ color: 'white', fontSize: 24, fontWeight: 'bold' }}>
+                    {user?.doctorName?.charAt(0)?.toUpperCase()}
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
+            <View>
+              <Text style={styles.greeting}>{getGreeting()},</Text>
+              <Text style={styles.userName}>Dr. {user?.doctorName}</Text>
+              <Text style={styles.userInfo}>{user?.specialty} • {user?.hospitalName}</Text>
+            </View>
           </View>
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
@@ -143,6 +156,19 @@ const HomeScreen = ({ navigation }) => {
                 <Text style={styles.quickActionText} numberOfLines={1} adjustsFontSizeToFit>Competition</Text>
               </LinearGradient>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.quickActionItem}
+              onPress={() => navigation.navigate('StudyGuides')}
+            >
+              <LinearGradient
+                colors={['#10b981', '#059669']}
+                style={styles.quickActionGradient}
+              >
+                <Ionicons name="book" size={24} color="white" />
+                <Text style={styles.quickActionText} numberOfLines={1} adjustsFontSizeToFit>Study Guides</Text>
+              </LinearGradient>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -162,6 +188,10 @@ const HomeScreen = ({ navigation }) => {
             </View>
           </View>
         ) : null}
+
+        <View style={styles.bannerContainer}>
+          <AppBanner location="dashboard_middle" />
+        </View>
 
         {/* Categories */}
         <View style={styles.section}>
@@ -254,7 +284,7 @@ const HomeScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.bannerContainer}>
-          <FooterBanner />
+          <AppBanner location="dashboard_footer" />
         </View>
       </ScrollView>
     </View>

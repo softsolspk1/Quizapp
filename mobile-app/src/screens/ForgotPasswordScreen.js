@@ -59,7 +59,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
             />
             <Text style={styles.title}>Forgot Password?</Text>
             <Text style={styles.subtitle}>
-              Enter your email address and we'll send you a link to reset your password.
+              Enter your email address to receive a password reset link.
             </Text>
           </View>
 
@@ -127,9 +127,9 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   logo: {
-    width: 220,
-    height: 220,
-    marginBottom: 25,
+    width: 140,
+    height: 140,
+    marginBottom: 15,
   },
   title: {
     fontSize: 32,

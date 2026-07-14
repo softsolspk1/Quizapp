@@ -69,6 +69,8 @@ router.post('/complaint', [
   body('city').notEmpty().withMessage('City is required'),
   body('email').isEmail().withMessage('Valid email is required'),
   body('phoneNumber').notEmpty().withMessage('Phone number is required'),
+  body('specialty').notEmpty().withMessage('Specialty is required'),
+  body('hospitalName').notEmpty().withMessage('Hospital name is required'),
   body('complaint').notEmpty().withMessage('Complaint text is required')
 ], async (req, res) => {
   try {
@@ -77,22 +79,23 @@ router.post('/complaint', [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { doctorName, city, email, phoneNumber, complaint } = req.body;
+    const { doctorName, specialty, hospitalName, city, email, phoneNumber, complaint } = req.body;
 
     const toAddresses = [
-      'shoaib.khan@hiltonpharma.com',
-      'muhammad.asad@hiltonpharma.com',
-      'kashiffareed2023@gmail.com'
+      'salman.zaffar@hiltonpharma.com',
+      'muhammad.asad@hiltonpharma.com'
     ].join(', ');
 
     const emailSubject = `New Registration Complaint: Dr. ${doctorName}`;
-    const emailText = `Complaint from Signup Form\n\nDetails:\nName: Dr. ${doctorName}\nCity: ${city}\nEmail: ${email}\nPhone: ${phoneNumber}\n\nComplaint:\n${complaint}`;
+    const emailText = `Complaint from Signup Form\n\nDetails:\nName: Dr. ${doctorName}\nSpecialty: ${specialty}\nHospital: ${hospitalName}\nCity: ${city}\nEmail: ${email}\nPhone: ${phoneNumber}\n\nComplaint:\n${complaint}`;
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
         <h2 style="color: #ef4444;">New Signup Complaint</h2>
         <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
           <h3>Submitter Details</h3>
           <p><strong>Name:</strong> Dr. ${doctorName}</p>
+          <p><strong>Specialty:</strong> ${specialty}</p>
+          <p><strong>Hospital:</strong> ${hospitalName}</p>
           <p><strong>City:</strong> ${city}</p>
           <p><strong>Email:</strong> ${email}</p>
           <p><strong>Phone:</strong> ${phoneNumber}</p>

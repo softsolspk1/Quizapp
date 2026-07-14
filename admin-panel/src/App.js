@@ -13,6 +13,7 @@ import Banners from './components/Banners';
 import Broadcast from './components/Broadcast';
 import Winners from './components/Winners';
 import Competitions from './components/Competitions';
+import StudyGuides from './components/StudyGuides';
 import Layout from './components/Layout';
 
 
@@ -127,6 +128,13 @@ function App() {
               <AdminOnlyRoute feature="competitions">
                 <Layout>
                   <Competitions />
+                </Layout>
+              </AdminOnlyRoute>
+            } />
+            <Route path="/study-guides" element={
+              <AdminOnlyRoute feature="studyguides">
+                <Layout>
+                  <StudyGuides />
                 </Layout>
               </AdminOnlyRoute>
             } />

@@ -6,7 +6,9 @@ import {
   FlatList,
   TouchableOpacity,
   RefreshControl,
-  TextInput
+  TextInput,
+  Image,
+  Dimensions
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,13 +16,16 @@ import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import { API_URL } from '../config';
 
+const { width } = Dimensions.get('window');
+
 const LeaderboardScreen = ({ navigation }) => {
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [timeFilter, setTimeFilter] = useState('All Time'); // Today, Weekly, All Time
   
   // Filters state
-  const [mode, setMode] = useState(''); // 'single', 'multiplayer', 'pin'
+  const [mode, setMode] = useState('');
   const [designation, setDesignation] = useState('');
   const [city, setCity] = useState('');
   const [hospital, setHospital] = useState('');
@@ -61,11 +66,8 @@ const LeaderboardScreen = ({ navigation }) => {
     setCity('');
     setHospital('');
     setQuizName('');
-    // Notice we don't call loadLeaderboard immediately because state updates are async
-    // But we can trigger it in a slight timeout or just rely on a separate effect (or just call it with empty params directly)
     setTimeout(() => {
       setShowFilters(false);
-      // Hack to reload without state
       axios.get(`${API_URL}/api/users/leaderboard`).then(res => setLeaderboard(res.data)).catch(console.error);
     }, 0);
   };
@@ -76,368 +78,302 @@ const LeaderboardScreen = ({ navigation }) => {
     setRefreshing(false);
   };
 
-  const getRankIcon = (index) => {
+  const getRankStyles = (index) => {
     switch (index) {
-      case 0:
-        return { name: 'trophy', color: '#fbbf24' };
-      case 1:
-        return { name: 'medal', color: '#9ca3af' };
-      case 2:
-        return { name: 'medal', color: '#f59e0b' };
-      default:
-        return { name: 'person', color: '#6b7280' };
+      case 0: return { bg: '#6d28d9', text: 'white' }; // 1st
+      case 1: return { bg: '#8b5cf6', text: 'white' }; // 2nd
+      case 2: return { bg: '#ddd6fe', text: '#1f2937' }; // 3rd
+      default: return { bg: 'white', text: '#1f2937' }; // 4th+
     }
   };
 
   const renderLeaderboardItem = ({ item, index }) => {
-    const rankIcon = getRankIcon(index);
+    const { bg, text } = getRankStyles(index);
+    const isTopThree = index < 3;
     
     return (
-      <View style={styles.leaderboardItem}>
-        <View style={styles.rankContainer}>
-          <Ionicons name={rankIcon.name} size={24} color={rankIcon.color} />
-          <Text style={styles.rankNumber}>{index + 1}</Text>
-        </View>
+      <View style={[styles.leaderboardItem, { backgroundColor: bg }]}>
+        <Text style={[styles.listRankNumber, { color: text }]}>{index + 1}</Text>
         
-        <View style={styles.userInfo}>
-          <Text style={styles.userName}>Dr. {item.doctorName}</Text>
-          <Text style={styles.userDetails}>
-            {item.specialty} • {item.hospitalName}
-          </Text>
+        <View style={styles.listAvatarContainer}>
+          {item.profilePicture ? (
+            <Image source={{ uri: item.profilePicture }} style={styles.listAvatar} />
+          ) : (
+            <View style={styles.listAvatarFallback}>
+              <Text style={styles.listAvatarFallbackText}>{item.doctorName?.charAt(0)}</Text>
+            </View>
+          )}
         </View>
+
+        <Text style={[styles.listUserName, { color: text }]} numberOfLines={1}>
+          {item.doctorName}
+        </Text>
         
-        <View style={styles.scoreContainer}>
-          <Text style={styles.score}>{item.totalPoints}</Text>
-          <Text style={styles.scoreLabel}>points</Text>
+        <Ionicons name="trophy" size={16} color="#f97316" style={{ marginHorizontal: 8 }} />
+        
+        <View style={styles.listScorePill}>
+          <Ionicons name="diamond" size={12} color="#f97316" />
+          <Text style={styles.listScoreText}>{item.totalPoints || 0}</Text>
         </View>
       </View>
     );
   };
 
-  if (loading) {
+  const renderPodium = () => {
+    if (leaderboard.length < 3) return null;
+    const top3 = leaderboard.slice(0, 3);
+    
     return (
-      <View style={styles.container}>
-        <LinearGradient
-          colors={['#db2777', '#9d174d']}
-          style={styles.header}
-        >
-          <View style={styles.headerContent}>
-            <Ionicons name="trophy" size={32} color="white" />
-            <Text style={styles.title}>Leaderboard</Text>
-            <Text style={styles.subtitle}>Top performers</Text>
+      <View style={styles.podiumContainer}>
+        {/* Rank 2 (Left) */}
+        <View style={styles.podiumItemSide}>
+          <View style={[styles.podiumAvatarWrap, { borderColor: '#22c55e' }]}>
+             {top3[1].profilePicture ? (
+                <Image source={{ uri: top3[1].profilePicture }} style={styles.podiumAvatarSide} />
+              ) : (
+                <View style={styles.podiumAvatarFallbackSide}><Text style={{fontSize:20, color:'#555'}}>{top3[1].doctorName?.charAt(0)}</Text></View>
+              )}
+             <View style={[styles.podiumRankBadge, { backgroundColor: '#22c55e' }]}><Text style={styles.podiumRankText}>2</Text></View>
           </View>
-        </LinearGradient>
-        
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading leaderboard...</Text>
+          <Text style={styles.podiumName} numberOfLines={1}>{top3[1].doctorName.split(' ')[0]}</Text>
+          <View style={[styles.podiumScorePill, { backgroundColor: '#22c55e' }]}>
+            <Ionicons name="diamond" size={12} color="white" />
+            <Text style={styles.podiumScoreText}>{top3[1].totalPoints || 0}</Text>
+          </View>
+        </View>
+
+        {/* Rank 1 (Center) */}
+        <View style={styles.podiumItemCenter}>
+          <Ionicons name="star" size={32} color="#facc15" style={styles.crownIcon} />
+          <View style={[styles.podiumAvatarWrapCenter, { borderColor: '#f97316' }]}>
+             {top3[0].profilePicture ? (
+                <Image source={{ uri: top3[0].profilePicture }} style={styles.podiumAvatarCenter} />
+              ) : (
+                <View style={styles.podiumAvatarFallbackCenter}><Text style={{fontSize:28, color:'#555'}}>{top3[0].doctorName?.charAt(0)}</Text></View>
+              )}
+             <View style={[styles.podiumRankBadgeCenter, { backgroundColor: '#f97316' }]}><Text style={styles.podiumRankText}>1</Text></View>
+          </View>
+          <Text style={styles.podiumNameCenter} numberOfLines={1}>{top3[0].doctorName.split(' ')[0]}</Text>
+          <View style={[styles.podiumScorePill, { backgroundColor: '#f97316' }]}>
+            <Ionicons name="diamond" size={12} color="white" />
+            <Text style={styles.podiumScoreText}>{top3[0].totalPoints || 0}</Text>
+          </View>
+        </View>
+
+        {/* Rank 3 (Right) */}
+        <View style={styles.podiumItemSide}>
+          <View style={[styles.podiumAvatarWrap, { borderColor: '#8b5cf6' }]}>
+             {top3[2].profilePicture ? (
+                <Image source={{ uri: top3[2].profilePicture }} style={styles.podiumAvatarSide} />
+              ) : (
+                <View style={styles.podiumAvatarFallbackSide}><Text style={{fontSize:20, color:'#555'}}>{top3[2].doctorName?.charAt(0)}</Text></View>
+              )}
+             <View style={[styles.podiumRankBadge, { backgroundColor: '#8b5cf6' }]}><Text style={styles.podiumRankText}>3</Text></View>
+          </View>
+          <Text style={styles.podiumName} numberOfLines={1}>{top3[2].doctorName.split(' ')[0]}</Text>
+          <View style={[styles.podiumScorePill, { backgroundColor: '#8b5cf6' }]}>
+            <Ionicons name="diamond" size={12} color="white" />
+            <Text style={styles.podiumScoreText}>{top3[2].totalPoints || 0}</Text>
+          </View>
         </View>
       </View>
     );
-  }
+  };
 
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#db2777', '#9d174d']}
-        style={styles.header}
+        colors={['#4c1d95', '#6d28d9', '#8b5cf6']}
+        style={styles.headerBackground}
       >
         <View style={styles.headerTop}>
-          <View style={{ width: 32 }} />
-          <View style={styles.headerContent}>
-            <Ionicons name="trophy" size={32} color="white" />
-            <Text style={styles.title}>Leaderboard</Text>
-            <Text style={styles.subtitle}>Top performers</Text>
-          </View>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeBtn}>
+            <Ionicons name="close" size={24} color="#1f2937" />
+          </TouchableOpacity>
+          <Text style={styles.title}>Leaderboard</Text>
           <TouchableOpacity onPress={() => setShowFilters(!showFilters)} style={styles.filterBtn}>
             <Ionicons name="filter" size={24} color="white" />
           </TouchableOpacity>
         </View>
+
+        {/* Time Filters */}
+        <View style={styles.timeFilterContainer}>
+          {['Today', 'Weekly', 'All Time'].map((tab) => (
+            <TouchableOpacity 
+              key={tab}
+              style={[styles.timeFilterTab, timeFilter === tab && styles.timeFilterTabActive]}
+              onPress={() => setTimeFilter(tab)}
+            >
+              <Text style={[styles.timeFilterText, timeFilter === tab && styles.timeFilterTextActive]}>{tab}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {renderPodium()}
+        
       </LinearGradient>
 
+      {/* Advanced Filters */}
       {showFilters && (
         <View style={styles.filterContainer}>
           <Text style={styles.filterTitle}>Filter Rankings</Text>
-          
           <View style={styles.filterRow}>
-            <TextInput
-              style={styles.filterInput}
-              placeholder="City"
-              value={city}
-              onChangeText={setCity}
-            />
-            <TextInput
-              style={styles.filterInput}
-              placeholder="Hospital"
-              value={hospital}
-              onChangeText={setHospital}
-            />
+            <TextInput style={styles.filterInput} placeholder="City" value={city} onChangeText={setCity} />
+            <TextInput style={styles.filterInput} placeholder="Hospital" value={hospital} onChangeText={setHospital} />
           </View>
-
           <View style={styles.filterRow}>
-            <TextInput
-              style={styles.filterInput}
-              placeholder="Designation"
-              value={designation}
-              onChangeText={setDesignation}
-            />
-            <TextInput
-              style={styles.filterInput}
-              placeholder="Category / Ward Name"
-              value={quizName}
-              onChangeText={setQuizName}
-            />
+            <TextInput style={styles.filterInput} placeholder="Designation" value={designation} onChangeText={setDesignation} />
+            <TextInput style={styles.filterInput} placeholder="Category" value={quizName} onChangeText={setQuizName} />
           </View>
-
           <View style={styles.modeContainer}>
-            <TouchableOpacity 
-              style={[styles.modeBtn, mode === 'single' && styles.modeBtnActive]}
-              onPress={() => setMode(mode === 'single' ? '' : 'single')}
-            >
-              <Text style={[styles.modeBtnText, mode === 'single' && styles.modeBtnTextActive]}>Single</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.modeBtn, mode === 'multiplayer' && styles.modeBtnActive]}
-              onPress={() => setMode(mode === 'multiplayer' ? '' : 'multiplayer')}
-            >
-              <Text style={[styles.modeBtnText, mode === 'multiplayer' && styles.modeBtnTextActive]}>Multi</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.modeBtn, mode === 'pin' && styles.modeBtnActive]}
-              onPress={() => setMode(mode === 'pin' ? '' : 'pin')}
-            >
-              <Text style={[styles.modeBtnText, mode === 'pin' && styles.modeBtnTextActive]}>Ward</Text>
-            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modeBtn, mode === 'single' && styles.modeBtnActive]} onPress={() => setMode(mode === 'single' ? '' : 'single')}><Text style={[styles.modeBtnText, mode === 'single' && styles.modeBtnTextActive]}>Single</Text></TouchableOpacity>
+            <TouchableOpacity style={[styles.modeBtn, mode === 'multiplayer' && styles.modeBtnActive]} onPress={() => setMode(mode === 'multiplayer' ? '' : 'multiplayer')}><Text style={[styles.modeBtnText, mode === 'multiplayer' && styles.modeBtnTextActive]}>Multi</Text></TouchableOpacity>
+            <TouchableOpacity style={[styles.modeBtn, mode === 'pin' && styles.modeBtnActive]} onPress={() => setMode(mode === 'pin' ? '' : 'pin')}><Text style={[styles.modeBtnText, mode === 'pin' && styles.modeBtnTextActive]}>Ward</Text></TouchableOpacity>
           </View>
-
           <View style={styles.filterActions}>
-            <TouchableOpacity style={styles.clearBtn} onPress={clearFilters}>
-              <Text style={styles.clearBtnText}>Clear</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.applyBtn} onPress={applyFilters}>
-              <Text style={styles.applyBtnText}>Apply Filters</Text>
-            </TouchableOpacity>
+            <TouchableOpacity style={styles.clearBtn} onPress={clearFilters}><Text style={styles.clearBtnText}>Clear</Text></TouchableOpacity>
+            <TouchableOpacity style={styles.applyBtn} onPress={applyFilters}><Text style={styles.applyBtnText}>Apply</Text></TouchableOpacity>
           </View>
         </View>
       )}
 
-      <FlatList
-        data={leaderboard}
-        renderItem={renderLeaderboardItem}
-        keyExtractor={(item) => item.id}
-        style={styles.list}
-        contentContainerStyle={styles.listContent}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        showsVerticalScrollIndicator={false}
-      />
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading leaderboard...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={leaderboard}
+          renderItem={renderLeaderboardItem}
+          keyExtractor={(item, index) => item.id + index.toString()}
+          contentContainerStyle={styles.listContent}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#6d28d9" />}
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={leaderboard.length < 3 ? null : <View style={{ height: 10 }} />}
+        />
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  header: {
+  container: { flex: 1, backgroundColor: '#f8fafc' },
+  headerBackground: {
     paddingTop: 50,
+    paddingHorizontal: 20,
     paddingBottom: 20,
-    paddingHorizontal: 24,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
   },
   headerTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: '100%',
+    marginBottom: 20,
   },
-  headerContent: {
-    alignItems: 'center',
-    flex: 1,
+  closeBtn: {
+    backgroundColor: 'white',
+    width: 36, height: 36,
+    borderRadius: 18,
+    alignItems: 'center', justifyContent: 'center'
   },
   filterBtn: {
-    padding: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 12,
+    width: 36, height: 36,
+    borderRadius: 18,
+    alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.2)'
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: 'white',
-    marginTop: 12,
-    marginBottom: 8,
-    fontFamily: 'Inter-Bold',
+    fontSize: 22, color: 'white', fontWeight: 'bold', fontFamily: 'Inter-Bold'
   },
-  subtitle: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontFamily: 'Inter-Medium',
+  timeFilterContainer: {
+    flexDirection: 'row', backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 20, padding: 4, marginBottom: 20
   },
-  list: {
-    flex: 1,
+  timeFilterTab: {
+    flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 16
   },
-  listContent: {
-    paddingHorizontal: 24,
-    paddingTop: 20,
+  timeFilterTabActive: { backgroundColor: 'white' },
+  timeFilterText: { color: 'white', fontWeight: '600', fontSize: 13, fontFamily: 'Inter-SemiBold' },
+  timeFilterTextActive: { color: '#6d28d9' },
+  
+  // Podium Styles
+  podiumContainer: {
+    flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end',
+    height: 180, marginBottom: 10
   },
+  podiumItemSide: { alignItems: 'center', width: width * 0.28, marginBottom: 10 },
+  podiumItemCenter: { alignItems: 'center', width: width * 0.34, zIndex: 10 },
+  podiumAvatarWrap: {
+    width: 70, height: 70, borderRadius: 35, borderWidth: 3,
+    backgroundColor: 'white', alignItems: 'center', justifyContent: 'center', marginBottom: 8
+  },
+  podiumAvatarSide: { width: 64, height: 64, borderRadius: 32 },
+  podiumAvatarFallbackSide: { width: 64, height: 64, borderRadius: 32, backgroundColor: '#f1f5f9', alignItems:'center', justifyContent:'center' },
+  podiumRankBadge: {
+    position: 'absolute', bottom: -10, width: 24, height: 24, borderRadius: 12,
+    alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: 'white'
+  },
+  podiumRankText: { color: 'white', fontSize: 12, fontWeight: 'bold' },
+  podiumAvatarWrapCenter: {
+    width: 90, height: 90, borderRadius: 45, borderWidth: 4,
+    backgroundColor: 'white', alignItems: 'center', justifyContent: 'center', marginBottom: 8
+  },
+  podiumAvatarCenter: { width: 82, height: 82, borderRadius: 41 },
+  podiumAvatarFallbackCenter: { width: 82, height: 82, borderRadius: 41, backgroundColor: '#f1f5f9', alignItems:'center', justifyContent:'center' },
+  podiumRankBadgeCenter: {
+    position: 'absolute', bottom: -12, width: 30, height: 30, borderRadius: 15,
+    alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: 'white'
+  },
+  crownIcon: { position: 'absolute', top: -35, zIndex: 20 },
+  podiumName: { color: 'white', fontSize: 14, fontWeight: 'bold', marginBottom: 6, fontFamily: 'Inter-Bold' },
+  podiumNameCenter: { color: 'white', fontSize: 16, fontWeight: 'bold', marginBottom: 8, fontFamily: 'Inter-Bold' },
+  podiumScorePill: {
+    flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 4,
+    borderRadius: 12
+  },
+  podiumScoreText: { color: 'white', fontSize: 12, fontWeight: 'bold', marginLeft: 4 },
+
+  // List Styles
+  listContent: { paddingHorizontal: 20, paddingBottom: 30 },
   leaderboardItem: {
-    backgroundColor: 'white',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    flexDirection: 'row', alignItems: 'center', padding: 14,
+    borderRadius: 16, marginBottom: 10,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2
   },
-  rankContainer: {
-    alignItems: 'center',
-    marginRight: 16,
-    minWidth: 40,
+  listRankNumber: { width: 30, fontSize: 16, fontWeight: 'bold', fontFamily: 'Inter-Bold' },
+  listAvatarContainer: { marginRight: 12 },
+  listAvatar: { width: 44, height: 44, borderRadius: 22 },
+  listAvatarFallback: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#f1f5f9', alignItems: 'center', justifyContent: 'center' },
+  listAvatarFallbackText: { fontSize: 18, color: '#64748b', fontWeight: 'bold' },
+  listUserName: { flex: 1, fontSize: 15, fontWeight: '600', fontFamily: 'Inter-SemiBold' },
+  listScorePill: {
+    flexDirection: 'row', alignItems: 'center', backgroundColor: 'white',
+    paddingHorizontal: 10, paddingVertical: 6, borderRadius: 16,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2, elevation: 1
   },
-  rankNumber: {
-    fontSize: 12,
-    color: '#6b7280',
-    marginTop: 4,
-    fontFamily: 'Inter-Medium',
-  },
-  userInfo: {
-    flex: 1,
-  },
-  userName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1f2937',
-    marginBottom: 4,
-    fontFamily: 'Inter-SemiBold',
-  },
-  userDetails: {
-    fontSize: 14,
-    color: '#6b7280',
-    fontFamily: 'Inter-Regular',
-  },
-  scoreContainer: {
-    alignItems: 'center',
-  },
-  score: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#3b82f6',
-    fontFamily: 'Inter-Bold',
-  },
-  scoreLabel: {
-    fontSize: 12,
-    color: '#6b7280',
-    fontFamily: 'Inter-Regular',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    fontSize: 16,
-    color: '#6b7280',
-    fontFamily: 'Inter-Medium',
-  },
+  listScoreText: { fontSize: 13, fontWeight: 'bold', color: '#1f2937', marginLeft: 4, fontFamily: 'Inter-Bold' },
+
+  // Filter Styles
   filterContainer: {
-    backgroundColor: 'white',
-    marginHorizontal: 16,
-    marginTop: -10,
-    marginBottom: 10,
-    borderRadius: 16,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-    zIndex: 10,
+    backgroundColor: 'white', marginHorizontal: 20, marginTop: -20, borderRadius: 16, padding: 16,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 5, zIndex: 10
   },
-  filterTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    color: '#1f2937',
-  },
-  filterRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  filterInput: {
-    flex: 1,
-    backgroundColor: '#f3f4f6',
-    borderRadius: 8,
-    padding: 10,
-    marginHorizontal: 4,
-    fontSize: 14,
-  },
-  modeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginHorizontal: 4,
-    marginBottom: 16,
-    marginTop: 6,
-  },
-  modeBtn: {
-    flex: 1,
-    backgroundColor: '#f3f4f6',
-    paddingVertical: 8,
-    marginHorizontal: 4,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  modeBtnActive: {
-    backgroundColor: '#3b82f6',
-  },
-  modeBtnText: {
-    color: '#6b7280',
-    fontWeight: '600',
-    fontSize: 13,
-  },
-  modeBtnTextActive: {
-    color: 'white',
-  },
-  filterActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginHorizontal: 4,
-  },
-  clearBtn: {
-    flex: 1,
-    paddingVertical: 10,
-    marginRight: 6,
-    borderRadius: 8,
-    alignItems: 'center',
-    backgroundColor: '#fee2e2',
-  },
-  clearBtnText: {
-    color: '#ef4444',
-    fontWeight: 'bold',
-  },
-  applyBtn: {
-    flex: 1,
-    paddingVertical: 10,
-    marginLeft: 6,
-    borderRadius: 8,
-    alignItems: 'center',
-    backgroundColor: '#3b82f6',
-  },
-  applyBtnText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
+  filterTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 12, color: '#1f2937' },
+  filterRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
+  filterInput: { flex: 1, backgroundColor: '#f3f4f6', borderRadius: 8, padding: 10, marginHorizontal: 4, fontSize: 14 },
+  modeContainer: { flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 4, marginBottom: 16, marginTop: 6 },
+  modeBtn: { flex: 1, backgroundColor: '#f3f4f6', paddingVertical: 8, marginHorizontal: 4, borderRadius: 8, alignItems: 'center' },
+  modeBtnActive: { backgroundColor: '#6d28d9' },
+  modeBtnText: { color: '#6b7280', fontWeight: '600', fontSize: 13 },
+  modeBtnTextActive: { color: 'white' },
+  filterActions: { flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 4 },
+  clearBtn: { flex: 1, paddingVertical: 10, marginRight: 6, borderRadius: 8, alignItems: 'center', backgroundColor: '#fee2e2' },
+  clearBtnText: { color: '#ef4444', fontWeight: 'bold' },
+  applyBtn: { flex: 1, paddingVertical: 10, marginLeft: 6, borderRadius: 8, alignItems: 'center', backgroundColor: '#6d28d9' },
+  applyBtnText: { color: 'white', fontWeight: 'bold' },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  loadingText: { fontSize: 16, color: '#6b7280', fontFamily: 'Inter-Medium' }
 });
 
 export default LeaderboardScreen;
-
-

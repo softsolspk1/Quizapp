@@ -15,7 +15,7 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'quizapp_uploads',
-    allowed_formats: ['jpg', 'png', 'jpeg', 'gif', 'webp']
+    allowed_formats: ['jpg', 'png', 'jpeg', 'gif', 'webp', 'pdf']
   }
 });
 

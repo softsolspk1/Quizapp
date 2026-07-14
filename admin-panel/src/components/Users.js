@@ -399,9 +399,18 @@ const Users = () => {
               {filteredUsers.map((user) => (
                 <tr key={user.id}>
                   <td className="table-cell">
-                    <div>
-                      <div className="font-medium text-gray-900">{user.doctorName}</div>
-                      <div className="text-sm text-gray-500">{user.designation}</div>
+                    <div className="flex items-center gap-3">
+                      {user.profilePicture ? (
+                        <img src={user.profilePicture} alt="Profile" className="h-10 w-10 rounded-full object-cover border" />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold border">
+                          {user.doctorName?.charAt(0)?.toUpperCase()}
+                        </div>
+                      )}
+                      <div>
+                        <div className="font-medium text-gray-900">{user.doctorName}</div>
+                        <div className="text-sm text-gray-500">{user.designation}</div>
+                      </div>
                     </div>
                   </td>
                   <td className="table-cell">{user.email}</td>
@@ -528,6 +537,15 @@ const Users = () => {
               </div>
               
               <div className="space-y-3">
+                <div className="flex justify-center mb-4">
+                  {selectedUser.profilePicture ? (
+                    <img src={selectedUser.profilePicture} alt="Profile" className="h-24 w-24 rounded-full object-cover border-4 border-white shadow-lg" />
+                  ) : (
+                    <div className="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-3xl font-bold border-4 border-white shadow-lg">
+                      {selectedUser.doctorName?.charAt(0)?.toUpperCase()}
+                    </div>
+                  )}
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Doctor Name</label>
                   <p className="text-sm text-gray-900">{selectedUser.doctorName}</p>

@@ -15,6 +15,7 @@ import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import { API_URL } from '../config';
 import Toast from 'react-native-toast-message';
+import AppBanner from '../components/AppBanner';
 
 const ProfileScreen = ({ navigation }) => {
   const { user, logout, checkAuthStatus } = useAuth();
@@ -58,8 +59,8 @@ const ProfileScreen = ({ navigation }) => {
       });
 
       // After upload, update user profile
-      await axios.put(`${API_URL}/api/users/${user.id}`, {
-        profilePicture: response.data.imageUrl
+      await axios.put(`${API_URL}/api/users/profile`, {
+        profilePicture: response.data.url
       });
 
       Toast.show({ type: 'success', text1: 'Profile Picture Updated' });
@@ -281,11 +282,7 @@ const ProfileScreen = ({ navigation }) => {
       </ScrollView>
       
       <View style={styles.footer}>
-        <Image
-          source={require('../../assets/zeegap.jpeg')}
-          style={styles.footerImage}
-          resizeMode="contain"
-        />
+        <AppBanner location="profile_footer" />
       </View>
     </View>
   );

@@ -5,12 +5,12 @@ const { body, validationResult } = require('express-validator');
 
 const router = express.Router();
 
-// @route   GET /api/banners
-// @desc    Get all active banners (filtered by specialty if provided)
+// @route   GET /api/study-guides
+// @desc    Get all active study guides (filtered by specialty if provided)
 // @access  Private
 router.get('/', auth, async (req, res) => {
   try {
-    const { specialty, location } = req.query;
+    const { specialty } = req.query;
     
     const whereClause = { isActive: true };
     if (specialty) {
@@ -19,24 +19,21 @@ router.get('/', auth, async (req, res) => {
         { specialty }
       ];
     }
-    if (location) {
-      whereClause.location = location;
-    }
 
-    const banners = await prisma.banner.findMany({
+    const studyGuides = await prisma.studyGuide.findMany({
       where: whereClause,
       orderBy: { createdAt: 'desc' }
     });
 
-    res.json(banners);
+    res.json(studyGuides);
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server error');
   }
 });
 
-// @route   GET /api/banners/all
-// @desc    Get all banners (admin only)
+// @route   GET /api/study-guides/all
+// @desc    Get all study guides (admin only)
 // @access  Private
 router.get('/all', auth, async (req, res) => {
   try {
@@ -44,24 +41,24 @@ router.get('/all', auth, async (req, res) => {
       return res.status(403).json({ message: 'Access denied' });
     }
 
-    const banners = await prisma.banner.findMany({
+    const studyGuides = await prisma.studyGuide.findMany({
       orderBy: { createdAt: 'desc' }
     });
 
-    res.json(banners);
+    res.json(studyGuides);
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server error');
   }
 });
 
-// @route   POST /api/banners
-// @desc    Create a new banner (admin only)
+// @route   POST /api/study-guides
+// @desc    Create a new study guide (admin only)
 // @access  Private
 router.post('/', [
   auth,
   body('title').notEmpty().withMessage('Title is required'),
-  body('imageUrl').notEmpty().withMessage('Image URL is required'),
+  body('pdfUrl').notEmpty().withMessage('PDF URL is required'),
   body('specialty').notEmpty().withMessage('Specialty is required')
 ], async (req, res) => {
   try {
@@ -74,27 +71,26 @@ router.post('/', [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { title, imageUrl, specialty, location, isActive } = req.body;
+    const { title, pdfUrl, specialty, isActive } = req.body;
 
-    const banner = await prisma.banner.create({
+    const studyGuide = await prisma.studyGuide.create({
       data: {
         title,
-        imageUrl,
+        pdfUrl,
         specialty,
-        location: location || 'dashboard_middle',
         isActive: isActive !== undefined ? isActive : true
       }
     });
 
-    res.json(banner);
+    res.json(studyGuide);
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server error');
   }
 });
 
-// @route   PUT /api/banners/:id
-// @desc    Update a banner (admin only)
+// @route   PUT /api/study-guides/:id
+// @desc    Update a study guide (admin only)
 // @access  Private
 router.put('/:id', auth, async (req, res) => {
   try {
@@ -102,29 +98,28 @@ router.put('/:id', auth, async (req, res) => {
       return res.status(403).json({ message: 'Access denied' });
     }
 
-    const { title, imageUrl, specialty, location, isActive } = req.body;
-    const bannerId = parseInt(req.params.id);
+    const { title, pdfUrl, specialty, isActive } = req.body;
+    const studyGuideId = parseInt(req.params.id);
 
-    const updatedBanner = await prisma.banner.update({
-      where: { id: bannerId },
+    const updatedStudyGuide = await prisma.studyGuide.update({
+      where: { id: studyGuideId },
       data: {
         title,
-        imageUrl,
+        pdfUrl,
         specialty,
-        location,
         isActive
       }
     });
 
-    res.json(updatedBanner);
+    res.json(updatedStudyGuide);
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server error');
   }
 });
 
-// @route   DELETE /api/banners/:id
-// @desc    Delete a banner (admin only)
+// @route   DELETE /api/study-guides/:id
+// @desc    Delete a study guide (admin only)
 // @access  Private
 router.delete('/:id', auth, async (req, res) => {
   try {
@@ -132,13 +127,13 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(403).json({ message: 'Access denied' });
     }
 
-    const bannerId = parseInt(req.params.id);
+    const studyGuideId = parseInt(req.params.id);
 
-    await prisma.banner.delete({
-      where: { id: bannerId }
+    await prisma.studyGuide.delete({
+      where: { id: studyGuideId }
     });
 
-    res.json({ message: 'Banner removed' });
+    res.json({ message: 'Study guide removed' });
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server error');

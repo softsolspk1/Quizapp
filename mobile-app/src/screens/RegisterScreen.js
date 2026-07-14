@@ -80,21 +80,23 @@ const RegisterScreen = ({ navigation }) => {
     'Gynaecology',
     'Internal Medicine',
     'Nephrology',
+    'Neuro Surgery',
     'Neurology',
     'Orthopaedic',
     'Paediatrics',
+    'Peads Neurology',
     'Psychiatry',
     'Pulmonology'
-  ];
+  ].sort();
 
   const designationOptions = [
     'Professor',
     'Associate Professor',
-    'Assitant Professor',
+    'Assistant Professor',
     'Consultant',
     'Post Graduate',
     'General Physician',
-    'GP'
+    'General Practitioner'
   ];
 
   const cityOptions = [

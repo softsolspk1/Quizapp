@@ -128,6 +128,17 @@ model Banner {
   title     String
   imageUrl  String
   specialty String   @default("All") // "All" or specific specialty
+  location  String   @default("dashboard_middle") // "dashboard_middle", "dashboard_footer", "sidebar", "profile_footer"
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StudyGuide {
+  id        Int      @id @default(autoincrement())
+  title     String
+  pdfUrl    String
+  specialty String   @default("All")
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
