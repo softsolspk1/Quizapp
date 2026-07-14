@@ -16,14 +16,15 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../contexts/AuthContext';
+import { API_URL } from '../config';
 
 const RegisterScreen = ({ navigation }) => {
   const [formData, setFormData] = useState({
     doctorName: '',
     designation: '',
     highestQualification: '',
-    specialty: '',
     hospitalName: '',
     pmdcNumber: '',
     city: '',
@@ -32,9 +33,12 @@ const RegisterScreen = ({ navigation }) => {
     password: '',
     confirmPassword: ''
   });
+  const [selectedSpecialties, setSelectedSpecialties] = useState([]);
+  const [profilePicture, setProfilePicture] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  
   const [showSpecialtyModal, setShowSpecialtyModal] = useState(false);
   const [showDesignationModal, setShowDesignationModal] = useState(false);
   const [showCityModal, setShowCityModal] = useState(false);
@@ -86,7 +90,8 @@ const RegisterScreen = ({ navigation }) => {
     'Paediatrics',
     'Peads Neurology',
     'Psychiatry',
-    'Pulmonology'
+    'Pulmonology',
+    'Radiologist'
   ].sort();
 
   const designationOptions = [
@@ -95,7 +100,6 @@ const RegisterScreen = ({ navigation }) => {
     'Assistant Professor',
     'Consultant',
     'Post Graduate',
-    'General Physician',
     'General Practitioner'
   ];
 
@@ -114,9 +118,12 @@ const RegisterScreen = ({ navigation }) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSpecialtySelect = (specialty) => {
-    setFormData(prev => ({ ...prev, specialty }));
-    setShowSpecialtyModal(false);
+  const toggleSpecialty = (specialty) => {
+    if (selectedSpecialties.includes(specialty)) {
+      setSelectedSpecialties(prev => prev.filter(item => item !== specialty));
+    } else {
+      setSelectedSpecialties(prev => [...prev, specialty]);
+    }
   };
 
   const handleDesignationSelect = (designation) => {
@@ -129,15 +136,38 @@ const RegisterScreen = ({ navigation }) => {
     setShowCityModal(false);
   };
 
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
+    });
+
+    if (!result.canceled) {
+      setProfilePicture(result.assets[0]);
+    }
+  };
+
   const validateForm = () => {
     const requiredFields = [
-      'doctorName', 'designation', 'highestQualification', 'specialty', 'hospitalName',
+      'doctorName', 'designation', 'highestQualification', 'hospitalName',
       'pmdcNumber', 'city', 'phoneNumber', 'email', 'password'
     ];
 
     const isComplete = requiredFields.every(field => formData[field].trim() !== '');
     if (!isComplete) {
       Alert.alert('Error', 'Please fill in all required fields');
+      return false;
+    }
+    
+    if (selectedSpecialties.length === 0) {
+      Alert.alert('Error', 'Please select at least one specialty');
+      return false;
+    }
+
+    if (!profilePicture) {
+      Alert.alert('Error', 'Please upload a profile photo');
       return false;
     }
 
@@ -159,7 +189,33 @@ const RegisterScreen = ({ navigation }) => {
 
     setLoading(true);
     try {
-      const { confirmPassword, ...registerData } = formData;
+      let uploadedImageUrl = '';
+      
+      const uploadData = new FormData();
+      uploadData.append('image', {
+        uri: profilePicture.uri,
+        name: 'profile.jpg',
+        type: 'image/jpeg'
+      });
+      
+      const uploadRes = await fetch(`${API_URL}/api/upload`, {
+        method: 'POST',
+        body: uploadData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      const uploadJson = await uploadRes.json();
+      if (!uploadRes.ok) throw new Error(uploadJson.message || 'Image upload failed');
+      uploadedImageUrl = uploadJson.url;
+
+      const { confirmPassword, ...restData } = formData;
+      const registerData = {
+        ...restData,
+        specialty: selectedSpecialties.join(', '),
+        profilePicture: uploadedImageUrl
+      };
+
       const success = await register(registerData);
       
       if (success) {
@@ -170,7 +226,7 @@ const RegisterScreen = ({ navigation }) => {
         );
       }
     } catch (error) {
-      Alert.alert('Registration Failed', error.response?.data?.message || 'Please try again later');
+      Alert.alert('Registration Failed', error.message || error.response?.data?.message || 'Please try again later');
     } finally {
       setLoading(false);
     }
@@ -185,7 +241,7 @@ const RegisterScreen = ({ navigation }) => {
     
     setSubmittingComplaint(true);
     try {
-      const response = await fetch(`${require('../config').API_URL}/api/support/complaint`, {
+      const response = await fetch(`${API_URL}/api/support/complaint`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(complaintData)
@@ -220,7 +276,7 @@ const RegisterScreen = ({ navigation }) => {
           <Animated.View style={[styles.header, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
             <View style={styles.logoContainer}>
               <Image
-                source={require('../../assets/logo.png')}
+                source={require('../../assets/logo2.png')}
                 style={styles.logo}
                 resizeMode="contain"
               />
@@ -230,6 +286,20 @@ const RegisterScreen = ({ navigation }) => {
           </Animated.View>
 
           <Animated.View style={[styles.form, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+            
+            <View style={styles.photoContainer}>
+              <TouchableOpacity style={styles.photoUploadBtn} onPress={pickImage}>
+                {profilePicture ? (
+                  <Image source={{ uri: profilePicture.uri }} style={styles.photoPreview} />
+                ) : (
+                  <View style={styles.photoPlaceholder}>
+                    <Ionicons name="camera" size={32} color="#9ca3af" />
+                    <Text style={styles.photoText}>Upload Photo</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            </View>
+
             <View style={styles.inputContainer}>
               <Ionicons name="person-outline" size={20} color="#6b7280" style={styles.inputIcon} />
               <TextInput
@@ -270,8 +340,8 @@ const RegisterScreen = ({ navigation }) => {
               onPress={() => setShowSpecialtyModal(true)}
             >
               <Ionicons name="medical-outline" size={20} color="#6b7280" style={styles.inputIcon} />
-              <Text style={[styles.input, !formData.specialty && styles.placeholder]}>
-                {formData.specialty || 'Specialty'}
+              <Text style={[styles.input, selectedSpecialties.length === 0 && styles.placeholder]} numberOfLines={1}>
+                {selectedSpecialties.length > 0 ? selectedSpecialties.join(', ') : 'Specialty (Select Multiple)'}
               </Text>
               <Ionicons name="chevron-down" size={20} color="#6b7280" />
             </TouchableOpacity>
@@ -429,33 +499,33 @@ const RegisterScreen = ({ navigation }) => {
             <Text style={styles.modalTitle}>Submit Complaint</Text>
             
             <TextInput
-              style={styles.input}
+              style={styles.inputModal}
               placeholder="Doctor Name"
               value={complaintData.doctorName}
               onChangeText={(val) => setComplaintData(prev => ({ ...prev, doctorName: val }))}
             />
             <TextInput
-              style={[styles.input, { marginTop: 10 }]}
+              style={[styles.inputModal, { marginTop: 10 }]}
               placeholder="City"
               value={complaintData.city}
               onChangeText={(val) => setComplaintData(prev => ({ ...prev, city: val }))}
             />
             <TextInput
-              style={[styles.input, { marginTop: 10 }]}
+              style={[styles.inputModal, { marginTop: 10 }]}
               placeholder="Email Address"
               keyboardType="email-address"
               value={complaintData.email}
               onChangeText={(val) => setComplaintData(prev => ({ ...prev, email: val }))}
             />
             <TextInput
-              style={[styles.input, { marginTop: 10 }]}
+              style={[styles.inputModal, { marginTop: 10 }]}
               placeholder="Phone Number"
               keyboardType="phone-pad"
               value={complaintData.phoneNumber}
               onChangeText={(val) => setComplaintData(prev => ({ ...prev, phoneNumber: val }))}
             />
             <TextInput
-              style={[styles.input, { marginTop: 10, height: 100, textAlignVertical: 'top' }]}
+              style={[styles.inputModal, { marginTop: 10, height: 100, textAlignVertical: 'top' }]}
               placeholder="Your Complaint"
               multiline
               value={complaintData.complaint}
@@ -489,24 +559,28 @@ const RegisterScreen = ({ navigation }) => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Specialty</Text>
+            <Text style={styles.modalTitle}>Select Specialties</Text>
             <FlatList
               data={specialtyOptions}
               keyExtractor={(item) => item}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.modalItem}
-                  onPress={() => handleSpecialtySelect(item)}
-                >
-                  <Text style={styles.modalItemText}>{item}</Text>
-                </TouchableOpacity>
-              )}
+              renderItem={({ item }) => {
+                const isSelected = selectedSpecialties.includes(item);
+                return (
+                  <TouchableOpacity
+                    style={[styles.modalItem, isSelected && { backgroundColor: '#f3f4f6' }]}
+                    onPress={() => toggleSpecialty(item)}
+                  >
+                    <Text style={[styles.modalItemText, isSelected && { fontWeight: 'bold', color: '#6d28d9' }]}>{item}</Text>
+                    {isSelected && <Ionicons name="checkmark" size={20} color="#6d28d9" />}
+                  </TouchableOpacity>
+                );
+              }}
             />
             <TouchableOpacity
               style={styles.modalCloseButton}
               onPress={() => setShowSpecialtyModal(false)}
             >
-              <Text style={styles.modalCloseText}>Cancel</Text>
+              <Text style={[styles.modalCloseText, { color: '#6d28d9', fontWeight: 'bold' }]}>Done</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -671,6 +745,36 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
   },
+  photoContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  photoUploadBtn: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#f3f4f6',
+    borderWidth: 2,
+    borderColor: '#e5e7eb',
+    borderStyle: 'dashed',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  photoPreview: {
+    width: '100%',
+    height: '100%',
+  },
+  photoPlaceholder: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  photoText: {
+    fontSize: 12,
+    color: '#9ca3af',
+    marginTop: 4,
+    fontFamily: 'Inter-Medium',
+  },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -690,6 +794,17 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#0f172a',
     fontFamily: 'Inter-Medium',
+  },
+  inputModal: {
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 15,
+    color: '#0f172a',
+    fontFamily: 'Inter-Medium',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
   eyeIcon: {
     padding: 4,
@@ -773,6 +888,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#e5e7eb',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   modalItemText: {
     fontSize: 16,
@@ -794,5 +912,3 @@ const styles = StyleSheet.create({
 });
 
 export default RegisterScreen;
-
-

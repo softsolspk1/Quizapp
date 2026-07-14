@@ -148,6 +148,7 @@ model Notification {
   id          Int      @id @default(autoincrement())
   title       String
   message     String
+  imageUrl    String?
   targetType  String   // "all", "specialty", "city", "hospital", "role"
   targetValue String?  // e.g. "Cardiology", "Karachi", etc.
   isReadBy    Int[]    @default([])

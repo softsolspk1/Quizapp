@@ -116,7 +116,7 @@ router.post('/', [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { title, message, targetType, targetValue } = req.body;
+    const { title, message, targetType, targetValue, imageUrl } = req.body;
 
     const notification = await prisma.notification.create({
       data: {
@@ -124,6 +124,7 @@ router.post('/', [
         message,
         targetType,
         targetValue,
+        imageUrl,
         creatorId: req.user.id
       }
     });

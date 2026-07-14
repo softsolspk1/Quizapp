@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Send, Trash2, Bell, Download, FileText } from 'lucide-react';
+import { Send, Trash2, Bell, Download, FileText, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { exportToPDF, exportToExcel } from '../utils/exportUtils';
 
@@ -13,6 +13,9 @@ const Broadcast = () => {
     targetType: 'all',
     targetValue: ''
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const targetTypes = [
     { value: 'all', label: 'All Users' },
@@ -22,7 +25,7 @@ const Broadcast = () => {
     { value: 'role', label: 'Specific Role' }
   ];
 
-  const specialties = ['Cardiology', 'Dermatology', 'Endocrinology & Diabetes', 'ER', 'Gastroenterology', 'Gynaecology', 'Internal Medicine', 'Nephrology', 'Neurology', 'Orthopaedic', 'Paediatrics', 'Psychiatry', 'Pulmonology'];
+  const specialties = ['Cardiology', 'Dermatology', 'Endocrinology & Diabetes', 'ER', 'Gastroenterology', 'Gynaecology', 'Internal Medicine', 'Nephrology', 'Neuro Surgery', 'Neurology', 'Orthopaedic', 'Paediatrics', 'Peads Neurology', 'Psychiatry', 'Pulmonology', 'Radiologist'];
   
   const cities = ['Abbottabad', 'Bahawalpur', 'Chiniot', 'Dera Ghazi Khan', 'Dera Ismail Khan', 'Faisalabad', 'Gilgit', 'Gujranwala', 'Gujrat', 'Hyderabad', 'Islamabad', 'Jacobabad', 'Jhang', 'Jhelum', 'Karachi', 'Kasur', 'Khairpur', 'Lahore', 'Larkana', 'Mardan', 'Mingora', 'Mirpur Khas', 'Multan', 'Muzaffarabad', 'Nawabshah', 'Okara', 'Peshawar', 'Quetta', 'Rahim Yar Khan', 'Rawalpindi', 'Sadiqabad', 'Sahiwal', 'Sargodha', 'Sheikhupura', 'Shikarpur', 'Sialkot', 'Sukkur', 'Vehari'];
   
@@ -52,6 +55,23 @@ const Broadcast = () => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.title.trim() || !formData.message.trim()) {
@@ -61,8 +81,20 @@ const Broadcast = () => {
       return toast.error('Please specify the target filter value');
     }
 
+    setSubmitting(true);
     try {
-      await axios.post('/api/notifications', formData);
+      let imageUrl = null;
+      if (imageFile) {
+        const uploadData = new FormData();
+        uploadData.append('image', imageFile);
+        const uploadRes = await axios.post('/api/upload', uploadData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        imageUrl = uploadRes.data.url;
+      }
+
+      const payload = { ...formData, imageUrl };
+      await axios.post('/api/notifications', payload);
       toast.success('Broadcast sent successfully');
       setFormData({
         title: '',
@@ -70,9 +102,13 @@ const Broadcast = () => {
         targetType: 'all',
         targetValue: ''
       });
+      setImageFile(null);
+      setImagePreview(null);
       fetchNotifications();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to send broadcast');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -225,9 +261,33 @@ const Broadcast = () => {
               ></textarea>
             </div>
 
-            <button type="submit" className="w-full btn-primary flex items-center justify-center gap-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Optional Image</label>
+              {!imagePreview ? (
+                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md relative cursor-pointer hover:border-primary-500 transition-colors">
+                  <div className="space-y-1 text-center">
+                    <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
+                    <div className="flex text-sm text-gray-600">
+                      <label htmlFor="image-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500">
+                        <span>Upload a file</span>
+                        <input id="image-upload" name="image-upload" type="file" className="sr-only" accept="image/*" onChange={handleImageChange} />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="relative mt-2">
+                  <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover rounded-md border" />
+                  <button type="button" onClick={removeImage} className="absolute top-2 right-2 p-1 bg-red-600 text-white rounded-full hover:bg-red-700 shadow-sm">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <button type="submit" disabled={submitting} className="w-full btn-primary flex items-center justify-center gap-2 mt-4">
               <Send className="h-4 w-4" />
-              Send Broadcast
+              {submitting ? 'Sending...' : 'Send Broadcast'}
             </button>
           </form>
         </div>
@@ -242,6 +302,9 @@ const Broadcast = () => {
           <div className="space-y-4">
             {notifications.map((notif) => (
               <div key={notif.id} className="border border-gray-100 rounded-lg p-4 bg-gray-50 flex gap-4">
+                {notif.imageUrl && (
+                   <img src={notif.imageUrl} alt="Broadcast" className="w-20 h-20 object-cover rounded shadow-sm border border-gray-200" />
+                )}
                 <div className="flex-1">
                   <div className="flex justify-between items-start mb-1">
                     <h3 className="font-bold text-gray-900">{notif.title}</h3>

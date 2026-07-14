@@ -22,10 +22,11 @@ async function getRandomQuestions(categoryId, count) {
 // Start new quiz session
 router.post('/start', auth, async (req, res) => {
   try {
-    const { categoryId, totalQuestions = 10, gameMode = 'single' } = req.body;
+    const { categoryId, gameMode = 'single' } = req.body;
     const catId = parseInt(categoryId);
+    const totalQuestions = 10; // Forced to 10 as per user request
 
-    const questions = await getRandomQuestions(catId, parseInt(totalQuestions));
+    const questions = await getRandomQuestions(catId, totalQuestions);
 
     if (questions.length === 0) {
       return res.status(400).json({ message: 'No questions available in this category' });
@@ -113,10 +114,10 @@ router.post('/submit', auth, async (req, res) => {
 
       if (isCorrect) {
         correctAnswers++;
-        score += 10 * pointMultiplier;
+        score += 10; // 10 Points for correct
       } else {
         wrongAnswers++;
-        score -= 5; // Always deduct 5 points for wrong answers
+        // 0 Points for wrong answer
       }
 
       // Update Session Question
@@ -290,11 +291,12 @@ router.get('/session/:id', auth, async (req, res) => {
 // Create multiplayer room
 router.post('/multiplayer/create-room', auth, async (req, res) => {
   try {
-    const { categoryId, totalQuestions = 10 } = req.body;
+    const { categoryId } = req.body;
     const catId = parseInt(categoryId);
+    const totalQuestions = 10; // Forced to 10
     const roomId = `room_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    const questions = await getRandomQuestions(catId, parseInt(totalQuestions));
+    const questions = await getRandomQuestions(catId, totalQuestions);
 
     if (questions.length === 0) {
       return res.status(400).json({ message: 'No questions available in this category' });

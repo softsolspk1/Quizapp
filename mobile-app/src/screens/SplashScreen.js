@@ -33,7 +33,7 @@ const SplashScreen = () => {
       <Animated.View style={[styles.content, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
         <View style={styles.logoContainer}>
           <Image
-            source={require('../../assets/logo.png')}
+            source={require('../../assets/logo2.png')}
             style={styles.logo}
             resizeMode="contain"
           />

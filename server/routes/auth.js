@@ -25,7 +25,7 @@ router.post('/register', [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { doctorName, designation, highestQualification, specialty, hospitalName, pmdcNumber, city, phoneNumber, password } = req.body;
+    const { doctorName, designation, highestQualification, specialty, hospitalName, pmdcNumber, city, phoneNumber, password, profilePicture } = req.body;
     const email = (req.body.email || '').trim().toLowerCase();
 
     // Check if user already exists
@@ -58,6 +58,7 @@ router.post('/register', [
         phoneNumber,
         email,
         password: hashedPassword,
+        profilePicture,
         isApproved: false
       }
     });

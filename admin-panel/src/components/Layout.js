@@ -58,7 +58,7 @@ const Layout = ({ children }) => {
           <div className="flex h-20 items-center justify-between px-6 bg-gradient-to-r from-primary-900 to-primary-800">
             <div className="flex items-center">
               <div className="bg-white p-1 rounded-lg shadow-sm">
-                <img src="/logo.png" alt="I-Genius" className="h-10 w-10 object-contain" />
+                <img src="/logo2.png" alt="I-Genius" className="h-10 w-10 object-contain" />
               </div>
               <span className="ml-3 text-2xl font-extrabold text-white tracking-tight">I-Genius</span>
             </div>
@@ -102,7 +102,7 @@ const Layout = ({ children }) => {
         <div className="flex flex-col flex-grow bg-white border-r border-gray-200">
           <div className="flex h-20 items-center px-6 bg-gradient-to-r from-primary-900 to-primary-800">
             <div className="bg-white p-1 rounded-lg shadow-sm">
-              <img src="/logo.png" alt="I-Genius" className="h-10 w-10 object-contain" />
+              <img src="/logo2.png" alt="I-Genius" className="h-10 w-10 object-contain" />
             </div>
             <span className="ml-3 text-2xl font-extrabold text-white tracking-tight">I-Genius</span>
           </div>

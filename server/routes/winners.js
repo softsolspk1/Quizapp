@@ -24,11 +24,11 @@ router.get('/', auth, async (req, res) => {
 // @access  Public
 router.get('/active', async (req, res) => {
   try {
-    const activeWinner = await prisma.winner.findFirst({
+    const activeWinners = await prisma.winner.findMany({
       where: { isActive: true },
       orderBy: { createdAt: 'desc' }
     });
-    res.json(activeWinner);
+    res.json(activeWinners);
   } catch (error) {
     console.error(error.message);
     res.status(500).send('Server error');
@@ -39,13 +39,7 @@ router.post('/', auth, async (req, res) => {
   try {
     const { title, imageUrl, month, year, isActive } = req.body;
 
-    // If setting as active, maybe deactivate others (optional, depending on requirement)
-    if (isActive) {
-      await prisma.winner.updateMany({
-        where: { isActive: true },
-        data: { isActive: false }
-      });
-    }
+    // Allow multiple active winners for the slider
 
     const winner = await prisma.winner.create({
       data: {
@@ -71,12 +65,7 @@ router.put('/:id', auth, async (req, res) => {
   try {
     const { title, imageUrl, month, year, isActive } = req.body;
 
-    if (isActive) {
-      await prisma.winner.updateMany({
-        where: { isActive: true },
-        data: { isActive: false }
-      });
-    }
+    // Allow multiple active winners for the slider
 
     const winner = await prisma.winner.update({
       where: { id: parseInt(req.params.id) },

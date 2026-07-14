@@ -38,7 +38,7 @@ const Login = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="flex justify-center">
-            <img src="/logo.png" alt="I-Genius" className="h-28 w-28" />
+            <img src="/logo2.png" alt="I-Genius" className="h-28 w-28" />
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 font-inter">
             I-Genius Admin Panel

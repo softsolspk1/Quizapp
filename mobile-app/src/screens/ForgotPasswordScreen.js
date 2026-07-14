@@ -53,7 +53,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
         <View style={styles.content}>
           <View style={styles.header}>
             <Image
-              source={require('../../assets/logo.png')}
+              source={require('../../assets/logo2.png')}
               style={styles.logo}
               resizeMode="contain"
             />

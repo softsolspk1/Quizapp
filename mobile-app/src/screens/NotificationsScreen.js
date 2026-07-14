@@ -5,7 +5,8 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  RefreshControl
+  RefreshControl,
+  Image
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -74,6 +75,13 @@ const NotificationsScreen = ({ navigation }) => {
             <Text style={styles.time}>{new Date(item.createdAt).toLocaleDateString()}</Text>
           </View>
           <Text style={styles.message}>{item.message}</Text>
+          {item.imageUrl ? (
+            <Image 
+              source={{ uri: item.imageUrl }} 
+              style={styles.broadcastImage} 
+              resizeMode="cover" 
+            />
+          ) : null}
         </View>
         {!isRead && <View style={styles.unreadDot} />}
       </TouchableOpacity>
@@ -207,6 +215,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6b7280',
     lineHeight: 20,
+  },
+  broadcastImage: {
+    width: '100%',
+    height: 150,
+    borderRadius: 8,
+    marginTop: 10,
   },
   unreadDot: {
     width: 10,
