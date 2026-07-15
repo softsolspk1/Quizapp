@@ -105,9 +105,12 @@ const StudyGuidesScreen = ({ navigation }) => {
           </View>
           {selectedPdfUrl && (
             <WebView 
-              source={{ uri: `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(selectedPdfUrl)}` }} 
+              source={{ uri: `https://docs.google.com/viewer?url=${encodeURIComponent(selectedPdfUrl)}&embedded=true` }} 
               style={{ flex: 1 }} 
               startInLoadingState={true}
+              javaScriptEnabled={true}
+              domStorageEnabled={true}
+              mixedContentMode="always"
             />
           )}
         </SafeAreaView>

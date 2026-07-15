@@ -28,7 +28,10 @@ const MultiplayerScreen = ({ navigation }) => {
   const [isCreatingRoom, setIsCreatingRoom] = useState(false);
   const [newRoom, setNewRoom] = useState({
     name: '',
-    isOpen: true
+    isOpen: true,
+    specialty: '',
+    city: '',
+    hospitalName: ''
   });
 
   const loadRooms = async () => {
@@ -137,7 +140,16 @@ const MultiplayerScreen = ({ navigation }) => {
         {/* Create Room Button */}
         <TouchableOpacity
           style={styles.createButton}
-          onPress={() => setCreateModalVisible(true)}
+          onPress={() => {
+            setNewRoom({
+              name: '',
+              isOpen: true,
+              specialty: user?.specialty || '',
+              city: user?.city || '',
+              hospitalName: user?.hospitalName || ''
+            });
+            setCreateModalVisible(true);
+          }}
         >
           <LinearGradient
             colors={['#10b981', '#059669']}
@@ -221,18 +233,24 @@ const MultiplayerScreen = ({ navigation }) => {
                 onChangeText={(txt) => setNewRoom({ ...newRoom, name: txt })}
               />
 
-              <View style={styles.readOnlyField}>
-                <Text style={styles.label}>Specialty</Text>
-                <Text style={styles.readOnlyText}>{user?.specialty}</Text>
-              </View>
-              <View style={styles.readOnlyField}>
-                <Text style={styles.label}>City</Text>
-                <Text style={styles.readOnlyText}>{user?.city}</Text>
-              </View>
-              <View style={styles.readOnlyField}>
-                <Text style={styles.label}>Hospital</Text>
-                <Text style={styles.readOnlyText}>{user?.hospitalName}</Text>
-              </View>
+              <Text style={styles.label}>Specialty</Text>
+              <TextInput
+                style={styles.modalInput}
+                value={newRoom.specialty}
+                onChangeText={(txt) => setNewRoom({ ...newRoom, specialty: txt })}
+              />
+              <Text style={styles.label}>City</Text>
+              <TextInput
+                style={styles.modalInput}
+                value={newRoom.city}
+                onChangeText={(txt) => setNewRoom({ ...newRoom, city: txt })}
+              />
+              <Text style={styles.label}>Hospital</Text>
+              <TextInput
+                style={styles.modalInput}
+                value={newRoom.hospitalName}
+                onChangeText={(txt) => setNewRoom({ ...newRoom, hospitalName: txt })}
+              />
 
               <View style={styles.switchRow}>
                 <View>

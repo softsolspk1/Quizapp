@@ -68,9 +68,7 @@ const QuizScreen = ({ navigation, route }) => {
   };
 
   const handleAnswerSelect = (answerIndex) => {
-    if (selectedAnswer !== null) return; // Prevent changing answer if we want immediate feedback
     setSelectedAnswer(answerIndex);
-    // In a real app we might wait 1 sec then auto next, but user requested 'Next' button
   };
 
   const handleAnswerSubmit = (answerIndex = selectedAnswer, isTimeout = false) => {
@@ -259,7 +257,6 @@ const QuizScreen = ({ navigation, route }) => {
                   isSelected && styles.optionButtonSelected
                 ]}
                 onPress={() => handleAnswerSelect(index)}
-                disabled={selectedAnswer !== null}
               >
                 <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>{option}</Text>
                 

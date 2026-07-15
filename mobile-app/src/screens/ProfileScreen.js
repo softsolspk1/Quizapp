@@ -253,11 +253,6 @@ const ProfileScreen = ({ navigation }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Actions</Text>
           <View style={styles.actionsCard}>
-            <TouchableOpacity style={styles.actionItem}>
-              <Ionicons name="settings" size={20} color="#6b7280" />
-              <Text style={styles.actionText}>Settings</Text>
-              <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
-            </TouchableOpacity>
             
             <TouchableOpacity 
               style={styles.actionItem} 
@@ -265,12 +260,6 @@ const ProfileScreen = ({ navigation }) => {
             >
               <Ionicons name="help-circle" size={20} color="#6b7280" />
               <Text style={styles.actionText}>Help & Support</Text>
-              <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.actionItem}>
-              <Ionicons name="information-circle" size={20} color="#6b7280" />
-              <Text style={styles.actionText}>About</Text>
               <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
             </TouchableOpacity>
             
@@ -530,5 +519,3 @@ const styles = StyleSheet.create({
 });
 
 export default ProfileScreen;
-
-

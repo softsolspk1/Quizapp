@@ -20,8 +20,8 @@ router.post('/', [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, isOpen } = req.body;
-    const { id, specialty, city, hospitalName } = req.user;
+    const { name, isOpen, specialty, city, hospitalName } = req.body;
+    const { id } = req.user;
 
     // Generate PIN
     // User requested "in Open Room there is default PIN showing 123456"
