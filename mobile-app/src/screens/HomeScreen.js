@@ -100,6 +100,7 @@ const HomeScreen = ({ navigation }) => {
             </TouchableOpacity>
             <View>
               <Text style={styles.userName}>Dr. {user?.doctorName}</Text>
+              {user?.hospitalName ? <Text style={styles.userHospital}>{user.hospitalName}</Text> : null}
             </View>
           </View>
           <View style={styles.statsContainer}>
@@ -269,6 +270,7 @@ const styles = StyleSheet.create({
   header: { paddingTop: 60, paddingBottom: 30, paddingHorizontal: 24, borderBottomLeftRadius: 30, borderBottomRightRadius: 30 },
   headerContent: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   userName: { fontSize: 24, fontWeight: 'bold', color: 'white', fontFamily: 'Inter-Bold' },
+  userHospital: { fontSize: 14, color: 'rgba(255, 255, 255, 0.8)', fontFamily: 'Inter-Medium', marginTop: 2 },
   statsContainer: { flexDirection: 'row', gap: 20 },
   statItem: { alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: 15, paddingVertical: 8, borderRadius: 15 },
   statNumber: { fontSize: 20, fontWeight: 'bold', color: 'white', fontFamily: 'Inter-Bold' },

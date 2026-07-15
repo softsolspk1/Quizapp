@@ -108,7 +108,12 @@ const WardActivitiesScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#8b5cf6', '#6d28d9']} style={styles.header}>
+      <LinearGradient
+        colors={['#1e1b4b', '#4c1d95', '#6d28d9']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
         <View style={styles.headerTop}>
           <TouchableOpacity onPress={() => navigation.openDrawer()}>
             <Ionicons name="menu" size={28} color="white" />

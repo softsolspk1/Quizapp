@@ -137,7 +137,12 @@ const QuizScreen = ({ navigation, route }) => {
   if (!quizStarted) {
     return (
       <View style={styles.container}>
-        <LinearGradient colors={['#6d28d9', '#4c1d95']} style={styles.headerStart}>
+        <LinearGradient
+        colors={['#1e1b4b', '#4c1d95', '#6d28d9']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>

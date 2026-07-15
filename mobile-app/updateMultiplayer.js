@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+const fs = require('fs');
+
+const content = `import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -38,7 +40,7 @@ const MultiplayerScreen = ({ navigation }) => {
       if (filters.city) params.append('city', filters.city);
       if (filters.hospitalName) params.append('hospitalName', filters.hospitalName);
 
-      const res = await axios.get(`${API_URL}/api/rooms?${params.toString()}`);
+      const res = await axios.get(\`\${API_URL}/api/rooms?\${params.toString()}\`);
       setRooms(res.data);
     } catch (error) {
       console.error('Error loading rooms:', error);
@@ -59,7 +61,7 @@ const MultiplayerScreen = ({ navigation }) => {
 
     setIsCreatingRoom(true);
     try {
-      const res = await axios.post(`${API_URL}/api/rooms`, newRoom);
+      const res = await axios.post(\`\${API_URL}/api/rooms\`, newRoom);
       setIsCreatingRoom(false);
       setCreateModalVisible(false);
       
@@ -67,7 +69,7 @@ const MultiplayerScreen = ({ navigation }) => {
       
       Alert.alert(
         'Room Created',
-        `Your room PIN is ${createdRoom.pin}\nShare this PIN with other players.`,
+        \`Your room PIN is \${createdRoom.pin}\\nShare this PIN with other players.\`,
         [
           {
             text: 'Join Room Now',
@@ -490,3 +492,7 @@ const styles = StyleSheet.create({
 });
 
 export default MultiplayerScreen;
+`;
+
+fs.writeFileSync('src/screens/MultiplayerScreen.js', content);
+console.log('MultiplayerScreen updated');

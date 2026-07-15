@@ -16,11 +16,16 @@ const CategoryScreen = ({ navigation, route }) => {
   const { category } = route.params;
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [difficulty, setDifficulty] = useState('all');
 
   const loadQuestions = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_URL}/api/questions/category/${category.id}?limit=20`);
+      let url = `${API_URL}/api/questions/category/${category.id}?limit=20`;
+      if (difficulty !== 'all') {
+        url += `&difficulty=${difficulty}`;
+      }
+      const response = await axios.get(url);
       setQuestions(response.data);
     } catch (error) {
       Alert.alert('Error', 'Failed to load questions');
@@ -31,7 +36,7 @@ const CategoryScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     loadQuestions();
-  }, []);
+  }, [difficulty]);
 
   const startQuiz = (gameMode = 'single') => {
     if (questions.length === 0) {
@@ -72,6 +77,29 @@ const CategoryScreen = ({ navigation, route }) => {
       </LinearGradient>
 
       <ScrollView style={styles.content}>
+                <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Select Difficulty Level</Text>
+          <View style={styles.filterContainer}>
+            {['all', 'easy', 'medium', 'hard'].map((level) => (
+              <TouchableOpacity
+                key={level}
+                style={[
+                  styles.filterButton,
+                  difficulty === level && styles.filterButtonActive
+                ]}
+                onPress={() => setDifficulty(level)}
+              >
+                <Text style={[
+                  styles.filterText,
+                  difficulty === level && styles.filterTextActive
+                ]}>
+                  {level === 'all' ? 'All' : level === 'easy' ? 'Basic Level' : level === 'medium' ? 'Intermediate Level' : 'Advance Level'}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Choose Game Mode</Text>
           
@@ -145,6 +173,12 @@ const CategoryScreen = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
+  filterContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10 },
+  filterButton: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: '#f3f4f6', borderWidth: 1, borderColor: '#e5e7eb' },
+  filterButtonActive: { backgroundColor: '#4c1d95', borderColor: '#4c1d95' },
+  filterText: { color: '#4b5563', fontSize: 14, fontFamily: 'Inter-Medium' },
+  filterTextActive: { color: 'white' },
+
   container: {
     flex: 1,
     backgroundColor: '#f9fafb',

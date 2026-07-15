@@ -16,7 +16,8 @@ import {
   Bell,
   Trophy,
   Calendar,
-  BookOpen
+  BookOpen,
+  MessageSquare
 } from 'lucide-react';
 
 const Layout = ({ children }) => {
@@ -35,6 +36,7 @@ const Layout = ({ children }) => {
     { name: 'Winners', href: '/winners', icon: Trophy },
     { name: 'Competitions', href: '/competitions', icon: Calendar },
     { name: 'Study Guides', href: '/study-guides', icon: BookOpen },
+    { name: 'Complaints', href: '/complaints', icon: MessageSquare },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   ];
 

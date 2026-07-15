@@ -14,6 +14,7 @@ import Broadcast from './components/Broadcast';
 import Winners from './components/Winners';
 import Competitions from './components/Competitions';
 import StudyGuides from './components/StudyGuides';
+import Complaints from './components/Complaints';
 import Layout from './components/Layout';
 
 
@@ -135,6 +136,13 @@ function App() {
               <AdminOnlyRoute feature="studyguides">
                 <Layout>
                   <StudyGuides />
+                </Layout>
+              </AdminOnlyRoute>
+            } />
+            <Route path="/complaints" element={
+              <AdminOnlyRoute feature="complaints">
+                <Layout>
+                  <Complaints />
                 </Layout>
               </AdminOnlyRoute>
             } />

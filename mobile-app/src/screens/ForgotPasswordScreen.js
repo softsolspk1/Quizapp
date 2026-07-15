@@ -43,7 +43,9 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
   return (
     <LinearGradient
-      colors={['#0f172a', '#1e293b', '#334155', '#475569']}
+      colors={['#1e1b4b', '#4c1d95', '#6d28d9']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
       style={styles.container}
     >
       <KeyboardAvoidingView

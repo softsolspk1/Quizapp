@@ -2,7 +2,9 @@ const express = require('express');
 const auth = require('../middleware/auth');
 const sendEmail = require('../utils/sendEmail');
 const { body, validationResult } = require('express-validator');
+const { PrismaClient } = require('@prisma/client');
 
+const prisma = new PrismaClient();
 const router = express.Router();
 
 // @route   POST /api/support
@@ -81,6 +83,19 @@ router.post('/complaint', [
 
     const { doctorName, specialty, hospitalName, city, email, phoneNumber, complaint } = req.body;
 
+    // Save to database
+    await prisma.complaint.create({
+      data: {
+        doctorName,
+        specialty,
+        hospitalName,
+        city,
+        email,
+        phoneNumber,
+        complaint
+      }
+    });
+
     const toAddresses = [
       'salman.zaffar@hiltonpharma.com',
       'muhammad.asad@hiltonpharma.com'
@@ -116,6 +131,27 @@ router.post('/complaint', [
     }
   } catch (error) {
     console.error('Complaint route error:', error.message);
+    res.status(500).send('Server error');
+  }
+});
+
+// @route   GET /api/support/complaints
+// @desc    Get all complaints
+// @access  Private (Admin only)
+router.get('/complaints', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+    
+    const complaints = await prisma.complaint.findMany({
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+    res.json(complaints);
+  } catch (error) {
+    console.error('Get complaints error:', error.message);
     res.status(500).send('Server error');
   }
 });

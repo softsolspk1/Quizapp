@@ -57,7 +57,9 @@ const MultiplayerQuizScreen = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#3b82f6', '#1d4ed8']}
+        colors={['#1e1b4b', '#4c1d95', '#6d28d9']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
         style={styles.header}
       >
         <TouchableOpacity

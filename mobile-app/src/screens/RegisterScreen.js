@@ -263,7 +263,7 @@ const RegisterScreen = ({ navigation }) => {
 
   return (
     <LinearGradient
-      colors={['#1e1b4b', '#4c1d95', '#6d28d9', '#1e1b4b']}
+      colors={['#1e1b4b', '#4c1d95', '#6d28d9']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={styles.container}

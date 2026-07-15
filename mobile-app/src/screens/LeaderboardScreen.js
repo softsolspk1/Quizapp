@@ -183,7 +183,9 @@ const LeaderboardScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#4c1d95', '#6d28d9', '#8b5cf6']}
+        colors={['#1e1b4b', '#4c1d95', '#6d28d9']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
         style={styles.headerBackground}
       >
         <View style={styles.headerTop}>

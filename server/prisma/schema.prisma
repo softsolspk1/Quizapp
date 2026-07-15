@@ -40,6 +40,7 @@ model User {
   conversations2 Conversation[] @relation("ConversationUser2")
   sentMessages   Message[]
   competitionEnrollments CompetitionEnrollment[]
+  roomsCreated   Room[]
 }
 
 model Category {
@@ -221,4 +222,32 @@ model CompetitionEnrollment {
   enrolledAt    DateTime           @default(now())
 
   @@unique([userId, competitionId])
+}
+
+model Room {
+  id           Int      @id @default(autoincrement())
+  name         String
+  specialty    String
+  city         String
+  hospitalName String
+  pin          String   @unique
+  isOpen       Boolean  @default(true)
+  creatorId    Int
+  creator      User     @relation(fields: [creatorId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Complaint {
+  id           Int      @id @default(autoincrement())
+  doctorName   String
+  specialty    String?
+  hospitalName String?
+  city         String
+  email        String
+  phoneNumber  String
+  complaint    String
+  status       String   @default("Pending")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
