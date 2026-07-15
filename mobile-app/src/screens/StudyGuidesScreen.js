@@ -4,7 +4,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { API_URL } from '../config';
-import { WebView } from 'react-native-webview';
+import * as WebBrowser from 'expo-web-browser';
+import { Alert } from 'react-native';
 
 const StudyGuidesScreen = ({ navigation }) => {
   const [studyGuides, setStudyGuides] = useState([]);
@@ -33,12 +34,13 @@ const StudyGuidesScreen = ({ navigation }) => {
     setRefreshing(false);
   };
 
-  const openPdf = (url) => {
-    setSelectedPdfUrl(url);
-  };
-
-  const closePdf = () => {
-    setSelectedPdfUrl(null);
+  const openPdf = async (url) => {
+    try {
+      await WebBrowser.openBrowserAsync(url);
+    } catch (error) {
+      console.log('Error opening PDF:', error);
+      Alert.alert('Error', 'Could not open the study guide.');
+    }
   };
 
   const renderItem = ({ item }) => (
@@ -93,28 +95,6 @@ const StudyGuidesScreen = ({ navigation }) => {
         />
       )}
 
-      {/* PDF Viewer Modal */}
-      <Modal visible={!!selectedPdfUrl} animationType="slide" onRequestClose={closePdf}>
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f9fafb' }}>
-          <View style={styles.modalHeader}>
-            <TouchableOpacity onPress={closePdf} style={styles.modalCloseButton}>
-              <Ionicons name="close" size={28} color="#1f2937" />
-            </TouchableOpacity>
-            <Text style={styles.modalTitle}>Study Guide</Text>
-            <View style={{ width: 28 }} />
-          </View>
-          {selectedPdfUrl && (
-            <WebView 
-              source={{ uri: `https://docs.google.com/viewer?url=${encodeURIComponent(selectedPdfUrl)}&embedded=true` }} 
-              style={{ flex: 1 }} 
-              startInLoadingState={true}
-              javaScriptEnabled={true}
-              domStorageEnabled={true}
-              mixedContentMode="always"
-            />
-          )}
-        </SafeAreaView>
-      </Modal>
     </View>
   );
 };
@@ -204,25 +184,6 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
     fontSize: 16,
     marginTop: 16,
-    fontFamily: 'Inter-Medium',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-  },
-  modalCloseButton: {
-    padding: 4,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1f2937',
-    fontFamily: 'Inter-Bold',
   }
 });
 
