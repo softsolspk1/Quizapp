@@ -13,9 +13,17 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: 'quizapp_uploads',
-    allowed_formats: ['jpg', 'png', 'jpeg', 'gif', 'webp', 'pdf']
+  params: async (req, file) => {
+    if (file.mimetype === 'application/pdf' || file.originalname.toLowerCase().endsWith('.pdf')) {
+      return {
+        folder: 'quizapp_uploads',
+        resource_type: 'raw'
+      };
+    }
+    return {
+      folder: 'quizapp_uploads',
+      allowed_formats: ['jpg', 'png', 'jpeg', 'gif', 'webp', 'pdf']
+    };
   }
 });
 

@@ -71,8 +71,6 @@ router.post('/complaint', [
   body('city').notEmpty().withMessage('City is required'),
   body('email').isEmail().withMessage('Valid email is required'),
   body('phoneNumber').notEmpty().withMessage('Phone number is required'),
-  body('specialty').notEmpty().withMessage('Specialty is required'),
-  body('hospitalName').notEmpty().withMessage('Hospital name is required'),
   body('complaint').notEmpty().withMessage('Complaint text is required')
 ], async (req, res) => {
   try {
@@ -81,7 +79,7 @@ router.post('/complaint', [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { doctorName, specialty, hospitalName, city, email, phoneNumber, complaint } = req.body;
+    const { doctorName, specialty = 'N/A', hospitalName = 'N/A', city, email, phoneNumber, complaint } = req.body;
 
     // Save to database
     await prisma.complaint.create({
