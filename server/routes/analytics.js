@@ -186,6 +186,7 @@ router.get('/top-performers', auth, async (req, res) => {
       select: {
         id: true,
         doctorName: true,
+        profilePicture: true,
         specialty: true,
         hospitalName: true,
         totalPoints: true,

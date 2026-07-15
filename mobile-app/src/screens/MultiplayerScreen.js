@@ -9,7 +9,8 @@ import {
   ScrollView,
   Modal,
   Switch,
-  ActivityIndicator
+  ActivityIndicator,
+  Image
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -205,7 +206,16 @@ const MultiplayerScreen = ({ navigation }) => {
                   <Text style={styles.roomDetailText}><Ionicons name="medkit" size={14}/> {room.specialty}</Text>
                   <Text style={styles.roomDetailText}><Ionicons name="location" size={14}/> {room.city}</Text>
                   <Text style={styles.roomDetailText}><Ionicons name="business" size={14}/> {room.hospitalName}</Text>
-                  <Text style={styles.roomCreator}>By Dr. {room.creator?.doctorName}</Text>
+                  <View style={styles.roomCreatorContainer}>
+                    {room.creator?.profilePicture ? (
+                      <Image source={{ uri: room.creator.profilePicture }} style={styles.roomCreatorAvatar} />
+                    ) : (
+                      <View style={styles.roomCreatorAvatarFallback}>
+                        <Text style={styles.roomCreatorAvatarText}>{room.creator?.doctorName?.charAt(0)}</Text>
+                      </View>
+                    )}
+                    <Text style={styles.roomCreator}>By Dr. {room.creator?.doctorName}</Text>
+                  </View>
                 </View>
               </TouchableOpacity>
             ))
@@ -422,8 +432,32 @@ const styles = StyleSheet.create({
     color: '#4b5563',
     fontFamily: 'Inter-Medium'
   },
+  roomCreatorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8
+  },
+  roomCreatorAvatar: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    marginRight: 6
+  },
+  roomCreatorAvatarFallback: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#e5e7eb',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 6
+  },
+  roomCreatorAvatarText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#4b5563'
+  },
   roomCreator: {
-    marginTop: 8,
     fontSize: 13,
     color: '#9ca3af',
     fontFamily: 'Inter-Regular',

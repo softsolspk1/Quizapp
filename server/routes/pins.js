@@ -71,7 +71,7 @@ router.get('/', auth, async (req, res) => {
     const pins = await prisma.pin.findMany({
       where: query,
       include: {
-        creator: { select: { doctorName: true, email: true } },
+        creator: { select: { doctorName: true, email: true, profilePicture: true } },
         category: { select: { name: true } }
       },
       orderBy: { createdAt: 'desc' }
@@ -224,7 +224,7 @@ router.get('/:id/leaderboard', auth, async (req, res) => {
       },
       include: {
         user: {
-          select: { id: true, doctorName: true, specialty: true, city: true, hospitalName: true }
+          select: { id: true, doctorName: true, specialty: true, city: true, hospitalName: true, profilePicture: true }
         }
       },
       orderBy: [

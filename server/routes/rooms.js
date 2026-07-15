@@ -81,7 +81,8 @@ router.get('/', auth, async (req, res) => {
       include: {
         creator: {
           select: {
-            doctorName: true
+            doctorName: true,
+            profilePicture: true
           }
         }
       },

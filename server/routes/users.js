@@ -353,7 +353,8 @@ router.get('/leaderboard', auth, async (req, res) => {
           specialty: true,
           hospitalName: true,
           city: true,
-          designation: true
+          designation: true,
+          profilePicture: true
         }
       });
 
@@ -377,6 +378,7 @@ router.get('/leaderboard', auth, async (req, res) => {
         hospitalName: true,
         city: true,
         designation: true,
+        profilePicture: true,
         totalPoints: true,
         gamesPlayed: true,
         correctAnswers: true,
