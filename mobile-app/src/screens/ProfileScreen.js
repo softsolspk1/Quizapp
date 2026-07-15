@@ -18,7 +18,7 @@ import Toast from 'react-native-toast-message';
 import AppBanner from '../components/AppBanner';
 
 const ProfileScreen = ({ navigation }) => {
-  const { user, logout, checkAuthStatus } = useAuth();
+  const { user, logout, loadUser } = useAuth();
   const [uploading, setUploading] = useState(false);
 
   const getInitials = (name) => {
@@ -64,7 +64,7 @@ const ProfileScreen = ({ navigation }) => {
       });
 
       Toast.show({ type: 'success', text1: 'Profile Picture Updated' });
-      await checkAuthStatus(); // Refresh user context
+      await loadUser(); // Refresh user context
     } catch (error) {
       console.log('Error uploading image:', error);
       Toast.show({ type: 'error', text1: 'Upload Failed' });

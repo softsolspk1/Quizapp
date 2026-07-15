@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Modal, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { API_URL } from '../config';
-import * as WebBrowser from 'expo-web-browser';
+import { WebView } from 'react-native-webview';
 
 const StudyGuidesScreen = ({ navigation }) => {
   const [studyGuides, setStudyGuides] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
 
   useEffect(() => {
     loadStudyGuides();
@@ -32,12 +33,12 @@ const StudyGuidesScreen = ({ navigation }) => {
     setRefreshing(false);
   };
 
-  const openPdf = async (url) => {
-    try {
-      await WebBrowser.openBrowserAsync(url);
-    } catch (error) {
-      console.log('Error opening PDF:', error);
-    }
+  const openPdf = (url) => {
+    setSelectedPdfUrl(url);
+  };
+
+  const closePdf = () => {
+    setSelectedPdfUrl(null);
   };
 
   const renderItem = ({ item }) => (
@@ -91,6 +92,26 @@ const StudyGuidesScreen = ({ navigation }) => {
           }
         />
       )}
+
+      {/* PDF Viewer Modal */}
+      <Modal visible={!!selectedPdfUrl} animationType="slide" onRequestClose={closePdf}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity onPress={closePdf} style={styles.modalCloseButton}>
+              <Ionicons name="close" size={28} color="#1f2937" />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Study Guide</Text>
+            <View style={{ width: 28 }} />
+          </View>
+          {selectedPdfUrl && (
+            <WebView 
+              source={{ uri: `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(selectedPdfUrl)}` }} 
+              style={{ flex: 1 }} 
+              startInLoadingState={true}
+            />
+          )}
+        </SafeAreaView>
+      </Modal>
     </View>
   );
 };
@@ -181,6 +202,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 16,
     fontFamily: 'Inter-Medium',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#ffffff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  modalCloseButton: {
+    padding: 4,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1f2937',
+    fontFamily: 'Inter-Bold',
   }
 });
 

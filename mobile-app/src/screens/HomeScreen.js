@@ -121,7 +121,7 @@ const HomeScreen = ({ navigation }) => {
           <View style={styles.quickActions}>
             <TouchableOpacity
               style={styles.quickActionItem}
-              onPress={() => navigation.navigate('Category', { mode: 'single' })}
+              onPress={() => navigation.navigate('Categories')}
             >
               <LinearGradient colors={['#3b82f6', '#2563eb']} style={styles.quickActionGradient}>
                 <Ionicons name="person" size={24} color="white" />
