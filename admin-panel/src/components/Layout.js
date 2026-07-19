@@ -17,7 +17,8 @@ import {
   Trophy,
   Calendar,
   BookOpen,
-  MessageSquare
+  MessageSquare,
+  Newspaper
 } from 'lucide-react';
 
 const Layout = ({ children }) => {
@@ -38,6 +39,7 @@ const Layout = ({ children }) => {
     { name: 'Study Guides', href: '/study-guides', icon: BookOpen },
     { name: 'Complaints', href: '/complaints', icon: MessageSquare },
     { name: 'Comments & Feedback', href: '/comments-feedback', icon: MessageSquare },
+    { name: 'News Ticker', href: '/news', icon: Newspaper },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   ];
 
@@ -57,6 +59,7 @@ const Layout = ({ children }) => {
           'Study Guides': 'studyguides',
           'Complaints': 'complaints',
           'Comments & Feedback': 'comments',
+          'News Ticker': 'news',
           'Analytics': 'analytics'
         };
         const permissionId = permissionMap[item.name] || item.name.toLowerCase();

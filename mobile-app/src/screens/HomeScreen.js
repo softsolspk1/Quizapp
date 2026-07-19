@@ -35,15 +35,18 @@ const HomeScreen = ({ navigation }) => {
   const [largeImageUrl, setLargeImageUrl] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Comments and Feedback states
+  // Comments, Feedback, and News states
   const [recentComments, setRecentComments] = useState([]);
   const [recentFeedbacks, setRecentFeedbacks] = useState([]);
+  const [news, setNews] = useState([]);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [feedbackText, setFeedbackText] = useState('');
   const [submittingFeedback, setSubmittingFeedback] = useState(false);
 
   const flatListRef = useRef(null);
   const slideInterval = useRef(null);
+  const tickerRef = useRef(null);
+  const tickerScrollX = useRef(0);
 
   useEffect(() => {
     loadData();
@@ -66,18 +69,40 @@ const HomeScreen = ({ navigation }) => {
     };
   }, [currentIndex, activeWinners]);
 
+  // Handle auto-scroll for News Ticker
+  useEffect(() => {
+    let tickerInterval = null;
+    if (news && news.length > 0) {
+      tickerInterval = setInterval(() => {
+        tickerScrollX.current += 1.5;
+        tickerRef.current?.scrollTo({ x: tickerScrollX.current, animated: true });
+        
+        // Loop back to start if it rolls past estimated total content width
+        const totalEstimatedWidth = width * 0.85 * news.length;
+        if (tickerScrollX.current > totalEstimatedWidth) {
+          tickerScrollX.current = -50; // brief offset back
+        }
+      }, 70);
+    }
+    return () => {
+      if (tickerInterval) clearInterval(tickerInterval);
+    };
+  }, [news]);
+
   const loadData = async () => {
     try {
-      const [categoriesRes, winnersRes, commentsRes, feedbacksRes] = await Promise.all([
+      const [categoriesRes, winnersRes, commentsRes, feedbacksRes, newsRes] = await Promise.all([
         axios.get(`${API_URL}/api/categories`),
         axios.get(`${API_URL}/api/winners/active`),
         axios.get(`${API_URL}/api/comments`),
-        axios.get(`${API_URL}/api/feedbacks`)
+        axios.get(`${API_URL}/api/feedbacks`),
+        axios.get(`${API_URL}/api/news`)
       ]);
       setCategories(categoriesRes.data);
       setActiveWinners(Array.isArray(winnersRes.data) ? winnersRes.data : (winnersRes.data ? [winnersRes.data] : []));
       setRecentComments(commentsRes.data || []);
       setRecentFeedbacks(feedbacksRes.data || []);
+      setNews(newsRes.data || []);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -247,6 +272,34 @@ const HomeScreen = ({ navigation }) => {
                 flatListRef.current?.scrollToOffset({ offset, animated: true });
               }}
             />
+          </View>
+        )}
+
+        {/* News Ticker Section */}
+        {news && news.length > 0 && (
+          <View style={styles.tickerSection}>
+            <View style={styles.tickerHeader}>
+              <Ionicons name="megaphone" size={14} color="#4c1d95" />
+              <Text style={styles.tickerTitle}>NEWS</Text>
+            </View>
+            <View style={styles.tickerContainer}>
+              <ScrollView
+                ref={tickerRef}
+                horizontal
+                scrollEnabled={true}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.tickerScroll}
+              >
+                {news.map((item, index) => (
+                  <View key={item.id} style={styles.tickerItem}>
+                    <Text style={styles.tickerText}>
+                      📢 <Text style={{ fontWeight: 'bold', color: '#1e1b4b' }}>{item.title}</Text>: {item.content}
+                    </Text>
+                    {index < news.length - 1 && <Text style={styles.tickerSeparator}> • </Text>}
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
           </View>
         )}
 
@@ -601,6 +654,62 @@ const styles = StyleSheet.create({
   pinQuizDesc: { color: 'rgba(255, 255, 255, 0.8)', fontSize: 13, marginTop: 4, fontFamily: 'Inter-Regular' },
   
   bannerContainer: { marginTop: 20, borderRadius: 16, overflow: 'hidden', marginHorizontal: 20 },
+
+  // News Ticker styles
+  tickerSection: {
+    marginHorizontal: 20,
+    marginTop: 20,
+    backgroundColor: '#fef08a',
+    borderRadius: 16,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#fde047',
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  tickerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#facc15',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginRight: 10,
+    gap: 4
+  },
+  tickerTitle: {
+    color: '#4c1d95',
+    fontSize: 10,
+    fontWeight: 'bold',
+    fontFamily: 'Inter-Bold',
+  },
+  tickerContainer: {
+    flex: 1,
+    overflow: 'hidden',
+  },
+  tickerScroll: {
+    alignItems: 'center',
+  },
+  tickerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  tickerText: {
+    color: '#854d0e',
+    fontSize: 12.5,
+    fontFamily: 'Inter-Medium',
+  },
+  tickerSeparator: {
+    color: '#ca8a04',
+    fontSize: 14,
+    marginHorizontal: 10,
+    fontWeight: 'bold',
+  },
 
   // Drawer styles
   drawerOverlay: { flex: 1, flexDirection: 'row', backgroundColor: 'rgba(0,0,0,0.5)' },

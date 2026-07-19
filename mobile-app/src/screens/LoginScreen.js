@@ -69,12 +69,21 @@ const LoginScreen = ({ navigation }) => {
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <Animated.View style={[styles.header, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-            <View style={styles.logoContainer}>
-              <Image
-                source={require('../../assets/logo2.png')}
-                style={styles.logo}
-                resizeMode="contain"
-              />
+            <View style={styles.logosContainer}>
+              <View style={styles.logoContainer}>
+                <Image
+                  source={require('../../assets/logo2.png')}
+                  style={styles.logo}
+                  resizeMode="contain"
+                />
+              </View>
+              <View style={styles.logoContainer}>
+                <Image
+                  source={require('../../assets/hilton.png')}
+                  style={styles.logo}
+                  resizeMode="contain"
+                />
+              </View>
             </View>
             <Text style={styles.title}>Welcome Back</Text>
             <Text style={styles.subtitle}>Sign in to continue</Text>
@@ -144,14 +153,6 @@ const LoginScreen = ({ navigation }) => {
             </View>
           </Animated.View>
         </ScrollView>
-
-        <View style={styles.footer}>
-          <Image
-            source={require('../../assets/zeegap.jpeg')}
-            style={styles.footerImage}
-            resizeMode="contain"
-          />
-        </View>
       </KeyboardAvoidingView>
     </LinearGradient>
   );
@@ -168,30 +169,37 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     paddingHorizontal: 24,
+    paddingVertical: 40,
   },
   header: {
     alignItems: 'center',
     marginBottom: 35,
     marginTop: 20,
   },
-  logoContainer: {
-    width: 140,
-    height: 140,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 30,
+  logosContainer: {
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    gap: 15,
+    marginBottom: 20
+  },
+  logoContainer: {
+    width: 100,
+    height: 100,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
-    elevation: 10,
-    padding: 10,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
+    padding: 8,
   },
   logo: {
-    width: 110,
-    height: 110,
+    width: 80,
+    height: 80,
   },
   title: {
     fontSize: 32,
@@ -296,16 +304,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontFamily: 'Inter-SemiBold',
   },
-  footer: {
-    alignItems: 'center',
-    paddingBottom: 30,
-  },
-  footerImage: {
-    width: 220,
-    height: 110,
-  },
 });
 
 export default LoginScreen;
-
-

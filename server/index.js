@@ -42,6 +42,7 @@ app.use('/api/study-guides', require('./routes/studyGuide'));
 app.use('/api/rooms', require('./routes/rooms'));
 app.use('/api/comments', require('./routes/comments'));
 app.use('/api/feedbacks', require('./routes/feedbacks'));
+app.use('/api/news', require('./routes/news'));
 
 // Socket.io for real-time multiplayer
 io.on('connection', (socket) => {
