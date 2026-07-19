@@ -62,7 +62,7 @@ const WardActivitiesScreen = ({ navigation }) => {
       });
 
       const { sessionId, questions, wardName, categoryId } = response.data;
-      const category = { id: categoryId, name: wardName || 'Ward Quiz' };
+      const category = { id: categoryId, name: wardName || 'Titans Quiz' };
 
       setModalVisible(false);
       
@@ -73,7 +73,7 @@ const WardActivitiesScreen = ({ navigation }) => {
         sessionId
       });
     } catch (error) {
-      const msg = error.response?.data?.message || 'Failed to join Ward Activity';
+      const msg = error.response?.data?.message || 'Failed to join Clash of Titans activity';
       Alert.alert('Error', msg);
     } finally {
       setJoining(false);
@@ -115,14 +115,14 @@ const WardActivitiesScreen = ({ navigation }) => {
         style={styles.header}
       >
         <View style={styles.headerTop}>
-          <TouchableOpacity onPress={() => navigation.openDrawer()}>
-            <Ionicons name="menu" size={28} color="white" />
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={28} color="white" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Ward Activities</Text>
+          <Text style={styles.headerTitle}>Clash of Titans</Text>
           <View style={{ width: 28 }} />
         </View>
         <Text style={styles.headerDesc}>
-          Select an active ward event in your city and enter the PIN to join.
+          Select an active Clash of Titans event in your city and enter the PIN to join.
         </Text>
       </LinearGradient>
 
@@ -142,7 +142,7 @@ const WardActivitiesScreen = ({ navigation }) => {
           <Ionicons name="calendar-outline" size={64} color="#d1d5db" />
           <Text style={styles.emptyTitle}>No Activities Found</Text>
           <Text style={styles.emptyDesc}>
-            There are currently no active ward activities for your city.
+            There are currently no active Clash of Titans events for your city.
           </Text>
         </View>
       )}

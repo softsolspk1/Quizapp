@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   Alert,
   Animated,
-  Dimensions
+  Dimensions,
+  ActivityIndicator
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,34 +20,38 @@ const { width } = Dimensions.get('window');
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const QuizScreen = ({ navigation, route }) => {
-  const { category, questions, gameMode, competitionId } = route.params;
+  const { category, questions: initialQuestions, gameMode, competitionId, difficulty = 'medium' } = route.params;
   const { user } = useAuth();
   
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [answers, setAnswers] = useState([]);
-  const [timeLeft, setTimeLeft] = useState(30);
   const [quizStarted, setQuizStarted] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [sessionId, setSessionId] = useState(null);
+  const [quizQuestions, setQuizQuestions] = useState(initialQuestions || []);
+  
+  // Calculate dynamic timer limit based on gameMode
+  const timerLimit = gameMode === 'single' ? 30 : 20;
+  const [timeLeft, setTimeLeft] = useState(timerLimit);
   
   const progressAnimation = useRef(new Animated.Value(1)).current;
   const timerRef = useRef(null);
 
-  const currentQuestion = questions[currentQuestionIndex];
-  const isLastQuestion = currentQuestionIndex === questions.length - 1;
+  const currentQuestion = quizQuestions[currentQuestionIndex];
+  const isLastQuestion = currentQuestionIndex === quizQuestions.length - 1;
 
   useEffect(() => {
-    if (quizStarted && !quizCompleted) {
+    if (quizStarted && !quizCompleted && currentQuestion) {
       startTimer();
     }
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [quizStarted, currentQuestionIndex, quizCompleted]);
+  }, [quizStarted, currentQuestionIndex, quizCompleted, quizQuestions]);
 
   const startTimer = () => {
-    setTimeLeft(30);
+    setTimeLeft(timerLimit);
     if (timerRef.current) clearInterval(timerRef.current);
     progressAnimation.setValue(1);
     
@@ -56,7 +61,7 @@ const QuizScreen = ({ navigation, route }) => {
           handleAnswerSubmit(null, true);
           return 0;
         }
-        const progress = (prev - 1) / 30;
+        const progress = (prev - 1) / timerLimit;
         Animated.timing(progressAnimation, {
           toValue: progress,
           duration: 1000,
@@ -80,7 +85,7 @@ const QuizScreen = ({ navigation, route }) => {
     const answer = {
       questionId: currentQuestion.id,
       answer: answerIndex,
-      timeSpent: 30 - timeLeft,
+      timeSpent: timerLimit - timeLeft,
       isTimeout
     };
 
@@ -92,7 +97,7 @@ const QuizScreen = ({ navigation, route }) => {
     } else {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswer(null);
-      setTimeLeft(30);
+      setTimeLeft(timerLimit);
       progressAnimation.setValue(1);
     }
   };
@@ -110,7 +115,7 @@ const QuizScreen = ({ navigation, route }) => {
         category,
         gameMode,
         answers: finalAnswers,
-        questions: questions
+        questions: quizQuestions
       });
     } catch (error) {
       Alert.alert('Error', 'Failed to submit quiz results');
@@ -122,12 +127,16 @@ const QuizScreen = ({ navigation, route }) => {
     try {
       const response = await axios.post(`${API_URL}/api/quiz/start`, {
         categoryId: category.id,
-        totalQuestions: questions.length,
+        difficulty,
         gameMode
       });
       setSessionId(response.data.sessionId);
+      if (response.data.questions && response.data.questions.length > 0) {
+        setQuizQuestions(response.data.questions);
+      }
       setQuizStarted(true);
     } catch (error) {
+      console.log('Error starting quiz:', error);
       Alert.alert('Error', 'Failed to start quiz session');
     }
   };
@@ -136,11 +145,11 @@ const QuizScreen = ({ navigation, route }) => {
     return (
       <View style={styles.container}>
         <LinearGradient
-        colors={['#1e1b4b', '#4c1d95', '#6d28d9']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.header}
-      >
+          colors={['#1e1b4b', '#4c1d95', '#6d28d9']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.headerStart}
+        >
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
@@ -153,7 +162,7 @@ const QuizScreen = ({ navigation, route }) => {
           <View style={styles.readyCard}>
             <Ionicons name="rocket" size={48} color="#6d28d9" />
             <Text style={styles.readyTitle}>Ready to Start?</Text>
-            <Text style={styles.readyDescription}>You'll have 30 seconds to answer each question.</Text>
+            <Text style={styles.readyDescription}>You'll have {timerLimit} seconds to answer each question.</Text>
             <TouchableOpacity style={styles.startButton} onPress={startQuiz}>
               <LinearGradient colors={['#f97316', '#ea580c']} style={styles.startButtonGradient}>
                 <Text style={styles.startButtonText}>Start Quiz</Text>
@@ -169,7 +178,19 @@ const QuizScreen = ({ navigation, route }) => {
     return (
       <View style={styles.container}>
         <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#6d28d9" />
           <Text style={styles.loadingText}>Calculating your score...</Text>
+        </View>
+      </View>
+    );
+  }
+
+  if (quizQuestions.length === 0 || !currentQuestion) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#6d28d9" />
+          <Text style={styles.loadingText}>Loading questions...</Text>
         </View>
       </View>
     );
@@ -190,14 +211,16 @@ const QuizScreen = ({ navigation, route }) => {
         <View style={styles.headerTopBar}>
           <View style={styles.headerPill}>
             <Ionicons name="person-outline" size={16} color="#1f2937" />
-            <Text style={styles.headerPillText}>{currentQuestionIndex + 1} of {questions.length}</Text>
+            <Text style={styles.headerPillText}>{currentQuestionIndex + 1} of {quizQuestions.length}</Text>
           </View>
           <View style={styles.progressBarBg}>
-             <View style={[styles.progressBarFill, { width: `${((currentQuestionIndex + 1)/questions.length)*100}%` }]} />
+             <View style={[styles.progressBarFill, { width: `${((currentQuestionIndex + 1)/quizQuestions.length)*100}%` }]} />
           </View>
           <View style={styles.headerPillOrange}>
             <Ionicons name="extension-puzzle-outline" size={16} color="white" />
-            <Text style={styles.headerPillTextOrange}>1 of 10</Text>
+            <Text style={styles.headerPillTextOrange}>
+              {difficulty === 'easy' ? 'Basic' : difficulty === 'hard' ? 'Advance' : 'Intermediate'}
+            </Text>
           </View>
         </View>
       </View>
@@ -244,11 +267,6 @@ const QuizScreen = ({ navigation, route }) => {
         <View style={styles.optionsList}>
           {currentQuestion.options.map((option, index) => {
             const isSelected = selectedAnswer === index;
-            // Simplified feedback: if selected, just style it. 
-            // We aren't showing correct/incorrect immediately until they submit or we can do it instantly.
-            // If they want immediate feedback, we need to know the correct answer. We only have it if sent from server.
-            // Assuming we don't have correctAnswer here, so we just highlight selection.
-            
             return (
               <TouchableOpacity
                 key={index}

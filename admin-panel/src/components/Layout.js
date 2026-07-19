@@ -30,20 +30,38 @@ const Layout = ({ children }) => {
     { name: 'Users', href: '/users', icon: Users },
     { name: 'Categories', href: '/categories', icon: FolderOpen },
     { name: 'Questions', href: '/questions', icon: HelpCircle },
-    { name: 'Ward Activities', href: '/ward-activities', icon: Key },
+    { name: 'Clash of Titans', href: '/ward-activities', icon: Key },
     { name: 'Banners', href: '/banners', icon: Image },
     { name: 'Broadcast', href: '/broadcast', icon: Bell },
     { name: 'Winners', href: '/winners', icon: Trophy },
     { name: 'Competitions', href: '/competitions', icon: Calendar },
     { name: 'Study Guides', href: '/study-guides', icon: BookOpen },
     { name: 'Complaints', href: '/complaints', icon: MessageSquare },
+    { name: 'Comments & Feedback', href: '/comments-feedback', icon: MessageSquare },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   ];
 
   const filteredNavigation = user?.role === 'admin' 
     ? navigation
-    : navigation.filter(item => user?.permissions?.includes(item.name.toLowerCase()) || 
-        (item.name === 'Dashboard' && user?.permissions?.includes('dashboard')));
+    : navigation.filter(item => {
+        const permissionMap = {
+          'Dashboard': 'dashboard',
+          'Users': 'users',
+          'Categories': 'categories',
+          'Questions': 'questions',
+          'Clash of Titans': 'pins',
+          'Banners': 'banners',
+          'Broadcast': 'broadcast',
+          'Winners': 'winners',
+          'Competitions': 'competitions',
+          'Study Guides': 'studyguides',
+          'Complaints': 'complaints',
+          'Comments & Feedback': 'comments',
+          'Analytics': 'analytics'
+        };
+        const permissionId = permissionMap[item.name] || item.name.toLowerCase();
+        return user?.permissions?.includes(permissionId);
+      });
 
   const isCurrentPath = (path) => {
     if (path === '/' && location.pathname === '/') return true;

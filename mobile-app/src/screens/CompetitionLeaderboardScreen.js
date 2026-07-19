@@ -46,7 +46,10 @@ const CompetitionLeaderboardScreen = ({ navigation, route }) => {
   };
 
   const renderItem = ({ item, index }) => (
-    <View style={styles.card}>
+    <TouchableOpacity 
+      style={styles.card}
+      onPress={() => navigation.navigate('UserProfile', { userId: item.user.id })}
+    >
       <View style={styles.rankContainer}>
         {index < 3 ? (
           <Ionicons 
@@ -72,10 +75,10 @@ const CompetitionLeaderboardScreen = ({ navigation, route }) => {
       </View>
       <View style={styles.scoreContainer}>
         <Text style={styles.scoreText}>{item.score}</Text>
-        <Text style={styles.pointsLabel}>Pts</Text>
+        <Text style={styles.pointsLabel}>Score</Text>
         <Text style={styles.timeText}>{item.timeSpent}s</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (

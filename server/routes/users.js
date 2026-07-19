@@ -33,10 +33,10 @@ const router = express.Router();
       updatedAt: true
     };
 
-// Get all users (admin only)
+// Get all users (admin or subadmin with users permission)
 router.get('/', auth, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && !(req.user.role === 'subadmin' && req.user.permissions?.includes('users'))) {
       return res.status(403).json({ message: 'Access denied' });
     }
 
@@ -51,7 +51,7 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// Create new user (admin only)
+// Create new user (admin or subadmin with users permission)
 router.post('/', [
   auth,
   body('doctorName').notEmpty().withMessage('Doctor name is required'),
@@ -66,7 +66,7 @@ router.post('/', [
   body('role').isIn(['user', 'subadmin', 'admin']).withMessage('Invalid role')
 ], async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && !(req.user.role === 'subadmin' && req.user.permissions?.includes('users'))) {
       return res.status(403).json({ message: 'Access denied' });
     }
 
@@ -95,6 +95,14 @@ router.post('/', [
     // Hash password before saving
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    // Sub-Admin never create any other Admin and Sub-Admin. Only Admin has rights to create Sub-Admin and Admin.
+    let finalRole = role;
+    let finalPermissions = permissions;
+    if (req.user.role === 'subadmin') {
+      finalRole = 'user';
+      finalPermissions = [];
+    }
+
     // Create new user, auto-approved and active
     const user = await prisma.user.create({
       data: {
@@ -108,8 +116,8 @@ router.post('/', [
         phoneNumber,
         email,
         password: hashedPassword,
-        role,
-        permissions: role === 'subadmin' && Array.isArray(permissions) ? permissions : [],
+        role: finalRole,
+        permissions: finalRole === 'subadmin' && Array.isArray(finalPermissions) ? finalPermissions : [],
         isApproved: true,
         isActive: true
       },
@@ -123,10 +131,10 @@ router.post('/', [
   }
 });
 
-// Get pending users (admin only)
+// Get pending users (admin or subadmin with users permission)
 router.get('/pending', auth, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && !(req.user.role === 'subadmin' && req.user.permissions?.includes('users'))) {
       return res.status(403).json({ message: 'Access denied' });
     }
 
@@ -144,10 +152,10 @@ router.get('/pending', auth, async (req, res) => {
 
 const sendEmail = require('../utils/sendEmail');
 
-// Approve user (admin only)
+// Approve user (admin or subadmin with users permission)
 router.put('/:id/approve', auth, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && !(req.user.role === 'subadmin' && req.user.permissions?.includes('users'))) {
       return res.status(403).json({ message: 'Access denied' });
     }
 
@@ -155,6 +163,10 @@ router.put('/:id/approve', auth, async (req, res) => {
     const user = await prisma.user.findUnique({ where: { id } });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (req.user.role === 'subadmin' && (user.role === 'admin' || user.role === 'subadmin')) {
+      return res.status(403).json({ message: 'Sub-admins cannot modify other admins or sub-admins' });
     }
 
     const updatedUser = await prisma.user.update({
@@ -186,10 +198,10 @@ router.put('/:id/approve', auth, async (req, res) => {
   }
 });
 
-// Deactivate user (admin only)
+// Deactivate user (admin or subadmin with users permission)
 router.put('/:id/deactivate', auth, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && !(req.user.role === 'subadmin' && req.user.permissions?.includes('users'))) {
       return res.status(403).json({ message: 'Access denied' });
     }
 
@@ -197,6 +209,10 @@ router.put('/:id/deactivate', auth, async (req, res) => {
     const user = await prisma.user.findUnique({ where: { id } });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (req.user.role === 'subadmin' && (user.role === 'admin' || user.role === 'subadmin')) {
+      return res.status(403).json({ message: 'Sub-admins cannot modify other admins or sub-admins' });
     }
 
     const updatedUser = await prisma.user.update({
@@ -212,10 +228,10 @@ router.put('/:id/deactivate', auth, async (req, res) => {
   }
 });
 
-// Activate user (admin only)
+// Activate user (admin or subadmin with users permission)
 router.put('/:id/activate', auth, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && !(req.user.role === 'subadmin' && req.user.permissions?.includes('users'))) {
       return res.status(403).json({ message: 'Access denied' });
     }
 
@@ -223,6 +239,10 @@ router.put('/:id/activate', auth, async (req, res) => {
     const user = await prisma.user.findUnique({ where: { id } });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (req.user.role === 'subadmin' && (user.role === 'admin' || user.role === 'subadmin')) {
+      return res.status(403).json({ message: 'Sub-admins cannot modify other admins or sub-admins' });
     }
 
     const updatedUser = await prisma.user.update({
@@ -277,10 +297,10 @@ router.put('/:id/role', auth, async (req, res) => {
   }
 });
 
-// Get user statistics
+// Get user statistics (admin or subadmin with users permission)
 router.get('/stats', auth, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && !(req.user.role === 'subadmin' && req.user.permissions?.includes('users'))) {
       return res.status(403).json({ message: 'Access denied' });
     }
 
@@ -395,6 +415,28 @@ router.get('/leaderboard', auth, async (req, res) => {
   }
 });
 
+// Get user by ID (auth required)
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ message: 'Invalid user ID' });
+
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: excludePassword
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+});
+
 // Update user profile (self)
 router.put('/profile', auth, async (req, res) => {
   try {
@@ -415,14 +457,14 @@ router.put('/profile', auth, async (req, res) => {
   }
 });
 
-// Edit user (admin only)
+// Edit user (admin or subadmin with users permission)
 router.put('/:id', [
   auth,
   body('email').optional().isEmail().withMessage('Valid email is required'),
   body('password').optional().isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
 ], async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && !(req.user.role === 'subadmin' && req.user.permissions?.includes('users'))) {
       return res.status(403).json({ message: 'Access denied' });
     }
 
@@ -439,6 +481,10 @@ router.put('/:id', [
     const user = await prisma.user.findUnique({ where: { id } });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (req.user.role === 'subadmin' && (user.role === 'admin' || user.role === 'subadmin')) {
+      return res.status(403).json({ message: 'Sub-admins cannot modify other admins or sub-admins' });
     }
 
     let updateData = {
@@ -466,10 +512,10 @@ router.put('/:id', [
   }
 });
 
-// Delete user (admin only)
+// Delete user (admin or subadmin with users permission)
 router.delete('/:id', auth, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'admin' && !(req.user.role === 'subadmin' && req.user.permissions?.includes('users'))) {
       return res.status(403).json({ message: 'Access denied' });
     }
 
@@ -479,6 +525,10 @@ router.delete('/:id', auth, async (req, res) => {
     const user = await prisma.user.findUnique({ where: { id } });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (req.user.role === 'subadmin' && (user.role === 'admin' || user.role === 'subadmin')) {
+      return res.status(403).json({ message: 'Sub-admins cannot delete other admins or sub-admins' });
     }
 
     await prisma.user.delete({ where: { id } });

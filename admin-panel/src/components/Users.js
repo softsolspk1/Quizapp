@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useAuth } from '../contexts/AuthContext';
 import {
   XCircle,
   Eye,
@@ -18,6 +19,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 const Users = () => {
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -426,87 +428,91 @@ const Users = () => {
                   <td className="table-cell font-semibold text-primary-600">{user.totalPoints}</td>
                   <td className="table-cell">
                     <div className="flex items-center space-x-2">
-                      {!user.isApproved && (
-                        <button
-                          onClick={() => handleApprove(user.id)}
-                          className="text-green-600 hover:text-green-900"
-                          title="Approve User"
-                        >
-                          <UserCheck className="h-5 w-5" />
-                        </button>
-                      )}
-                      {user.isActive ? (
-                        <button
-                          onClick={() => handleDeactivate(user.id)}
-                          className="text-red-600 hover:text-red-900"
-                          title="Deactivate User"
-                        >
-                          <UserX className="h-5 w-5" />
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => handleActivate(user.id)}
-                          className="text-green-600 hover:text-green-900"
-                          title="Activate User"
-                        >
-                          <UserCheck className="h-5 w-5" />
-                        </button>
-                      )}
-                      
-                      {user.role !== 'admin' && (
-                        user.role === 'subadmin' ? (
-                          <div className="flex items-center space-x-2">
+                      {(currentUser?.role === 'admin' || (user.role !== 'admin' && user.role !== 'subadmin')) ? (
+                        <>
+                          {!user.isApproved && (
                             <button
-                              onClick={() => {
-                                setRoleFormData({ userId: user.id, role: 'subadmin', permissions: user.permissions || [] });
-                                setShowRoleModal(true);
-                              }}
-                              className="text-indigo-600 hover:text-indigo-900"
-                              title="Edit Permissions"
+                              onClick={() => handleApprove(user.id)}
+                              className="text-green-600 hover:text-green-900"
+                              title="Approve User"
                             >
-                              <Shield className="h-5 w-5" />
+                              <UserCheck className="h-5 w-5" />
                             </button>
+                          )}
+                          {user.isActive ? (
                             <button
-                              onClick={() => handleRoleChange(user.id, 'user')}
-                              className="text-orange-600 hover:text-orange-900"
-                              title="Remove Sub-Admin"
+                              onClick={() => handleDeactivate(user.id)}
+                              className="text-red-600 hover:text-red-900"
+                              title="Deactivate User"
                             >
-                              <ShieldOff className="h-5 w-5" />
+                              <UserX className="h-5 w-5" />
                             </button>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => handleRoleChange(user.id, 'subadmin')}
-                            className="text-blue-600 hover:text-blue-900"
-                            title="Make Sub-Admin"
-                          >
-                            <Shield className="h-5 w-5" />
-                          </button>
-                        )
-                      )}
+                          ) : (
+                            <button
+                              onClick={() => handleActivate(user.id)}
+                              className="text-green-600 hover:text-green-900"
+                              title="Activate User"
+                            >
+                              <UserCheck className="h-5 w-5" />
+                            </button>
+                          )}
+                          
+                          {currentUser?.role === 'admin' && user.role !== 'admin' && (
+                            user.role === 'subadmin' ? (
+                              <div className="flex items-center space-x-2">
+                                <button
+                                  onClick={() => {
+                                    setRoleFormData({ userId: user.id, role: 'subadmin', permissions: user.permissions || [] });
+                                    setShowRoleModal(true);
+                                  }}
+                                  className="text-indigo-600 hover:text-indigo-900"
+                                  title="Edit Permissions"
+                                >
+                                  <Shield className="h-5 w-5" />
+                                </button>
+                                <button
+                                  onClick={() => handleRoleChange(user.id, 'user')}
+                                  className="text-orange-600 hover:text-orange-900"
+                                  title="Remove Sub-Admin"
+                                >
+                                  <ShieldOff className="h-5 w-5" />
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => handleRoleChange(user.id, 'subadmin')}
+                                className="text-blue-600 hover:text-blue-900"
+                                title="Make Sub-Admin"
+                              >
+                                <Shield className="h-5 w-5" />
+                              </button>
+                            )
+                          )}
 
-                        <button
-                          onClick={() => {
-                            setSelectedUser({ ...user, password: '' });
-                            setShowEditUserModal(true);
-                          }}
-                          className="text-gray-600 hover:text-gray-900"
-                          title="Edit User"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        </button>
-                        <button
-                          onClick={() => handleDeleteUser(user.id)}
-                          className="text-red-600 hover:text-red-900"
-                          title="Delete User"
-                        >
-                          <XCircle className="h-5 w-5" />
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSelectedUser(user);
-                            setShowUserModal(true);
-                          }}
+                          <button
+                            onClick={() => {
+                              setSelectedUser({ ...user, password: '' });
+                              setShowEditUserModal(true);
+                            }}
+                            className="text-gray-600 hover:text-gray-900"
+                            title="Edit User"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteUser(user.id)}
+                            className="text-red-600 hover:text-red-900"
+                            title="Delete User"
+                          >
+                            <XCircle className="h-5 w-5" />
+                          </button>
+                        </>
+                      ) : null}
+                      <button
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setShowUserModal(true);
+                        }}
                         className="text-blue-600 hover:text-blue-900"
                         title="View Details"
                       >
@@ -630,13 +636,15 @@ const Users = () => {
                     <label className="block text-sm font-medium text-gray-700">Password</label>
                     <input type="text" name="password" required minLength="6" value={formData.password} onChange={handleInputChange} className="mt-1 input-field" />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Role</label>
-                    <select name="role" value={formData.role} onChange={handleInputChange} className="mt-1 input-field">
-                      <option value="user">User / Doctor</option>
-                      <option value="subadmin">Sub-Admin</option>
-                    </select>
-                  </div>
+                  {currentUser?.role === 'admin' ? (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Role</label>
+                      <select name="role" value={formData.role} onChange={handleInputChange} className="mt-1 input-field">
+                        <option value="user">User / Doctor</option>
+                        <option value="subadmin">Sub-Admin</option>
+                      </select>
+                    </div>
+                  ) : null}
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Designation</label>
                     <input type="text" name="designation" required value={formData.designation} onChange={handleInputChange} className="mt-1 input-field" />
@@ -690,7 +698,7 @@ const Users = () => {
                   </div>
                 </div>
 
-                {formData.role === 'subadmin' && (
+                {currentUser?.role === 'admin' && formData.role === 'subadmin' && (
                   <div className="mt-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">Sub-Admin Permissions</label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">

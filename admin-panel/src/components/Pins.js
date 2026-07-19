@@ -61,13 +61,13 @@ const Pins = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this Ward Activity?')) {
+    if (window.confirm('Are you sure you want to delete this Clash of Titans activity?')) {
       try {
         await axios.delete(`/api/pins/${id}`);
-        toast.success('Ward Activity deleted successfully');
+        toast.success('Clash of Titans activity deleted successfully');
         fetchPinsAndCategories();
       } catch (error) {
-        toast.error('Failed to delete Ward Activity');
+        toast.error('Failed to delete Clash of Titans activity');
       }
     }
   };
@@ -89,7 +89,7 @@ const Pins = () => {
   );
 
   const handleExportPDF = () => {
-    const headers = ['Activity PIN', 'Ward Name', 'City', 'Creator', 'Status', 'Expires At'];
+    const headers = ['Activity PIN', 'Activity Name', 'City', 'Creator', 'Status', 'Expires At'];
     const data = filteredPins.map(pin => [
       pin.code,
       pin.wardName,
@@ -98,11 +98,11 @@ const Pins = () => {
       pin.isActive ? 'Active' : 'Revoked',
       pin.expiresAt ? new Date(pin.expiresAt).toLocaleString() : 'Never'
     ]);
-    exportToPDF('Ward Activities List', headers, data);
+    exportToPDF('Clash of Titans List', headers, data);
   };
 
   const handleExportExcel = () => {
-    const headers = ['Activity PIN', 'Ward Name', 'City', 'Creator', 'Status', 'Expires At'];
+    const headers = ['Activity PIN', 'Activity Name', 'City', 'Creator', 'Status', 'Expires At'];
     const data = filteredPins.map(pin => [
       pin.code,
       pin.wardName,
@@ -111,13 +111,13 @@ const Pins = () => {
       pin.isActive ? 'Active' : 'Revoked',
       pin.expiresAt ? new Date(pin.expiresAt).toLocaleString() : 'Never'
     ]);
-    exportToExcel('Ward Activities List', headers, data);
+    exportToExcel('Clash of Titans List', headers, data);
   };
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl font-bold text-gray-900">Ward Activity Management</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Clash of Titans Management</h1>
         <div className="flex gap-2">
           <button onClick={handleExportPDF} className="btn-secondary flex items-center gap-2">
             <FileText className="h-5 w-5 text-red-600" />
@@ -135,7 +135,7 @@ const Pins = () => {
             className="btn-primary flex items-center gap-2"
           >
             <Plus className="h-5 w-5" />
-            Create Ward Activity
+            Create Clash of Titans
           </button>
         </div>
       </div>
@@ -145,7 +145,7 @@ const Pins = () => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
           <input
             type="text"
-            placeholder="Search by Ward Name or PIN Code..."
+            placeholder="Search by Activity Name or PIN Code..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="input-field pl-10"
@@ -228,11 +228,11 @@ const Pins = () => {
                   </tr>
                 ))}
                 {filteredPins.length === 0 && (
-                  <tr>
-                    <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
-                      No Ward Activities found matching your criteria.
-                    </td>
-                  </tr>
+                    <tr>
+                      <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
+                        No Clash of Titans activities found matching your criteria.
+                      </td>
+                    </tr>
                 )}
               </tbody>
             </table>
@@ -244,7 +244,7 @@ const Pins = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-gray-900">Create Ward Activity</h3>
+              <h3 className="text-lg font-semibold text-gray-900">Create Clash of Titans</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-500">
                 <X className="h-6 w-6" />
               </button>
@@ -252,10 +252,10 @@ const Pins = () => {
             
             <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
               <div>
-                <label className="label">Ward / Activity Name</label>
+                <label className="label">Activity Name</label>
                 <input
                   type="text"
-                  {...register('wardName', { required: 'Ward name is required' })}
+                  {...register('wardName', { required: 'Activity name is required' })}
                   className="input-field"
                   placeholder="e.g., General Ward Morning Shift"
                 />
@@ -334,7 +334,7 @@ const Pins = () => {
                   type="submit"
                   className="btn-primary"
                 >
-                  Create Activity
+                  Create Clash of Titans
                 </button>
               </div>
             </form>

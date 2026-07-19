@@ -92,7 +92,10 @@ const LeaderboardScreen = ({ navigation }) => {
     const isTopThree = index < 3;
     
     return (
-      <View style={[styles.leaderboardItem, { backgroundColor: bg }]}>
+      <TouchableOpacity 
+        style={[styles.leaderboardItem, { backgroundColor: bg }]}
+        onPress={() => navigation.navigate('UserProfile', { userId: item.id })}
+      >
         <Text style={[styles.listRankNumber, { color: text }]}>{index + 1}</Text>
         
         <View style={styles.listAvatarContainer}>
@@ -115,7 +118,7 @@ const LeaderboardScreen = ({ navigation }) => {
           <Ionicons name="diamond" size={12} color="#f97316" />
           <Text style={styles.listScoreText}>{item.totalPoints || 0}</Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -126,7 +129,10 @@ const LeaderboardScreen = ({ navigation }) => {
     return (
       <View style={styles.podiumContainer}>
         {/* Rank 2 (Left) */}
-        <View style={styles.podiumItemSide}>
+        <TouchableOpacity 
+          style={styles.podiumItemSide}
+          onPress={() => navigation.navigate('UserProfile', { userId: top3[1].id })}
+        >
           <View style={[styles.podiumAvatarWrap, { borderColor: '#22c55e' }]}>
              {top3[1].profilePicture ? (
                 <Image source={{ uri: top3[1].profilePicture }} style={styles.podiumAvatarSide} />
@@ -140,10 +146,13 @@ const LeaderboardScreen = ({ navigation }) => {
             <Ionicons name="diamond" size={12} color="white" />
             <Text style={styles.podiumScoreText}>{top3[1].totalPoints || 0}</Text>
           </View>
-        </View>
+        </TouchableOpacity>
 
         {/* Rank 1 (Center) */}
-        <View style={styles.podiumItemCenter}>
+        <TouchableOpacity 
+          style={styles.podiumItemCenter}
+          onPress={() => navigation.navigate('UserProfile', { userId: top3[0].id })}
+        >
           <Ionicons name="star" size={32} color="#facc15" style={styles.crownIcon} />
           <View style={[styles.podiumAvatarWrapCenter, { borderColor: '#f97316' }]}>
              {top3[0].profilePicture ? (
@@ -158,10 +167,13 @@ const LeaderboardScreen = ({ navigation }) => {
             <Ionicons name="diamond" size={12} color="white" />
             <Text style={styles.podiumScoreText}>{top3[0].totalPoints || 0}</Text>
           </View>
-        </View>
+        </TouchableOpacity>
 
         {/* Rank 3 (Right) */}
-        <View style={styles.podiumItemSide}>
+        <TouchableOpacity 
+          style={styles.podiumItemSide}
+          onPress={() => navigation.navigate('UserProfile', { userId: top3[2].id })}
+        >
           <View style={[styles.podiumAvatarWrap, { borderColor: '#8b5cf6' }]}>
              {top3[2].profilePicture ? (
                 <Image source={{ uri: top3[2].profilePicture }} style={styles.podiumAvatarSide} />
@@ -175,7 +187,7 @@ const LeaderboardScreen = ({ navigation }) => {
             <Ionicons name="diamond" size={12} color="white" />
             <Text style={styles.podiumScoreText}>{top3[2].totalPoints || 0}</Text>
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
     );
   };

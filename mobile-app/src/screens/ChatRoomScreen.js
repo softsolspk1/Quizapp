@@ -80,15 +80,17 @@ const ChatRoomScreen = ({ route, navigation }) => {
     return (
       <View style={[styles.messageWrapper, isMe ? styles.messageWrapperMe : styles.messageWrapperOther]}>
         {!isMe && (
-          otherUser.profilePicture ? (
-            <Image source={{ uri: otherUser.profilePicture }} style={styles.messageAvatar} />
-          ) : (
-            <View style={styles.messageAvatarPlaceholder}>
-              <Text style={styles.messageAvatarInitials}>
-                {otherUser.doctorName ? otherUser.doctorName.substring(0, 2).toUpperCase() : ''}
-              </Text>
-            </View>
-          )
+          <TouchableOpacity onPress={() => navigation.navigate('UserProfile', { userId: otherUser.id })}>
+            {otherUser.profilePicture ? (
+              <Image source={{ uri: otherUser.profilePicture }} style={styles.messageAvatar} />
+            ) : (
+              <View style={styles.messageAvatarPlaceholder}>
+                <Text style={styles.messageAvatarInitials}>
+                  {otherUser.doctorName ? otherUser.doctorName.substring(0, 2).toUpperCase() : ''}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
         )}
         <View style={[styles.messageBubble, isMe ? styles.messageBubbleMe : styles.messageBubbleOther]}>
           <Text style={[styles.messageText, isMe ? styles.messageTextMe : styles.messageTextOther]}>
@@ -113,7 +115,10 @@ const ChatRoomScreen = ({ route, navigation }) => {
           <Ionicons name="arrow-back" size={24} color="#1f2937" />
         </TouchableOpacity>
         
-        <View style={styles.headerInfo}>
+        <TouchableOpacity 
+          onPress={() => navigation.navigate('UserProfile', { userId: otherUser.id })} 
+          style={[styles.headerInfo, { flexDirection: 'row', alignItems: 'center' }]}
+        >
           {otherUser.profilePicture ? (
             <Image source={{ uri: otherUser.profilePicture }} style={styles.headerAvatar} />
           ) : (
@@ -127,7 +132,7 @@ const ChatRoomScreen = ({ route, navigation }) => {
             <Text style={styles.headerName}>Dr. {otherUser.doctorName}</Text>
             <Text style={styles.headerSpecialty}>{otherUser.specialty}</Text>
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
 
       {/* Messages List */}

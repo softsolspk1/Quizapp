@@ -122,6 +122,7 @@ function AppNavigator() {
             <Stack.Screen name="ChatList" component={ChatListScreen} />
             <Stack.Screen name="ChatRoom" component={ChatRoomScreen} />
             <Stack.Screen name="StudyGuides" component={StudyGuidesScreen} />
+            <Stack.Screen name="UserProfile" component={ProfileScreen} />
           </>
         ) : (
           <Stack.Screen name="Auth" component={AuthStack} />

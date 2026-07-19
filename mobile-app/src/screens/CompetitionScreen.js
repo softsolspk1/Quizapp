@@ -61,12 +61,10 @@ const CompetitionScreen = ({ navigation }) => {
     const now = new Date();
     const compDate = new Date(comp.date);
     
-    // Parse start time (e.g., "14:30")
     const [startHour, startMin] = comp.startTime.split(':').map(Number);
     const startDateTime = new Date(compDate);
     startDateTime.setHours(startHour, startMin, 0, 0);
 
-    // Parse end time
     const [endHour, endMin] = comp.endTime.split(':').map(Number);
     const endDateTime = new Date(compDate);
     endDateTime.setHours(endHour, endMin, 0, 0);
@@ -81,7 +79,6 @@ const CompetitionScreen = ({ navigation }) => {
       return;
     }
 
-    // Load category questions
     try {
       setLoading(true);
       const response = await axios.get(`${API_URL}/api/questions/category/${comp.categoryId}?limit=20`);
@@ -92,7 +89,6 @@ const CompetitionScreen = ({ navigation }) => {
         return;
       }
 
-      // Navigate to Quiz with gameMode=competition
       navigation.navigate('Quiz', {
         category: comp.category || { name: 'Competition Quiz' },
         questions,
@@ -123,7 +119,7 @@ const CompetitionScreen = ({ navigation }) => {
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
         <View style={styles.headerContent}>
-          <Text style={styles.title}>Monthly Competition</Text>
+          <Text style={styles.title}>i-Challenge</Text>
           <Text style={styles.subtitle}>Compete in live quizzes</Text>
         </View>
       </LinearGradient>

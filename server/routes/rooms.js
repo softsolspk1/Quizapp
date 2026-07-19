@@ -20,21 +20,9 @@ router.post('/', [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, isOpen, specialty, city, hospitalName } = req.body;
+    const { name, isOpen, specialty, city, hospitalName, difficulty } = req.body;
     const { id } = req.user;
 
-    // Generate PIN
-    // User requested "in Open Room there is default PIN showing 123456"
-    // Since PIN has a @unique constraint, we can't have multiple rooms with "123456".
-    // I will generate a unique PIN for every room. The frontend can just auto-fill "123456" in UI logic, 
-    // or better yet, since the frontend knows the PIN, it can just bypass the PIN check for Open rooms.
-    // Wait, the user specifically wants "default PIN showing 123456" for open rooms. 
-    // I will remove the @unique constraint on PIN in the schema if I want 123456.
-    // Actually, I already pushed the schema. It's fine. I will generate a random PIN anyway,
-    // and if the room is open, the frontend can just say "Open Room". 
-    // No, I'll generate a random PIN. Wait, let me generate exactly "123456" for open rooms and remove the @unique constraint?
-    // Let's just generate a 6-letter PIN for all rooms.
-    
     let isUnique = false;
     let pin;
     while (!isUnique) {
@@ -53,7 +41,8 @@ router.post('/', [
         hospitalName,
         pin,
         isOpen,
-        creatorId: id
+        creatorId: id,
+        difficulty: difficulty || 'medium'
       }
     });
 

@@ -15,6 +15,7 @@ import Winners from './components/Winners';
 import Competitions from './components/Competitions';
 import StudyGuides from './components/StudyGuides';
 import Complaints from './components/Complaints';
+import CommentsFeedback from './components/CommentsFeedback';
 import Layout from './components/Layout';
 
 
@@ -143,6 +144,13 @@ function App() {
               <AdminOnlyRoute feature="complaints">
                 <Layout>
                   <Complaints />
+                </Layout>
+              </AdminOnlyRoute>
+            } />
+            <Route path="/comments-feedback" element={
+              <AdminOnlyRoute feature="comments">
+                <Layout>
+                  <CommentsFeedback />
                 </Layout>
               </AdminOnlyRoute>
             } />

@@ -40,7 +40,7 @@ const ResultsScreen = ({ navigation, route }) => {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `I just scored ${results.score} points on the ${category.name} Quiz in the Hilton Quiz App! Can you beat my score?`,
+        message: `I just achieved a score of ${results.score} on the ${category.name} Quiz in the Hilton Quiz App! Can you beat my score?`,
       });
     } catch (error) {
       console.log(error.message);
@@ -93,8 +93,17 @@ const ResultsScreen = ({ navigation, route }) => {
           <View style={styles.marksSection}>
              <Ionicons name="medal" size={48} color="#f59e0b" style={{ marginRight: 15 }} />
              <View style={{ flex: 1 }}>
-               <Text style={styles.marksLabel}>Your Points</Text>
-               <Text style={styles.marksHighlight}>{results.score} <Text style={styles.marksTotal}>/ {results.totalQuestions * 10}</Text></Text>
+               <Text style={styles.marksLabel}>Your Score</Text>
+               <Text style={styles.marksHighlight}>
+                 {results.score} 
+                 <Text style={styles.marksTotal}>
+                   / {questions.reduce((acc, q) => {
+                     const diff = q.difficulty || 'medium';
+                     const val = diff === 'easy' ? 2 : diff === 'hard' ? 5 : 3;
+                     return acc + val;
+                   }, 0)}
+                 </Text>
+               </Text>
              </View>
              <TouchableOpacity style={styles.analysisPill} onPress={() => setShowDetailedResults(!showDetailedResults)}>
                <Text style={styles.analysisText}>Analysis</Text>

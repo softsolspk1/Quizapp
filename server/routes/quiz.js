@@ -5,12 +5,25 @@ const auth = require('../middleware/auth');
 const router = express.Router();
 
 // Helper function to get random questions
-async function getRandomQuestions(categoryId, count) {
+async function getRandomQuestions(categoryId, count, difficulty = 'medium') {
+  const whereClause = { categoryId, isActive: true };
+  if (difficulty && difficulty !== 'all') {
+    whereClause.difficulty = difficulty;
+  }
+
   // Get all active question IDs for the category
-  const allQuestions = await prisma.question.findMany({
-    where: { categoryId, isActive: true },
+  let allQuestions = await prisma.question.findMany({
+    where: whereClause,
     select: { id: true, question: true, options: true, difficulty: true, correctAnswer: true }
   });
+
+  if (allQuestions.length === 0 && difficulty && difficulty !== 'all') {
+    // Fallback to any difficulty if no questions found matching selection
+    allQuestions = await prisma.question.findMany({
+      where: { categoryId, isActive: true },
+      select: { id: true, question: true, options: true, difficulty: true, correctAnswer: true }
+    });
+  }
 
   if (allQuestions.length === 0) return [];
 
@@ -22,11 +35,11 @@ async function getRandomQuestions(categoryId, count) {
 // Start new quiz session
 router.post('/start', auth, async (req, res) => {
   try {
-    const { categoryId, gameMode = 'single' } = req.body;
+    const { categoryId, gameMode = 'single', difficulty = 'medium' } = req.body;
     const catId = parseInt(categoryId);
     const totalQuestions = 10; // Forced to 10 as per user request
 
-    const questions = await getRandomQuestions(catId, totalQuestions);
+    const questions = await getRandomQuestions(catId, totalQuestions, difficulty);
 
     if (questions.length === 0) {
       return res.status(400).json({ message: 'No questions available in this category' });
@@ -114,10 +127,17 @@ router.post('/submit', auth, async (req, res) => {
 
       if (isCorrect) {
         correctAnswers++;
-        score += 10; // 10 Points for correct
+        const diff = sessionQuestion.question?.difficulty || 'medium';
+        if (diff === 'easy') {
+          score += 2;
+        } else if (diff === 'hard') {
+          score += 5;
+        } else {
+          score += 3;
+        }
       } else {
         wrongAnswers++;
-        // 0 Points for wrong answer
+        score -= 1; // Wrong answer gives -1
       }
 
       // Update Session Question
