@@ -51,13 +51,8 @@ const StudyGuidesScreen = ({ navigation }) => {
     setRefreshing(false);
   };
 
-  const openPdf = async (url) => {
-    try {
-      await WebBrowser.openBrowserAsync(url);
-    } catch (error) {
-      console.log('Error opening PDF:', error);
-      Alert.alert('Error', 'Could not open the study guide.');
-    }
+  const openPdf = (title, url) => {
+    navigation.navigate('PdfViewer', { title, url });
   };
 
   const openCommentsModal = async (guide) => {
@@ -102,7 +97,7 @@ const StudyGuidesScreen = ({ navigation }) => {
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
-      <TouchableOpacity style={styles.cardGradient} onPress={() => openPdf(item.pdfUrl)}>
+      <TouchableOpacity style={styles.cardGradient} onPress={() => openPdf(item.title, item.pdfUrl)}>
         <View style={styles.iconContainer}>
           <Ionicons name="document-text" size={32} color="#4c1d95" />
         </View>

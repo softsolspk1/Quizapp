@@ -39,6 +39,7 @@ import NotificationsScreen from './src/screens/NotificationsScreen';
 import ChatListScreen from './src/screens/ChatListScreen';
 import ChatRoomScreen from './src/screens/ChatRoomScreen';
 import StudyGuidesScreen from './src/screens/StudyGuidesScreen';
+import PdfViewerScreen from './src/screens/PdfViewerScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -123,6 +124,7 @@ function AppNavigator() {
             <Stack.Screen name="ChatRoom" component={ChatRoomScreen} />
             <Stack.Screen name="StudyGuides" component={StudyGuidesScreen} />
             <Stack.Screen name="UserProfile" component={ProfileScreen} />
+            <Stack.Screen name="PdfViewer" component={PdfViewerScreen} />
           </>
         ) : (
           <Stack.Screen name="Auth" component={AuthStack} />

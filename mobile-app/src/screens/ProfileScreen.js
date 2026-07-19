@@ -191,6 +191,11 @@ const ProfileScreen = ({ navigation, route }) => {
       </LinearGradient>
 
       <ScrollView style={styles.content}>
+        {/* Banner Ad on Profile Page before Profile Information */}
+        <View style={styles.bannerContainer}>
+          <AppBanner location="profile_header" />
+        </View>
+
         {/* Profile Information */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Profile Information</Text>
@@ -375,6 +380,7 @@ const styles = StyleSheet.create({
   actionText: { flex: 1, marginLeft: 16, fontSize: 15, color: '#374151', fontFamily: 'Inter-Medium' },
   
   footer: { padding: 20, paddingBottom: 30 },
+  bannerContainer: { marginTop: 20, borderRadius: 16, overflow: 'hidden', marginHorizontal: 20 },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f9fafb' },
   loadingText: { marginTop: 12, fontSize: 15, color: '#6b7280', fontFamily: 'Inter-Medium' }
 });

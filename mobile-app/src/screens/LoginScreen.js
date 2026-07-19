@@ -25,6 +25,7 @@ const LoginScreen = ({ navigation }) => {
   
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
+  const logoFloatAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.parallel([
@@ -39,6 +40,22 @@ const LoginScreen = ({ navigation }) => {
         useNativeDriver: true,
       })
     ]).start();
+
+    // Floating logo animation loop
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(logoFloatAnim, {
+          toValue: -8,
+          duration: 1800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(logoFloatAnim, {
+          toValue: 0,
+          duration: 1800,
+          useNativeDriver: true,
+        })
+      ])
+    ).start();
   }, []);
 
   const handleLogin = async () => {
@@ -69,7 +86,7 @@ const LoginScreen = ({ navigation }) => {
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <Animated.View style={[styles.header, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-            <View style={styles.logosContainer}>
+            <Animated.View style={[styles.logosContainer, { transform: [{ translateY: logoFloatAnim }] }]}>
               <View style={styles.logoContainer}>
                 <Image
                   source={require('../../assets/logo2.png')}
@@ -84,7 +101,7 @@ const LoginScreen = ({ navigation }) => {
                   resizeMode="contain"
                 />
               </View>
-            </View>
+            </Animated.View>
             <Text style={styles.title}>Welcome Back</Text>
             <Text style={styles.subtitle}>Sign in to continue</Text>
           </Animated.View>
@@ -184,22 +201,22 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
   logoContainer: {
-    width: 100,
-    height: 100,
+    width: 140,
+    height: 140,
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 20,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 6,
-    padding: 8,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 8,
+    padding: 12,
   },
   logo: {
-    width: 80,
-    height: 80,
+    width: 110,
+    height: 110,
   },
   title: {
     fontSize: 32,

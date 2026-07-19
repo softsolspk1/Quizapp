@@ -12,7 +12,8 @@ import {
   Modal,
   TextInput,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  Animated
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -35,18 +36,18 @@ const HomeScreen = ({ navigation }) => {
   const [largeImageUrl, setLargeImageUrl] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Comments, Feedback, and News states
+  // Comments and News states (Feedback removed from dashboard)
   const [recentComments, setRecentComments] = useState([]);
-  const [recentFeedbacks, setRecentFeedbacks] = useState([]);
   const [news, setNews] = useState([]);
-  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
-  const [feedbackText, setFeedbackText] = useState('');
-  const [submittingFeedback, setSubmittingFeedback] = useState(false);
 
   const flatListRef = useRef(null);
   const slideInterval = useRef(null);
   const tickerRef = useRef(null);
   const tickerScrollX = useRef(0);
+
+  // Animations
+  const headerLogoFloat = useRef(new Animated.Value(0)).current;
+  const pulseScale = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     loadData();
@@ -80,7 +81,7 @@ const HomeScreen = ({ navigation }) => {
         // Loop back to start if it rolls past estimated total content width
         const totalEstimatedWidth = width * 0.85 * news.length;
         if (tickerScrollX.current > totalEstimatedWidth) {
-          tickerScrollX.current = -50; // brief offset back
+          tickerScrollX.current = -50; 
         }
       }, 70);
     }
@@ -89,19 +90,53 @@ const HomeScreen = ({ navigation }) => {
     };
   }, [news]);
 
+  // Floating Logo animation loop
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(headerLogoFloat, {
+          toValue: -6,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(headerLogoFloat, {
+          toValue: 0,
+          duration: 1500,
+          useNativeDriver: true,
+        })
+      ])
+    ).start();
+  }, []);
+
+  // Sparkling Pulse animation for i-Genius/i-Challenge Button
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseScale, {
+          toValue: 1.05,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseScale, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        })
+      ])
+    ).start();
+  }, []);
+
   const loadData = async () => {
     try {
-      const [categoriesRes, winnersRes, commentsRes, feedbacksRes, newsRes] = await Promise.all([
+      const [categoriesRes, winnersRes, commentsRes, newsRes] = await Promise.all([
         axios.get(`${API_URL}/api/categories`),
         axios.get(`${API_URL}/api/winners/active`),
         axios.get(`${API_URL}/api/comments`),
-        axios.get(`${API_URL}/api/feedbacks`),
         axios.get(`${API_URL}/api/news`)
       ]);
       setCategories(categoriesRes.data);
       setActiveWinners(Array.isArray(winnersRes.data) ? winnersRes.data : (winnersRes.data ? [winnersRes.data] : []));
       setRecentComments(commentsRes.data || []);
-      setRecentFeedbacks(feedbacksRes.data || []);
       setNews(newsRes.data || []);
     } catch (error) {
       console.error('Error loading data:', error);
@@ -114,25 +149,6 @@ const HomeScreen = ({ navigation }) => {
     setRefreshing(true);
     await loadData();
     setRefreshing(false);
-  };
-
-  const handleFeedbackSubmit = async () => {
-    if (!feedbackText.trim()) {
-      Alert.alert('Error', 'Please enter your feedback text.');
-      return;
-    }
-    setSubmittingFeedback(true);
-    try {
-      await axios.post(`${API_URL}/api/feedbacks`, { content: feedbackText.trim() });
-      Alert.alert('Thank You', 'Your feedback has been submitted successfully for approval.');
-      setFeedbackText('');
-      setIsFeedbackModalOpen(false);
-      loadData();
-    } catch (error) {
-      Alert.alert('Error', 'Failed to submit feedback. Please try again.');
-    } finally {
-      setSubmittingFeedback(false);
-    }
   };
 
   const renderWinnerItem = ({ item }) => (
@@ -161,16 +177,16 @@ const HomeScreen = ({ navigation }) => {
         end={{ x: 1, y: 1 }}
         style={styles.header}
       >
-        {/* Top bar with menu and logos */}
+        {/* Top bar with menu and double-sized floating logos */}
         <View style={styles.topBar}>
           <TouchableOpacity onPress={() => setIsMenuOpen(true)} style={styles.menuIconContainer}>
             <Ionicons name="menu" size={32} color="white" />
           </TouchableOpacity>
 
-          <View style={styles.logosContainer}>
+          <Animated.View style={[styles.logosContainer, { transform: [{ translateY: headerLogoFloat }] }]}>
             <Image source={require('../../assets/logo2.png')} style={styles.logoApp} />
             <Image source={require('../../assets/hilton.png')} style={styles.logoHilton} />
-          </View>
+          </Animated.View>
 
           <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={styles.avatarMiniContainer}>
             {user?.profilePicture ? (
@@ -185,13 +201,13 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Doctor Name & Tagline */}
+        {/* Doctor Name, Hospital & Tagline (Rearranged: Hospital then Tagline) */}
         <View style={styles.headerContent}>
           <View style={{ flex: 1 }}>
             <Text style={styles.welcomeText}>Welcome,</Text>
             <Text style={styles.userName}>Dr. {user?.doctorName}</Text>
-            <Text style={styles.tagline}>Transforming Learners Into Scholars</Text>
             {user?.hospitalName ? <Text style={styles.userHospital}>{user.hospitalName}</Text> : null}
+            <Text style={styles.tagline}>Transforming Learners Into Scholars</Text>
           </View>
 
           <View style={styles.statsContainer}>
@@ -203,6 +219,7 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </LinearGradient>
 
+      {/* Main dashboard body, shifted downside (marginTop: 10) */}
       <ScrollView
         style={styles.content}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
@@ -241,15 +258,18 @@ const HomeScreen = ({ navigation }) => {
               </LinearGradient>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.quickActionItem}
-              onPress={() => navigation.navigate('Competition')}
-            >
-              <LinearGradient colors={['#d946ef', '#c026d3']} style={styles.quickActionGradient}>
-                <Ionicons name="calendar" size={24} color="white" />
-                <Text style={styles.quickActionText} numberOfLines={1}>i-Challenge</Text>
-              </LinearGradient>
-            </TouchableOpacity>
+            {/* i-Challenge Button with sparkling scales and sparkles icon */}
+            <Animated.View style={[styles.quickActionItem, { transform: [{ scale: pulseScale }] }]}>
+              <TouchableOpacity
+                style={{ flex: 1 }}
+                onPress={() => navigation.navigate('Competition')}
+              >
+                <LinearGradient colors={['#d946ef', '#c026d3']} style={styles.quickActionGradient}>
+                  <Ionicons name="sparkles" size={24} color="#facc15" />
+                  <Text style={styles.quickActionText} numberOfLines={1}>✨ i-Challenge ✨</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </Animated.View>
           </View>
         </View>
 
@@ -303,6 +323,11 @@ const HomeScreen = ({ navigation }) => {
           </View>
         )}
 
+        {/* 1st Banner Ad just after News Section */}
+        <View style={styles.bannerContainer}>
+          <AppBanner location="dashboard_middle" />
+        </View>
+
         {/* Clash of Titans */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Clash of Titans</Text>
@@ -337,28 +362,6 @@ const HomeScreen = ({ navigation }) => {
               <Ionicons name="chevron-forward" size={24} color="white" />
             </LinearGradient>
           </TouchableOpacity>
-        </View>
-
-        {/* Feedback Quick Action */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>App Feedback</Text>
-          <TouchableOpacity
-            style={styles.pinQuizCard}
-            onPress={() => setIsFeedbackModalOpen(true)}
-          >
-            <LinearGradient colors={['#ec4899', '#db2777']} style={styles.pinQuizGradient}>
-              <Ionicons name="chatbubble-ellipses" size={32} color="white" />
-              <View style={styles.pinQuizTextContainer}>
-                <Text style={styles.pinQuizTitle}>Submit App Feedback</Text>
-                <Text style={styles.pinQuizDesc}>Help us improve your experience</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={24} color="white" />
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.bannerContainer}>
-          <AppBanner location="dashboard_middle" />
         </View>
 
         {/* Comments Section */}
@@ -403,48 +406,11 @@ const HomeScreen = ({ navigation }) => {
           )}
         </View>
 
-        {/* Feedback Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>App Feedback & Reviews</Text>
-          {loading ? (
-            <ActivityIndicator size="small" color="#6d28d9" style={{ marginVertical: 10 }} />
-          ) : recentFeedbacks.length === 0 ? (
-            <View style={styles.emptyItemsCard}>
-              <Ionicons name="chatbubbles-outline" size={24} color="#9ca3af" />
-              <Text style={styles.emptyItemsText}>No app feedbacks have been posted yet.</Text>
-            </View>
-          ) : (
-            <View style={styles.feedbacksContainer}>
-              {recentFeedbacks.map((feedback) => (
-                <View key={feedback.id} style={styles.feedbackItemCard}>
-                  <View style={styles.feedbackItemHeader}>
-                    {feedback.user?.profilePicture ? (
-                      <Image source={{ uri: feedback.user.profilePicture }} style={styles.feedbackAvatar} />
-                    ) : (
-                      <View style={styles.feedbackAvatarFallback}>
-                        <Text style={styles.feedbackAvatarText}>
-                          {feedback.user?.doctorName?.charAt(0).toUpperCase()}
-                        </Text>
-                      </View>
-                    )}
-                    <View style={{ marginLeft: 10, flex: 1 }}>
-                      <Text style={styles.feedbackDoctorName}>Dr. {feedback.user?.doctorName}</Text>
-                      <Text style={styles.feedbackDoctorSub}>{feedback.user?.city} • {feedback.user?.specialty}</Text>
-                    </View>
-                    <Text style={styles.feedbackTime}>
-                      {new Date(feedback.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                    </Text>
-                  </View>
-                  <Text style={styles.feedbackBodyText}>"{feedback.content}"</Text>
-                </View>
-              ))}
-            </View>
-          )}
-        </View>
-
+        {/* 2nd Banner Ad after Discussion and Comments Section */}
         <View style={styles.bannerContainer}>
           <AppBanner location="dashboard_footer" />
         </View>
+
         <View style={{ height: 40 }} />
       </ScrollView>
 
@@ -532,51 +498,12 @@ const HomeScreen = ({ navigation }) => {
                 <Text style={[styles.drawerMenuItemText, { color: '#f87171' }]}>Logout</Text>
               </TouchableOpacity>
             </ScrollView>
-          </LinearGradient>
-        </View>
-      </Modal>
 
-      {/* App Feedback Submission Modal */}
-      <Modal
-        visible={isFeedbackModalOpen}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setIsFeedbackModalOpen(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Submit App Feedback</Text>
-              <TouchableOpacity onPress={() => setIsFeedbackModalOpen(false)}>
-                <Ionicons name="close" size={24} color="#6b7280" />
-              </TouchableOpacity>
+            {/* Added Banner Ad on Hamburger Menu Footer */}
+            <View style={styles.drawerBanner}>
+              <AppBanner location="sidebar" />
             </View>
-
-            <Text style={styles.modalDesc}>
-              Tell us what you like or how we can improve the Hilton Quiz App. Your comments will be reviewed by admin.
-            </Text>
-
-            <TextInput
-              style={styles.feedbackInput}
-              placeholder="Write your feedback here..."
-              value={feedbackText}
-              onChangeText={setFeedbackText}
-              multiline={true}
-              numberOfLines={4}
-            />
-
-            <TouchableOpacity
-              style={[styles.submitBtn, submittingFeedback && styles.submitBtnDisabled]}
-              onPress={handleFeedbackSubmit}
-              disabled={submittingFeedback}
-            >
-              {submittingFeedback ? (
-                <ActivityIndicator size="small" color="white" />
-              ) : (
-                <Text style={styles.submitBtnText}>Submit Feedback</Text>
-              )}
-            </TouchableOpacity>
-          </View>
+          </LinearGradient>
         </View>
       </Modal>
 
@@ -609,21 +536,27 @@ const HomeScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f9fafb' },
-  header: { paddingTop: 50, paddingBottom: 25, paddingHorizontal: 20, borderBottomLeftRadius: 30, borderBottomRightRadius: 30 },
-  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  header: { 
+    paddingTop: 60, 
+    paddingBottom: 35, 
+    paddingHorizontal: 20, 
+    borderBottomLeftRadius: 30, 
+    borderBottomRightRadius: 30 
+  },
+  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 25 },
   menuIconContainer: { padding: 4 },
-  logosContainer: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1, justifyContent: 'center' },
-  logoApp: { width: 50, height: 40, resizeMode: 'contain' },
-  logoHilton: { width: 65, height: 35, resizeMode: 'contain' },
+  logosContainer: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1, justifyContent: 'center' },
+  logoApp: { width: 90, height: 70, resizeMode: 'contain' },
+  logoHilton: { width: 110, height: 60, resizeMode: 'contain' },
   avatarMiniContainer: { padding: 2 },
   avatarMini: { width: 36, height: 36, borderRadius: 18, borderWidth: 1.5, borderColor: 'white' },
   avatarMiniFallback: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: 'white' },
   avatarMiniText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
   
-  headerContent: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 5 },
+  headerContent: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 10 },
   welcomeText: { fontSize: 13, color: 'rgba(255, 255, 255, 0.7)', fontFamily: 'Inter-Medium' },
   userName: { fontSize: 22, fontWeight: 'bold', color: 'white', fontFamily: 'Inter-Bold', marginTop: 2 },
-  tagline: { fontSize: 12, color: '#facc15', fontFamily: 'Inter-SemiBold', marginTop: 4, fontStyle: 'italic' },
+  tagline: { fontSize: 12, color: '#facc15', fontFamily: 'Inter-SemiBold', marginTop: 8, fontStyle: 'italic' },
   userHospital: { fontSize: 12, color: 'rgba(255, 255, 255, 0.8)', fontFamily: 'Inter-Regular', marginTop: 4 },
   
   statsContainer: { marginLeft: 15 },
@@ -631,7 +564,7 @@ const styles = StyleSheet.create({
   statNumber: { fontSize: 20, fontWeight: 'bold', color: 'white', fontFamily: 'Inter-Bold' },
   statLabel: { fontSize: 11, color: 'rgba(255, 255, 255, 0.9)', fontFamily: 'Inter-Medium', marginTop: 2 },
   
-  content: { flex: 1, marginTop: -10 },
+  content: { flex: 1, marginTop: 10 },
   section: { padding: 20, paddingBottom: 0 },
   sectionTitle: { fontSize: 17, fontWeight: 'bold', color: '#1f2937', marginBottom: 12 },
   
@@ -644,7 +577,7 @@ const styles = StyleSheet.create({
   
   quickActions: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 10 },
   quickActionItem: { width: '48%', marginBottom: 10 },
-  quickActionGradient: { padding: 16, borderRadius: 16, alignItems: 'center', gap: 8 },
+  quickActionGradient: { padding: 16, borderRadius: 16, alignItems: 'center', gap: 8, minHeight: 80, justifyContent: 'center' },
   quickActionText: { color: 'white', fontSize: 13, fontWeight: '600', fontFamily: 'Inter-SemiBold', textAlign: 'center' },
   
   pinQuizCard: { borderRadius: 16, overflow: 'hidden' },
@@ -731,6 +664,15 @@ const styles = StyleSheet.create({
   drawerMenuItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 4, gap: 12 },
   drawerMenuIcon: { width: 24, textAlign: 'center' },
   drawerMenuItemText: { color: 'white', fontSize: 15, fontFamily: 'Inter-Medium' },
+  drawerBanner: {
+    marginTop: 'auto',
+    marginBottom: 10,
+    borderRadius: 12,
+    overflow: 'hidden',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)'
+  },
 
   // Large image preview styles
   largeImageOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.9)', justifyContent: 'center', alignItems: 'center' },
@@ -752,29 +694,6 @@ const styles = StyleSheet.create({
   commentTargetName: { fontSize: 11, color: '#6b7280', marginTop: 1 },
   commentTime: { fontSize: 11, color: '#9ca3af' },
   commentBodyText: { fontSize: 13, color: '#4b5563', lineHeight: 18, fontStyle: 'italic' },
-
-  // Feedback List styling
-  feedbacksContainer: { gap: 12 },
-  feedbackItemCard: { backgroundColor: 'white', padding: 16, borderRadius: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3, elevation: 2 },
-  feedbackItemHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
-  feedbackAvatar: { width: 36, height: 36, borderRadius: 18 },
-  feedbackAvatarFallback: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#fdf2f8', alignItems: 'center', justifyContent: 'center' },
-  feedbackAvatarText: { color: '#9d174d', fontSize: 16, fontWeight: 'bold' },
-  feedbackDoctorName: { fontSize: 14, fontWeight: 'bold', color: '#1f2937' },
-  feedbackDoctorSub: { fontSize: 11, color: '#6b7280', marginTop: 1 },
-  feedbackTime: { fontSize: 11, color: '#9ca3af' },
-  feedbackBodyText: { fontSize: 13, color: '#4b5563', lineHeight: 18 },
-
-  // Modal styles
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center', padding: 20 },
-  modalContent: { backgroundColor: 'white', borderRadius: 20, padding: 24, width: '100%', maxWidth: 400 },
-  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
-  modalTitle: { fontSize: 20, fontWeight: 'bold', color: '#1f2937' },
-  modalDesc: { fontSize: 14, color: '#4b5563', marginBottom: 20, lineHeight: 20 },
-  feedbackInput: { backgroundColor: '#f3f4f6', borderRadius: 12, padding: 16, fontSize: 15, color: '#1f2937', height: 100, textAlignVertical: 'top', marginBottom: 24 },
-  submitBtn: { backgroundColor: '#db2777', borderRadius: 12, padding: 16, alignItems: 'center' },
-  submitBtnDisabled: { backgroundColor: '#f472b6' },
-  submitBtnText: { color: 'white', fontSize: 16, fontWeight: 'bold' }
 });
 
 export default HomeScreen;
