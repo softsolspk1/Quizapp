@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { MessageSquare, Check, X, ShieldAlert, MessageCircle } from 'lucide-react';
+import { MessageSquare, Check, X, MessageCircle } from 'lucide-react';
 
 const CommentsFeedback = () => {
   const [activeTab, setActiveTab] = useState('comments'); // 'comments' or 'feedback'
