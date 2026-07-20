@@ -20,19 +20,19 @@ const Banners = () => {
 
   const specialties = [
     'All',
-    'Cardiology',
-    'Dermatology',
-    'Endocrinology & Diabetes',
-    'ER',
-    'Gastroenterology',
-    'Gynaecology',
-    'Internal Medicine',
-    'Nephrology',
-    'Neurology',
-    'Orthopaedic',
-    'Paediatrics',
-    'Psychiatry',
-    'Pulmonology'
+    'Cardiologist',
+    'Dermatologist',
+    'Endocrinologist',
+    'ER Specialist',
+    'Gastroenterologist',
+    'Gynaecologist',
+    'General Physician',
+    'Nephrologist',
+    'Neurologist',
+    'Orthopedic Surgeon',
+    'Pediatrician',
+    'Psychiatrist',
+    'Pulmonologist'
   ];
 
   useEffect(() => {

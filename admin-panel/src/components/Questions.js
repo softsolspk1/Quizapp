@@ -255,9 +255,9 @@ const Questions = () => {
               onChange={(e) => setSelectedDifficulty(e.target.value)}
             >
               <option value="">All Difficulties</option>
-              <option value="easy">Easy</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
+              <option value="basic">Basic</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advance">Advance</option>
             </select>
           </div>
         </div>
@@ -275,8 +275,8 @@ const Questions = () => {
                     {question.category.name}
                   </span>
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    question.difficulty === 'easy' ? 'bg-green-100 text-green-800' :
-                    question.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                    question.difficulty === 'basic' ? 'bg-green-100 text-green-800' :
+                    question.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
                     'bg-red-100 text-red-800'
                   }`}>
                     {question.difficulty}
@@ -542,9 +542,9 @@ const Questions = () => {
                     className="input-field"
                     {...register('difficulty', { required: 'Difficulty is required' })}
                   >
-                    <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
-                    <option value="hard">Hard</option>
+                    <option value="basic">Basic</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advance">Advance</option>
                   </select>
                 </div>
                 

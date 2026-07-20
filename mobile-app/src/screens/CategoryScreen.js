@@ -19,7 +19,7 @@ const CategoryScreen = ({ navigation, route }) => {
   const { category } = route.params;
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [difficulty, setDifficulty] = useState('easy');
+  const [difficulty, setDifficulty] = useState('basic');
 
   // Comments state variables
   const [comments, setComments] = useState([]);
@@ -89,9 +89,9 @@ const CategoryScreen = ({ navigation, route }) => {
   };
 
   const getPointsInfoText = () => {
-    if (difficulty === 'easy') {
+    if (difficulty === 'basic') {
       return { correct: '+2 points', wrong: '-1 point' };
-    } else if (difficulty === 'hard') {
+    } else if (difficulty === 'advance') {
       return { correct: '+5 points', wrong: '-1 point' };
     } else {
       return { correct: '+3 points', wrong: '-1 point' };
@@ -103,7 +103,7 @@ const CategoryScreen = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#3b82f6', '#1d4ed8']}
+        colors={['#1e1b4b', '#4c1d95', '#6d28d9']}
         style={styles.header}
       >
         <TouchableOpacity
@@ -129,7 +129,7 @@ const CategoryScreen = ({ navigation, route }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Select Quiz Type</Text>
           <View style={styles.filterContainer}>
-            {['easy', 'medium', 'hard'].map((level) => (
+            {['basic', 'intermediate', 'advance'].map((level) => (
               <TouchableOpacity
                 key={level}
                 style={[
@@ -142,7 +142,7 @@ const CategoryScreen = ({ navigation, route }) => {
                   styles.filterText,
                   difficulty === level && styles.filterTextActive
                 ]}>
-                  {level === 'easy' ? 'Basic Quiz' : level === 'medium' ? 'Intermediate Quiz' : 'Advance Quiz'}
+                  {level === 'basic' ? 'Basic Quiz' : level === 'intermediate' ? 'Intermediate Quiz' : 'Advance Quiz'}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
   filterContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10 },
   filterButton: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: '#f3f4f6', borderWidth: 1, borderColor: '#e5e7eb' },
   filterButtonActive: { backgroundColor: '#4c1d95', borderColor: '#4c1d95' },
-  filterText: { color: '#4b5563', fontSize: 14, fontFamily: 'Inter-Medium' },
+  filterText: { color: '#4b5563', fontSize: 14, fontFamily: 'Inter-Intermediate' },
   filterTextActive: { color: 'white' },
 
   container: {
@@ -311,9 +311,10 @@ const styles = StyleSheet.create({
   headerContent: {
     alignItems: 'center',
     marginTop: 20,
+    paddingHorizontal: 40,
   },
   categoryName: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
     color: 'white',
     textAlign: 'center',
@@ -325,7 +326,7 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.8)',
     textAlign: 'center',
     marginBottom: 20,
-    fontFamily: 'Inter-Medium',
+    fontFamily: 'Inter-Intermediate',
   },
   statsContainer: {
     flexDirection: 'row',
@@ -339,7 +340,7 @@ const styles = StyleSheet.create({
   statText: {
     color: 'white',
     fontSize: 14,
-    fontFamily: 'Inter-Medium',
+    fontFamily: 'Inter-Intermediate',
   },
   content: {
     flex: 1,
@@ -386,7 +387,7 @@ const styles = StyleSheet.create({
   pointsText: {
     fontSize: 12,
     color: 'rgba(255, 255, 255, 0.9)',
-    fontFamily: 'Inter-Medium',
+    fontFamily: 'Inter-Intermediate',
   },
   rulesCard: {
     backgroundColor: 'white',

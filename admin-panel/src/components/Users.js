@@ -653,19 +653,19 @@ const Users = () => {
                     <label className="block text-sm font-medium text-gray-700">Specialty</label>
                     <select name="specialty" required value={formData.specialty} onChange={handleInputChange} className="mt-1 input-field">
                       <option value="">Select Specialty</option>
-                      <option value="Cardiology">Cardiology</option>
-                      <option value="Dermatology">Dermatology</option>
-                      <option value="Endocrinology & Diabetes">Endocrinology & Diabetes</option>
-                      <option value="ER">ER</option>
-                      <option value="Gastroenterology">Gastroenterology</option>
-                      <option value="Gynaecology">Gynaecology</option>
-                      <option value="Internal Medicine">Internal Medicine</option>
-                      <option value="Nephrology">Nephrology</option>
-                      <option value="Neurology">Neurology</option>
-                      <option value="Orthopaedic">Orthopaedic</option>
-                      <option value="Paediatrics">Paediatrics</option>
-                      <option value="Psychiatry">Psychiatry</option>
-                      <option value="Pulmonology">Pulmonology</option>
+                      <option value="Cardiologist">Cardiology</option>
+                      <option value="Dermatologist">Dermatology</option>
+                      <option value="Endocrinologist">Endocrinology & Diabetes</option>
+                      <option value="ER Specialist">ER</option>
+                      <option value="Gastroenterologist">Gastroenterology</option>
+                      <option value="Gynaecologist">Gynaecology</option>
+                      <option value="General Physician">Internal Medicine</option>
+                      <option value="Nephrologist">Nephrology</option>
+                      <option value="Neurologist">Neurology</option>
+                      <option value="Orthopedic Surgeon">Orthopaedic</option>
+                      <option value="Pediatrician">Paediatrics</option>
+                      <option value="Psychiatrist">Psychiatry</option>
+                      <option value="Pulmonologist">Pulmonology</option>
                     </select>
                   </div>
                   <div>
@@ -776,19 +776,19 @@ const Users = () => {
                     <label className="block text-sm font-medium text-gray-700">Specialty</label>
                     <select name="specialty" required value={selectedUser.specialty || ''} onChange={handleEditInputChange} className="mt-1 input-field">
                       <option value="">Select Specialty</option>
-                      <option value="Cardiology">Cardiology</option>
-                      <option value="Dermatology">Dermatology</option>
-                      <option value="Endocrinology & Diabetes">Endocrinology & Diabetes</option>
-                      <option value="ER">ER</option>
-                      <option value="Gastroenterology">Gastroenterology</option>
-                      <option value="Gynaecology">Gynaecology</option>
-                      <option value="Internal Medicine">Internal Medicine</option>
-                      <option value="Nephrology">Nephrology</option>
-                      <option value="Neurology">Neurology</option>
-                      <option value="Orthopaedic">Orthopaedic</option>
-                      <option value="Paediatrics">Paediatrics</option>
-                      <option value="Psychiatry">Psychiatry</option>
-                      <option value="Pulmonology">Pulmonology</option>
+                      <option value="Cardiologist">Cardiology</option>
+                      <option value="Dermatologist">Dermatology</option>
+                      <option value="Endocrinologist">Endocrinology & Diabetes</option>
+                      <option value="ER Specialist">ER</option>
+                      <option value="Gastroenterologist">Gastroenterology</option>
+                      <option value="Gynaecologist">Gynaecology</option>
+                      <option value="General Physician">Internal Medicine</option>
+                      <option value="Nephrologist">Nephrology</option>
+                      <option value="Neurologist">Neurology</option>
+                      <option value="Orthopedic Surgeon">Orthopaedic</option>
+                      <option value="Pediatrician">Paediatrics</option>
+                      <option value="Psychiatrist">Psychiatry</option>
+                      <option value="Pulmonologist">Pulmonology</option>
                     </select>
                   </div>
                   <div>

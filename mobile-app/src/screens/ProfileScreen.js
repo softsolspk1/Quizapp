@@ -191,9 +191,9 @@ const ProfileScreen = ({ navigation, route }) => {
       </LinearGradient>
 
       <ScrollView style={styles.content}>
-        {/* Banner Ad on Profile Page before Profile Information */}
+        {/* Banner Ad on Profile Page after Header */}
         <View style={styles.bannerContainer}>
-          <AppBanner location="profile_header" />
+          <AppBanner location="profile_footer" />
         </View>
 
         {/* Profile Information */}
@@ -330,10 +330,6 @@ const ProfileScreen = ({ navigation, route }) => {
           </View>
         )}
       </ScrollView>
-      
-      <View style={styles.footer}>
-        <AppBanner location="profile_footer" />
-      </View>
     </View>
   );
 };

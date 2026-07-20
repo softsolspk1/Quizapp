@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, ActivityIndicator, SafeAreaView } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, ActivityIndicator, SafeAreaView, Platform } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -7,8 +7,68 @@ import { LinearGradient } from 'expo-linear-gradient';
 const PdfViewerScreen = ({ navigation, route }) => {
   const { title, url } = route.params;
 
-  // Use Google Docs viewer to embed PDF for cross-platform support
-  const embedUrl = `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(url)}`;
+  // For Android, we use a custom injected PDF.js viewer
+  const getPdfViewerHtml = (pdfUrl) => `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+        <style>
+          body { margin: 0; padding: 0; background-color: #f9fafb; display: flex; flex-direction: column; align-items: center; }
+          canvas { max-width: 100%; margin-bottom: 10px; box-shadow: 0px 2px 5px rgba(0,0,0,0.2); }
+          #pdf-container { width: 100%; display: flex; flex-direction: column; align-items: center; padding: 10px 0; }
+          .loading { font-family: sans-serif; padding: 20px; color: #6d28d9; }
+        </style>
+      </head>
+      <body>
+        <div id="loading" class="loading">Loading PDF...</div>
+        <div id="pdf-container"></div>
+        <script>
+          var url = '${pdfUrl}';
+          var pdfjsLib = window['pdfjs-dist/build/pdf'];
+          pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+          var loadingTask = pdfjsLib.getDocument(url);
+          loadingTask.promise.then(function(pdf) {
+            document.getElementById('loading').style.display = 'none';
+            for (var pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+              pdf.getPage(pageNum).then(function(page) {
+                var scale = 1.5;
+                var viewport = page.getViewport({scale: scale});
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                canvas.setAttribute('data-page', page._pageIndex + 1);
+                
+                var container = document.getElementById('pdf-container');
+                var inserted = false;
+                for (var i = 0; i < container.children.length; i++) {
+                  if (parseInt(container.children[i].getAttribute('data-page')) > (page._pageIndex + 1)) {
+                    container.insertBefore(canvas, container.children[i]);
+                    inserted = true;
+                    break;
+                  }
+                }
+                if (!inserted) {
+                  container.appendChild(canvas);
+                }
+
+                var renderContext = {
+                  canvasContext: ctx,
+                  viewport: viewport
+                };
+                page.render(renderContext);
+              });
+            }
+          }, function (reason) {
+            document.getElementById('loading').innerText = 'Error loading PDF: ' + reason.message;
+          });
+        </script>
+      </body>
+    </html>
+  `;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -27,7 +87,8 @@ const PdfViewerScreen = ({ navigation, route }) => {
         </LinearGradient>
         
         <WebView
-          source={{ uri: embedUrl }}
+          source={Platform.OS === 'ios' ? { uri: url } : { html: getPdfViewerHtml(url) }}
+          originWhitelist={['*']}
           startInLoadingState={true}
           renderLoading={() => (
             <View style={styles.loader}>
@@ -36,6 +97,9 @@ const PdfViewerScreen = ({ navigation, route }) => {
             </View>
           )}
           style={{ flex: 1 }}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+          allowFileAccess={true}
         />
       </View>
     </SafeAreaView>

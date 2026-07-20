@@ -93,7 +93,7 @@ const CompetitionLeaderboardScreen = ({ navigation, route }) => {
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
         <View style={styles.headerContent}>
-          <Text style={styles.title}>Leaderboard</Text>
+          <Text style={styles.title}>Scoreboard</Text>
           <Text style={styles.subtitle}>{competition.name}</Text>
         </View>
       </LinearGradient>

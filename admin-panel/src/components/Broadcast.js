@@ -25,7 +25,7 @@ const Broadcast = () => {
     { value: 'role', label: 'Specific Role' }
   ];
 
-  const specialties = ['Cardiology', 'Dermatology', 'Endocrinology & Diabetes', 'ER', 'Gastroenterology', 'Gynaecology', 'Internal Medicine', 'Nephrology', 'Neuro Surgery', 'Neurology', 'Orthopaedic', 'Paediatrics', 'Peads Neurology', 'Psychiatry', 'Pulmonology', 'Radiologist'];
+  const specialties = ['Cardiologist', 'Dermatologist', 'Endocrinologist', 'ER Specialist', 'Gastroenterologist', 'Gynaecologist', 'General Physician', 'Nephrologist', 'Neurosurgeon', 'Neurologist', 'Orthopedic Surgeon', 'Pediatrician', 'Pediatric Neurologist', 'Psychiatrist', 'Pulmonologist', 'Radiologist'];
   
   const cities = ['Abbottabad', 'Bahawalpur', 'Chiniot', 'Dera Ghazi Khan', 'Dera Ismail Khan', 'Faisalabad', 'Gilgit', 'Gujranwala', 'Gujrat', 'Hyderabad', 'Islamabad', 'Jacobabad', 'Jhang', 'Jhelum', 'Karachi', 'Kasur', 'Khairpur', 'Lahore', 'Larkana', 'Mardan', 'Mingora', 'Mirpur Khas', 'Multan', 'Muzaffarabad', 'Nawabshah', 'Okara', 'Peshawar', 'Quetta', 'Rahim Yar Khan', 'Rawalpindi', 'Sadiqabad', 'Sahiwal', 'Sargodha', 'Sheikhupura', 'Shikarpur', 'Sialkot', 'Sukkur', 'Vehari'];
   

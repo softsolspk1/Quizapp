@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import { API_URL } from '../config';
+import FooterBar from '../components/FooterBar';
 
 const { width } = Dimensions.get('window');
 
@@ -204,7 +205,7 @@ const LeaderboardScreen = ({ navigation }) => {
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeBtn}>
             <Ionicons name="close" size={24} color="#1f2937" />
           </TouchableOpacity>
-          <Text style={styles.title}>Leaderboard</Text>
+          <Text style={styles.title}>Scoreboard</Text>
           <TouchableOpacity onPress={() => setShowFilters(!showFilters)} style={styles.filterBtn}>
             <Ionicons name="filter" size={24} color="white" />
           </TouchableOpacity>
@@ -266,6 +267,7 @@ const LeaderboardScreen = ({ navigation }) => {
           ListHeaderComponent={leaderboard.length < 3 ? null : <View style={{ height: 10 }} />}
         />
       )}
+      <FooterBar location="leaderboard_footer" />
     </View>
   );
 };

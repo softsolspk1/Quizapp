@@ -13,6 +13,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import io from 'socket.io-client';
+import { LinearGradient } from 'expo-linear-gradient';
 import { API_URL } from '../config';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -108,11 +109,17 @@ const ChatRoomScreen = ({ route, navigation }) => {
     <KeyboardAvoidingView 
       style={styles.container} 
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       {/* Header */}
-      <View style={styles.header}>
+      <LinearGradient
+        colors={['#1e1b4b', '#4c1d95', '#6d28d9']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#1f2937" />
+          <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
         
         <TouchableOpacity 
@@ -133,7 +140,7 @@ const ChatRoomScreen = ({ route, navigation }) => {
             <Text style={styles.headerSpecialty}>{otherUser.specialty}</Text>
           </View>
         </TouchableOpacity>
-      </View>
+      </LinearGradient>
 
       {/* Messages List */}
       <FlatList
@@ -175,12 +182,11 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
     paddingTop: 50,
-    paddingBottom: 15,
+    paddingBottom: 20,
     paddingHorizontal: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
   backButton: {
     padding: 5,
@@ -213,11 +219,11 @@ const styles = StyleSheet.create({
   headerName: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#1f2937',
+    color: 'white',
   },
   headerSpecialty: {
     fontSize: 12,
-    color: '#6b7280',
+    color: 'rgba(255, 255, 255, 0.8)',
   },
   messagesList: {
     padding: 15,
@@ -291,6 +297,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     padding: 10,
+    paddingBottom: Platform.OS === 'ios' ? 24 : 10,
     backgroundColor: 'white',
     borderTopWidth: 1,
     borderTopColor: '#e5e7eb',

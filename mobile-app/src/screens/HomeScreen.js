@@ -185,7 +185,6 @@ const HomeScreen = ({ navigation }) => {
 
           <Animated.View style={[styles.logosContainer, { transform: [{ translateY: headerLogoFloat }] }]}>
             <Image source={require('../../assets/logo2.png')} style={styles.logoApp} />
-            <Image source={require('../../assets/hilton.png')} style={styles.logoHilton} />
           </Animated.View>
 
           <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={styles.avatarMiniContainer}>
@@ -211,10 +210,10 @@ const HomeScreen = ({ navigation }) => {
           </View>
 
           <View style={styles.statsContainer}>
-            <View style={styles.statItem}>
+            <Animated.View style={[styles.statItem, { transform: [{ scale: pulseScale }] }]}>
               <Text style={styles.statNumber}>{user?.totalPoints || 0}</Text>
               <Text style={styles.statLabel}>Score</Text>
-            </View>
+            </Animated.View>
           </View>
         </View>
       </LinearGradient>
@@ -254,7 +253,7 @@ const HomeScreen = ({ navigation }) => {
             >
               <LinearGradient colors={['#db2777', '#be185d']} style={styles.quickActionGradient}>
                 <Ionicons name="trophy" size={24} color="white" />
-                <Text style={styles.quickActionText} numberOfLines={1}>Leaderboard</Text>
+                <Text style={styles.quickActionText} numberOfLines={1}>Scoreboard</Text>
               </LinearGradient>
             </TouchableOpacity>
 
@@ -467,7 +466,7 @@ const HomeScreen = ({ navigation }) => {
                 { name: 'Clash of Titans', icon: 'medical', action: () => navigation.navigate('WardActivities') },
                 { name: 'Single Player', icon: 'person', action: () => navigation.navigate('Categories') },
                 { name: 'Multiplayer', icon: 'people', action: () => navigation.navigate('Multiplayer') },
-                { name: 'Leaderboard', icon: 'trophy', action: () => navigation.navigate('Leaderboard') },
+                { name: 'Scoreboard', icon: 'trophy', action: () => navigation.navigate('Leaderboard') },
                 { name: 'Study Guides', icon: 'book', action: () => navigation.navigate('StudyGuides') },
                 { name: 'Support', icon: 'help-circle', action: () => navigation.navigate('Support') },
                 { name: 'Profile', icon: 'person-circle', action: () => navigation.navigate('Profile') },
@@ -499,9 +498,9 @@ const HomeScreen = ({ navigation }) => {
               </TouchableOpacity>
             </ScrollView>
 
-            {/* Added Banner Ad on Hamburger Menu Footer */}
+            {/* Added Hilton Logo on Hamburger Menu Footer */}
             <View style={styles.drawerBanner}>
-              <AppBanner location="sidebar" />
+              <Image source={require('../../assets/hilton.png')} style={{ width: 120, height: 60, resizeMode: 'contain' }} />
             </View>
           </LinearGradient>
         </View>
@@ -546,12 +545,12 @@ const styles = StyleSheet.create({
   topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 25 },
   menuIconContainer: { padding: 4 },
   logosContainer: { flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1, justifyContent: 'center' },
-  logoApp: { width: 90, height: 70, resizeMode: 'contain' },
+  logoApp: { width: 140, height: 100, resizeMode: 'contain' },
   logoHilton: { width: 110, height: 60, resizeMode: 'contain' },
   avatarMiniContainer: { padding: 2 },
-  avatarMini: { width: 36, height: 36, borderRadius: 18, borderWidth: 1.5, borderColor: 'white' },
-  avatarMiniFallback: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: 'white' },
-  avatarMiniText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
+  avatarMini: { width: 48, height: 48, borderRadius: 24, borderWidth: 1.5, borderColor: 'white' },
+  avatarMiniFallback: { width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: 'white' },
+  avatarMiniText: { color: 'white', fontSize: 20, fontWeight: 'bold' },
   
   headerContent: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 10 },
   welcomeText: { fontSize: 13, color: 'rgba(255, 255, 255, 0.7)', fontFamily: 'Inter-Medium' },

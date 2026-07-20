@@ -76,21 +76,21 @@ const RegisterScreen = ({ navigation }) => {
   }, []);
 
   const specialtyOptions = [
-    'Cardiology',
-    'Dermatology',
-    'Endocrinology & Diabetes',
-    'ER',
-    'Gastroenterology',
-    'Gynaecology',
-    'Internal Medicine',
-    'Nephrology',
-    'Neuro Surgery',
-    'Neurology',
-    'Orthopaedic',
-    'Paediatrics',
-    'Peads Neurology',
-    'Psychiatry',
-    'Pulmonology',
+    'Cardiologist',
+    'Dermatologist',
+    'Endocrinologist',
+    'ER Specialist',
+    'Gastroenterologist',
+    'Gynaecologist',
+    'General Physician',
+    'Nephrologist',
+    'Neurosurgeon',
+    'Neurologist',
+    'Orthopedic Surgeon',
+    'Pediatrician',
+    'Pediatric Neurologist',
+    'Psychiatrist',
+    'Pulmonologist',
     'Radiologist'
   ].sort();
 

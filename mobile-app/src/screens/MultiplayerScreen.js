@@ -194,31 +194,46 @@ const MultiplayerScreen = ({ navigation }) => {
           ) : rooms.length === 0 ? (
             <Text style={styles.noRoomsText}>No rooms found. Be the first to create one!</Text>
           ) : (
-            rooms.map((room) => (
-              <TouchableOpacity key={room.id} style={styles.roomCard} onPress={() => joinRoom(room)}>
-                <View style={styles.roomHeader}>
-                  <Text style={styles.roomName}>{room.name}</Text>
-                  <View style={[styles.badge, room.isOpen ? styles.badgeOpen : styles.badgeClosed]}>
-                    <Text style={styles.badgeText}>{room.isOpen ? 'Open' : 'Closed'}</Text>
+            <View style={styles.roomsGrid}>
+              {rooms.map((room) => (
+                <TouchableOpacity key={room.id} style={styles.roomCard} onPress={() => joinRoom(room)}>
+                  <View style={styles.roomHeader}>
+                    <Text style={styles.roomName} numberOfLines={1}>{room.name}</Text>
+                    <View style={[styles.badge, room.isOpen ? styles.badgeOpen : styles.badgeClosed]}>
+                      <Text style={styles.badgeText}>{room.isOpen ? 'Open' : 'Closed'}</Text>
+                    </View>
                   </View>
-                </View>
-                <View style={styles.roomDetails}>
-                  <Text style={styles.roomDetailText}><Ionicons name="medkit" size={14}/> {room.specialty}</Text>
-                  <Text style={styles.roomDetailText}><Ionicons name="location" size={14}/> {room.city}</Text>
-                  <Text style={styles.roomDetailText}><Ionicons name="business" size={14}/> {room.hospitalName}</Text>
-                  <View style={styles.roomCreatorContainer}>
-                    {room.creator?.profilePicture ? (
-                      <Image source={{ uri: room.creator.profilePicture }} style={styles.roomCreatorAvatar} />
-                    ) : (
-                      <View style={styles.roomCreatorAvatarFallback}>
-                        <Text style={styles.roomCreatorAvatarText}>{room.creator?.doctorName?.charAt(0)}</Text>
-                      </View>
+                  <View style={styles.roomDetails}>
+                    <Text style={styles.roomDetailText} numberOfLines={1}><Ionicons name="medkit" size={12}/> {room.specialty}</Text>
+                    <Text style={styles.roomDetailText} numberOfLines={1}><Ionicons name="location" size={12}/> {room.city}</Text>
+                    <Text style={styles.roomDetailText} numberOfLines={1}><Ionicons name="business" size={12}/> {room.hospitalName}</Text>
+                    <View style={styles.roomCreatorContainer}>
+                      {room.creator?.profilePicture ? (
+                        <Image source={{ uri: room.creator.profilePicture }} style={styles.roomCreatorAvatar} />
+                      ) : (
+                        <View style={styles.roomCreatorAvatarFallback}>
+                          <Text style={styles.roomCreatorAvatarText}>{room.creator?.doctorName?.charAt(0)}</Text>
+                        </View>
+                      )}
+                      <Text style={styles.roomCreator} numberOfLines={1}>By Dr. {room.creator?.doctorName}</Text>
+                    </View>
+                    
+                    {room.creatorId === user.id && (
+                      <TouchableOpacity 
+                        style={styles.revealPinButton}
+                        onPress={(e) => {
+                          e.stopPropagation();
+                          Alert.alert('Room PIN', `Share this PIN with other players:\n\n${room.pin}`);
+                        }}
+                      >
+                        <Ionicons name="key" size={14} color="#6d28d9" style={{ marginRight: 4 }} />
+                        <Text style={styles.revealPinText}>Reveal PIN</Text>
+                      </TouchableOpacity>
                     )}
-                    <Text style={styles.roomCreator}>By Dr. {room.creator?.doctorName}</Text>
                   </View>
-                </View>
-              </TouchableOpacity>
-            ))
+                </TouchableOpacity>
+              ))}
+            </View>
           )}
         </View>
       </ScrollView>
@@ -327,7 +342,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     color: 'rgba(255, 255, 255, 0.8)',
-    fontFamily: 'Inter-Medium',
+    fontFamily: 'Inter-Intermediate',
   },
   content: {
     flex: 1,
@@ -382,8 +397,13 @@ const styles = StyleSheet.create({
   noRoomsText: {
     textAlign: 'center',
     color: '#6b7280',
-    fontFamily: 'Inter-Medium',
+    fontFamily: 'Inter-Intermediate',
     marginTop: 20
+  },
+  roomsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
   roomCard: {
     backgroundColor: 'white',
@@ -394,24 +414,24 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    elevation: 2
+    elevation: 2,
+    width: '48%'
   },
   roomHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    marginBottom: 8
   },
   roomName: {
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: 'Inter-Bold',
     color: '#1f2937',
-    flex: 1
+    marginBottom: 6
   },
   badge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8
   },
   badgeOpen: {
     backgroundColor: '#d1fae5'
@@ -425,17 +445,21 @@ const styles = StyleSheet.create({
     color: '#374151'
   },
   roomDetails: {
-    gap: 6
+    gap: 4
   },
   roomDetailText: {
+    fontSize: 12,
     fontSize: 14,
     color: '#4b5563',
-    fontFamily: 'Inter-Medium'
+    fontFamily: 'Inter-Intermediate'
   },
   roomCreatorContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 8
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#f3f4f6'
   },
   roomCreatorAvatar: {
     width: 20,
@@ -447,21 +471,36 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: '#6d28d9',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 6
   },
   roomCreatorAvatarText: {
+    color: 'white',
     fontSize: 10,
-    fontWeight: 'bold',
-    color: '#4b5563'
+    fontWeight: 'bold'
   },
   roomCreator: {
-    fontSize: 13,
-    color: '#9ca3af',
-    fontFamily: 'Inter-Regular',
-    fontStyle: 'italic'
+    fontSize: 11,
+    color: '#4b5563',
+    fontFamily: 'Inter-Medium',
+    flex: 1
+  },
+  revealPinButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f3e8ff',
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    marginTop: 8,
+  },
+  revealPinText: {
+    color: '#6d28d9',
+    fontSize: 12,
+    fontFamily: 'Inter-Bold',
   },
   modalOverlay: {
     flex: 1,
@@ -511,7 +550,7 @@ const styles = StyleSheet.create({
   },
   readOnlyText: {
     fontSize: 16,
-    fontFamily: 'Inter-Medium',
+    fontFamily: 'Inter-Intermediate',
     color: '#4b5563'
   },
   switchRow: {

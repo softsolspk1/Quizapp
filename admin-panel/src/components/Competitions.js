@@ -25,7 +25,7 @@ const Competitions = () => {
     isActive: true
   });
 
-  const specialties = ['Cardiology', 'Dermatology', 'Endocrinology & Diabetes', 'ER', 'Gastroenterology', 'Gynaecology', 'Internal Medicine', 'Nephrology', 'Neurology', 'Orthopaedic', 'Paediatrics', 'Psychiatry', 'Pulmonology'];
+  const specialties = ['Cardiologist', 'Dermatologist', 'Endocrinologist', 'ER Specialist', 'Gastroenterologist', 'Gynaecologist', 'General Physician', 'Nephrologist', 'Neurologist', 'Orthopedic Surgeon', 'Pediatrician', 'Psychiatrist', 'Pulmonologist'];
 
   useEffect(() => {
     fetchData();
@@ -388,7 +388,7 @@ const Competitions = () => {
             
             <div className="flex-1 overflow-y-auto p-6 space-y-8">
               <div>
-                <h4 className="font-bold text-gray-800 mb-4 text-lg border-b pb-2">Leaderboard</h4>
+                <h4 className="font-bold text-gray-800 mb-4 text-lg border-b pb-2">Scoreboard</h4>
                 {leaderboard.length > 0 ? (
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">

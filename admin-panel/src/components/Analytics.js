@@ -19,8 +19,29 @@ import {
   Users,
   Trophy,
   Target,
-  Award
+  Award,
+  Download
 } from 'lucide-react';
+
+const specialtyOptions = [
+  'All',
+  'Cardiologist',
+  'Dermatologist',
+  'Endocrinologist',
+  'ER Specialist',
+  'Gastroenterologist',
+  'Gynaecologist',
+  'General Physician',
+  'Nephrologist',
+  'Neurosurgeon',
+  'Neurologist',
+  'Orthopedic Surgeon',
+  'Pediatrician',
+  'Pediatric Neurologist',
+  'Psychiatrist',
+  'Pulmonologist',
+  'Radiologist'
+];
 
 const Analytics = () => {
   const [overview, setOverview] = useState(null);
@@ -31,11 +52,12 @@ const Analytics = () => {
   const [gameModeStats, setGameModeStats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState('30');
+  const [selectedSpecialty, setSelectedSpecialty] = useState('All');
 
   useEffect(() => {
     loadAnalyticsData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPeriod]);
+  }, [selectedPeriod, selectedSpecialty]);
 
   const loadAnalyticsData = async () => {
     try {
@@ -44,7 +66,7 @@ const Analytics = () => {
         axios.get(`/api/analytics/user-activity?days=${selectedPeriod}`),
         axios.get('/api/analytics/category-performance'),
         axios.get('/api/analytics/question-performance?limit=10'),
-        axios.get('/api/analytics/top-performers?limit=10'),
+        axios.get(`/api/analytics/top-performers?limit=100&specialty=${encodeURIComponent(selectedSpecialty)}`),
         axios.get('/api/analytics/game-mode-stats')
       ]);
 
@@ -59,6 +81,26 @@ const Analytics = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleExportCSV = () => {
+    if (!topPerformers || topPerformers.length === 0) return;
+    const headers = ['Rank', 'Doctor Name', 'Specialty', 'Hospital', 'Total Points', 'Games Played', 'Accuracy'];
+    const rows = topPerformers.map((p, index) => {
+      const acc = p.correctAnswers + p.wrongAnswers > 0 
+        ? ((p.correctAnswers / (p.correctAnswers + p.wrongAnswers)) * 100).toFixed(1)
+        : 0;
+      return [index + 1, p.doctorName, p.specialty, p.hospitalName, p.totalPoints, p.gamesPlayed, `${acc}%`];
+    });
+    
+    let csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.map(String).map(s => '"' + s.replace(/"/g, '""') + '"').join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', 'top_performers.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
@@ -234,7 +276,22 @@ const Analytics = () => {
 
       {/* Top Performers */}
       <div className="card">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Top Performers</h3>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-medium text-gray-900">Top Performers</h3>
+          <div className="flex space-x-2">
+            <select
+              className="input-field py-1"
+              value={selectedSpecialty}
+              onChange={(e) => setSelectedSpecialty(e.target.value)}
+            >
+              {specialtyOptions.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+            <button onClick={handleExportCSV} className="bg-primary-600 text-white hover:bg-primary-700 px-3 py-1 rounded flex items-center">
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </button>
+          </div>
+        </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">

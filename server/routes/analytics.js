@@ -179,10 +179,16 @@ router.get('/top-performers', auth, async (req, res) => {
       return res.status(403).json({ message: 'Access denied' });
     }
 
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 100;
+    const specialty = req.query.specialty;
+    
+    let whereClause = { isApproved: true, isActive: true };
+    if (specialty && specialty !== 'All') {
+      whereClause.specialty = specialty;
+    }
 
     const topPerformers = await prisma.user.findMany({
-      where: { isApproved: true, isActive: true },
+      where: whereClause,
       select: {
         id: true,
         doctorName: true,
